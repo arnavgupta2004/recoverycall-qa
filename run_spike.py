@@ -215,9 +215,19 @@ def plan_jobs(manifests: list[dict]) -> list[dict]:
     return jobs
 
 
+def current_spans(scenario: str, turn: int) -> list[dict]:
+    """Critical spans for one turn from the current data/scripts.json.
+
+    Manifests keep a snapshot of the spans from synthesis time; span metadata (e.g.
+    negation_tokens) can change later without new audio, so scoring always reads it here.
+    """
+    sc = next(s for s in load_scripts()["scenarios"] if s["id"] == scenario)
+    return sc["turns"][turn].get("critical_spans", [])
+
+
 def chunk_reference(m: dict, ch: dict) -> tuple[str, list[dict]]:
     turns = [m["turns"][i] for i in ch["turns"]]
-    spans = [dict(sp, turn=t["turn"]) for t in turns for sp in t.get("critical_spans", [])]
+    spans = [dict(sp, turn=t["turn"]) for t in turns for sp in current_spans(m["scenario"], t["turn"])]
     return " ".join(t["text"] for t in turns), spans
 
 
@@ -331,7 +341,8 @@ def cmd_report(args, paths: Paths, client=None) -> None:
     if not paths.results.exists():
         sys.exit(f"{paths.results.relative_to(ROOT)} not found; run transcribe first")
     results = json.loads(paths.results.read_text(encoding="utf-8"))
-    for rec in results:  # re-score so metric changes apply without new API calls
+    for rec in results:  # re-score so metric and span changes apply without new API calls
+        rec["critical_spans"] = [dict(sp, turn=t) for t in rec["turns"] for sp in current_spans(rec["scenario"], t)]
         score(rec)
     paths.results.write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
     tts_log = json.loads(paths.tts_log.read_text(encoding="utf-8")) if paths.tts_log.exists() else []
@@ -480,6 +491,14 @@ def cmd_report(args, paths: Paths, client=None) -> None:
     L.append("Not tested here, per the docs: word timestamps (not offered by the REST STT response) and a dedicated "
              "Hinglish STT language code (none exists; hi-IN and en-IN were tried instead).\n")
 
+    # Embed the silent-omission experiment report (experiment.py report) when it exists.
+    exp_report = paths.outputs / "experiment" / "report.md"
+    if exp_report.exists():
+        body = exp_report.read_text(encoding="utf-8").split("\n", 1)[1]
+        body = body.replace("\n## ", "\n### ").replace("](omission_vs_snr.png)", "](experiment/omission_vs_snr.png)")
+        L.append("\n## Silent-omission experiment (VAD segmentation, coverage check, recovery)\n")
+        L.append(f"From `{exp_report.relative_to(ROOT)}`; regenerate with `python experiment.py report`.\n")
+        L.append(body)
     paths.report.write_text("\n".join(L) + "\n", encoding="utf-8")
     log(f"report: wrote {paths.report.relative_to(ROOT)} and re-scored {paths.results.relative_to(ROOT)}")
 

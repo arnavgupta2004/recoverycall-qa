@@ -117,13 +117,35 @@ def match_span(span: str, transcript: str) -> dict:
     return {"status": status, "ratio": round(best_ratio, 3), "best_match": best_text}
 
 
+def negation_present(tokens: list[str], text: str) -> bool:
+    """True when any accepted negation variant occurs as a whole word in text (both normalized)."""
+    padded = f" {normalize(text)} "
+    return any(t and f" {t} " in padded for t in (normalize(tok) for tok in tokens))
+
+
+TURN_DROPPED_BELOW = 0.5
+SHORT_TURN_WORDS = 3
+
+
+def turn_missing(turn_text: str, transcript: str) -> tuple[bool, float]:
+    """Evaluation helper: is a reference turn absent from a transcript? Returns (missing, best ratio).
+
+    A turn is missing when its best word-window match ratio is below 0.5. Turns of three
+    words or fewer need a near match (>= 0.8): a two-word turn like "जी बताइए" can reach 0.5
+    against an unrelated word, which would wrongly count it as present.
+    """
+    ratio = match_span(turn_text, transcript)["ratio"]
+    floor = NEAR_THRESHOLD if len(normalize(turn_text).split()) <= SHORT_TURN_WORDS else TURN_DROPPED_BELOW
+    return ratio < floor, ratio
+
+
 def evaluate_spans(spans: list[dict], transcript: str) -> list[dict]:
-    """Match each critical span; for negation spans, flag when no negation marker survives in the best match.
+    """Match each critical span; for negation spans, flag when no negation survives in the best match.
 
     Negation detection priority:
-      1. If the span has a "negation_token" field, check for that token by whole-word
-         match on the normalized best_match (most precise; use for single words / suffixes
-         that are unambiguous when space-delimited).
+      1. If the span has "negation_tokens" (a list of accepted whole-word variants, e.g.
+         नहीं / नही, or a fused Kannada form plus its split form ಸಾಧ್ಯವಿಲ್ಲ / ಇಲ್ಲ), the
+         negation is kept when ANY variant occurs as a whole word in the normalized best_match.
       2. Otherwise fall back to substring matching on each "negation_markers" entry and
          emit a warning so the caller knows the less-precise path was taken.
     """
@@ -131,21 +153,19 @@ def evaluate_spans(spans: list[dict], transcript: str) -> list[dict]:
     for sp in spans:
         res = {"type": sp["type"], "span": sp["text"], **match_span(sp["text"], transcript)}
         if sp["type"] == "negation":
-            token = sp.get("negation_token")
+            tokens = sp.get("negation_tokens")
             markers = sp.get("negation_markers", [])
             best_norm = res["best_match"]
-            if token is not None:
-                # Whole-token match: pad with spaces so partial-word hits are avoided.
-                tok_n = normalize(token)
-                present = bool(tok_n and f" {tok_n} " in f" {best_norm} ")
-                res["negation_token"] = token
-                res["negation_detection"] = "token"
+            if tokens:
+                present = negation_present(tokens, best_norm)
+                res["negation_tokens"] = tokens
+                res["negation_detection"] = "tokens"
             else:
                 # Fallback: substring match on each marker.
                 norm_markers = [normalize(m) for m in markers]
                 present = any(m and m in best_norm for m in norm_markers)
                 warnings.warn(
-                    f"negation span {sp['text']!r} has no negation_token; "
+                    f"negation span {sp['text']!r} has no negation_tokens; "
                     "using substring fallback for negation detection",
                     stacklevel=2,
                 )

@@ -17,7 +17,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from run_spike import load_scripts, score
-from src.metrics import match_span
+from src.metrics import turn_missing
 
 LIKE_FOR_LIKE = ["clean", "phone", "phone_noisy"]
 DROPPED_BELOW, PARTIAL_BELOW = 0.5, 0.8
@@ -45,8 +45,8 @@ def usable(records: list[dict]) -> list[dict]:
 def turn_coverage(rec: dict, turn_text: dict) -> dict[int, str]:
     out = {}
     for t in rec["turns"]:
-        ratio = match_span(turn_text[(rec["scenario"], t)], rec["transcript"])["ratio"]
-        out[t] = "dropped" if ratio < DROPPED_BELOW else ("partial" if ratio < PARTIAL_BELOW else "ok")
+        missing, ratio = turn_missing(turn_text[(rec["scenario"], t)], rec["transcript"])
+        out[t] = "dropped" if missing else ("partial" if ratio < PARTIAL_BELOW else "ok")
     return out
 
 
@@ -74,7 +74,8 @@ def main() -> None:
          "script check. Excluded: `phone_ulaw_container` (covers chunk 0 only, so its turns change with chunk "
          "length), ITN runs, and script mismatches (hi-IN on the Roman-script Hinglish call).\n",
          f"Turn coverage: each turn's reference text is fuzzy-matched against its chunk transcript with the same "
-         f"word-window matcher as the spans. Ratio < {DROPPED_BELOW} = dropped, < {PARTIAL_BELOW} = partial.\n"]
+         f"word-window matcher as the spans. Ratio < {DROPPED_BELOW} = dropped (turns of 3 words or fewer: < 0.8), "
+         f"< {PARTIAL_BELOW} = partial.\n"]
 
     L += ["## Span totals by variant\n",
           f"| variant | spans | {name_a} exact / near / garbled | {name_a} neg lost | "

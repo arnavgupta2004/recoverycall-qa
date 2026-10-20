@@ -18,7 +18,7 @@
          "critical_spans": [{"type": "amount", "text": "barah hazaar paanch sau rupaye"}]},
         {"speaker": "customer", "text": "Is mahine thodi problem hai, kya main do hafte baad pay kar sakta hoon?"},
         {"speaker": "agent", "text": "Bilkul, aapko aaj hi poora payment karna zaroori nahi hai. Main aapke liye ek payment plan bhej deti hoon.",
-         "critical_spans": [{"type": "negation", "text": "aaj hi poora payment karna zaroori nahi hai", "negation_token": "nahi", "negation_markers": ["nahi", "nahin", "not"]}]},
+         "critical_spans": [{"type": "negation", "text": "aaj hi poora payment karna zaroori nahi hai", "negation_tokens": ["nahi", "nahin", "nhi"], "negation_markers": ["nahi", "nahin", "not"]}]},
         {"speaker": "customer", "text": "Theek hai, thank you."},
         {"speaker": "agent", "text": "Dhanyavaad, aapka din shubh ho."}
       ]
@@ -35,11 +35,11 @@
         {"speaker": "agent", "text": "ನಿಮ್ಮ ಸಾಲದ ಹದಿನೆಂಟು ಸಾವಿರ ರೂಪಾಯಿ ಬಾಕಿ ಇದೆ. ಇವತ್ತೇ ಕಟ್ಟಬೇಕು.",
          "critical_spans": [{"type": "amount", "text": "ಹದಿನೆಂಟು ಸಾವಿರ ರೂಪಾಯಿ"}]},
         {"speaker": "customer", "text": "ನಾನು ಈಗ ಪೂರ್ತಿ ಹಣ ಕಟ್ಟಲು ಸಾಧ್ಯವಿಲ್ಲ, ಮುಂದಿನ ವಾರ ಕಟ್ಟುತ್ತೇನೆ.",
-         "critical_spans": [{"type": "negation", "text": "ಪೂರ್ತಿ ಹಣ ಕಟ್ಟಲು ಸಾಧ್ಯವಿಲ್ಲ", "negation_token": "ಸಾಧ್ಯವಿಲ್ಲ", "negation_markers": ["ಲ್ಲ"]}]},
+         "critical_spans": [{"type": "negation", "text": "ಪೂರ್ತಿ ಹಣ ಕಟ್ಟಲು ಸಾಧ್ಯವಿಲ್ಲ", "negation_tokens": ["ಸಾಧ್ಯವಿಲ್ಲ", "ಇಲ್ಲ"], "negation_markers": ["ಲ್ಲ"]}]},
         {"speaker": "agent", "text": "ಇವತ್ತು ಸಂಜೆಯೊಳಗೆ ಹಣ ಬರದಿದ್ದರೆ ನಮ್ಮ ಹುಡುಗರು ನಿಮ್ಮ ಮನೆಗೆ ಬರುತ್ತಾರೆ, ಆಮೇಲೆ ಏನಾಗುತ್ತೆ ನೋಡಿ.",
          "critical_spans": [{"type": "threat", "text": "ನಮ್ಮ ಹುಡುಗರು ನಿಮ್ಮ ಮನೆಗೆ ಬರುತ್ತಾರೆ"}]},
         {"speaker": "customer", "text": "ದಯವಿಟ್ಟು ಹಾಗೆ ಮಾಡಬೇಡಿ.",
-         "critical_spans": [{"type": "negation", "text": "ಹಾಗೆ ಮಾಡಬೇಡಿ", "negation_token": "ಮಾಡಬೇಡಿ", "negation_markers": ["ಬೇಡ"]}]},
+         "critical_spans": [{"type": "negation", "text": "ಹಾಗೆ ಮಾಡಬೇಡಿ", "negation_tokens": ["ಮಾಡಬೇಡಿ", "ಬೇಡಿ", "ಬೇಡ"], "negation_markers": ["ಬೇಡ"]}]},
         {"speaker": "agent", "text": "ನಿಮ್ಮ ಆಫೀಸಿನಲ್ಲಿ ಎಲ್ಲರಿಗೂ ನೀವು ಮೋಸ ಮಾಡಿದ್ದೀರಿ ಅಂತ ಹೇಳುತ್ತೇವೆ.",
          "critical_spans": [{"type": "threat", "text": "ಎಲ್ಲರಿಗೂ ನೀವು ಮೋಸ ಮಾಡಿದ್ದೀರಿ ಅಂತ ಹೇಳುತ್ತೇವೆ"}]}
       ]
@@ -56,16 +56,16 @@
         {"speaker": "agent", "text": "आपके खाते पर बयालीस हज़ार पाँच सौ रुपये बकाया हैं।",
          "critical_spans": [{"type": "amount", "text": "बयालीस हज़ार पाँच सौ रुपये"}]},
         {"speaker": "customer", "text": "मैं इस महीने पूरी रकम नहीं दे पाऊँगी, मेरी नौकरी चली गई है।",
-         "critical_spans": [{"type": "negation", "text": "पूरी रकम नहीं दे पाऊँगी", "negation_token": "नहीं", "negation_markers": ["नहीं", "नही"]}]},
+         "critical_spans": [{"type": "negation", "text": "पूरी रकम नहीं दे पाऊँगी", "negation_tokens": ["नहीं", "नही"], "negation_markers": ["नहीं", "नही"]}]},
         {"speaker": "agent", "text": "अगर आज शाम तक पैसे नहीं आए, तो हमारे लोग आपके घर आएँगे।",
          "critical_spans": [
-           {"type": "negation", "text": "आज शाम तक पैसे नहीं आए", "negation_token": "नहीं", "negation_markers": ["नहीं", "नही"]},
+           {"type": "negation", "text": "आज शाम तक पैसे नहीं आए", "negation_tokens": ["नहीं", "नही"], "negation_markers": ["नहीं", "नही"]},
            {"type": "threat", "text": "हमारे लोग आपके घर आएँगे"}
          ]},
         {"speaker": "agent", "text": "हम आपके पति को और आपकी बेटी के स्कूल में भी फ़ोन करेंगे।",
          "critical_spans": [{"type": "family", "text": "आपके पति को और आपकी बेटी के स्कूल में"}]},
         {"speaker": "customer", "text": "प्लीज़ मेरे परिवार को इसमें मत लाइए।",
-         "critical_spans": [{"type": "negation", "text": "मेरे परिवार को इसमें मत लाइए", "negation_token": "मत", "negation_markers": ["मत"]}]}
+         "critical_spans": [{"type": "negation", "text": "मेरे परिवार को इसमें मत लाइए", "negation_tokens": ["मत"], "negation_markers": ["मत"]}]}
       ]
     }
   ]

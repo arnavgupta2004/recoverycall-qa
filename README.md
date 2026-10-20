@@ -52,6 +52,41 @@ python run_spike.py all                  # the four steps above in order
   - Scenarios B and C (1 code each): 5 calls for 1 chunk, 9 calls for 2 chunks.
   - **Total: 18 to 33 STT calls**, plus any retries (at most 3 extra per request). The mock audio produced 2 / 2 / 1 chunks, which gives 29 calls. `transcribe` prints the planned count before it sends anything.
 
+## Silent-omission experiment (`experiment.py`)
+
+The first real runs showed Prisma sometimes drops whole turns without any error, especially in noise. `experiment.py` tests a way to detect and recover those omissions **using only the audio and the STT output**. The reference script is used only for evaluation, and to place noise at a measured SNR in the simulation.
+
+```bash
+python experiment.py prepare     # noise sweep audio + VAD segments; no API calls
+python experiment.py plan        # exact base STT count + worst-case recovery count; no API calls
+python experiment.py run         # STT + coverage check + recovery; stops on 403 or on 429/5xx that survive retries
+python experiment.py report      # evaluation vs reference -> outputs/experiment/report.md (+ omission_vs_snr.png)
+python run_spike.py report       # embeds the experiment report in outputs/report.md
+```
+
+All four commands accept `--mock`.
+
+1. **Segmentation (product path).** `src/vad.py` is an energy VAD with no torch and no extra dependencies.
+   - **Speech detection:** a 30 ms frame counts as speech when it is 3 dB above a noise floor, taken as the 5th percentile of frame energy. Gaps under 300 ms are bridged.
+   - **Partitioning:** the whole timeline is split into segments of at most 12 s. Cuts go at pause midpoints, choosing the furthest pause that doesn't leave a tail shorter than 1.5 s. Segments shorter than 1.5 s are merged with a neighbour when the result still fits, and each segment is padded with 300 ms of silence.
+   - **No audio is discarded,** so a VAD miss can only distort the speech-seconds estimate.
+   - The manifest-based chunking in `run_spike.py` is unchanged and stays available for comparison.
+2. **Coverage check.**
+   - Density = normalized transcript characters (spaces excluded) per VAD speech-second.
+   - The per-language baseline comes from the clean verbatim chunks of the archived runs in `outputs/runs/`; it is computed from transcripts, not the reference.
+   - A segment is flagged when its density is below `--flag-fraction` (default 0.5) × baseline.
+   - Segments with less than 0.5 s of detected speech are not judged.
+3. **Recovery.**
+   - A flagged segment is re-split at shorter pauses (≥120 ms; pieces ≤6 s, merged up to ≥0.8 s) and the pieces are transcribed.
+   - The pieces' joined transcript is kept only if density improves.
+   - Anything still below threshold is recorded as **untranscribed speech** with start and end times. So is a segment whose STT request failed.
+4. **Evaluation (reference used here only).**
+   - A turn is **missing** if its text matches the transcript of the segments it overlaps with ratio < 0.5.
+   - The report gives detection recall, recovery rate, false flags on clean audio, silent omissions after recovery (missing and not covered by an untranscribed record), and extra STT calls.
+5. **Noise sweep.**
+   - Conditions: clean, plus 20, 15, 10 and 5 dB SNR with 3 seeds each. That's 13 conditions per call, all built from cached TTS audio.
+   - Seed 0 at 10 dB is byte-identical to `run_spike`'s `phone_noisy` audio, so the report can compare the 12 s manifest chunks with the VAD segments on the same audio, at no extra cost.
+
 ## Pipeline
 
 | step | what happens |

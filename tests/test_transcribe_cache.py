@@ -60,7 +60,8 @@ class FixedStatusSession(MockSession):
 def project(tmp_path, monkeypatch):
     """A one-scenario, one-chunk project under tmp_path with every chunk file cmd_transcribe needs."""
     monkeypatch.setattr(run_spike, "ROOT", tmp_path)
-    monkeypatch.setattr(run_spike, "load_scripts", lambda: {"scenarios": [{"id": SCENARIO}]})
+    monkeypatch.setattr(run_spike, "load_scripts",
+                        lambda: {"scenarios": [{"id": SCENARIO, "turns": [{"text": "नमस्ते जी"}]}]})
     monkeypatch.setattr(run_spike, "log", lambda msg: None)
     paths = run_spike.Paths(mock=True)
     sdir = paths.scenario_dir(SCENARIO)
