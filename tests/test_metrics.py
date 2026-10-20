@@ -146,3 +146,94 @@ def test_mix_at_snr_hits_target():
     offsets = [(0.0, 1.0), (2.0, 4.0)]
     _, info = audio.mix_at_snr(sig, sr, offsets, 10.0, seed=3)
     assert info["measured_snr_db"] == pytest.approx(10.0, abs=0.3)
+
+
+# ---------------------------------------------------------------- negation_token (Fix 3)
+
+def test_negation_token_whole_word_match():
+    """negation_token present: whole-word hit prevents negation_missing."""
+    spans = [{"type": "negation", "text": "पूरी रकम नहीं दे पाऊँगी",
+              "negation_token": "नहीं", "negation_markers": ["नहीं"]}]
+    kept = evaluate_spans(spans, "पूरी रकम नहीं दे पाऊंगी")[0]
+    assert kept["negation_missing"] is False
+    assert kept["negation_detection"] == "token"
+
+
+def test_negation_token_not_present_sets_missing():
+    """negation_token present but absent from best_match -> negation_missing=True."""
+    spans = [{"type": "negation", "text": "पूरी रकम नहीं दे पाऊँगी",
+              "negation_token": "नहीं", "negation_markers": ["नहीं"]}]
+    lost = evaluate_spans(spans, "पूरी रकम दे पाऊंगी")[0]
+    assert lost["negation_missing"] is True
+    assert lost["negation_detection"] == "token"
+
+
+def test_negation_token_no_partial_word_match():
+    """negation_token whole-word check must NOT fire on a substring inside a different word.
+
+    'नहीं' must not match inside 'अनहीं' (contrived word). Token check pads with spaces,
+    so ' नहीं ' does not appear in ' अनहीं '.
+    """
+    spans = [{"type": "negation", "text": "पूरी रकम नहीं दे पाऊँगी",
+              "negation_token": "नहीं", "negation_markers": ["नहीं"]}]
+    result = evaluate_spans(spans, "पूरी रकम अनहीं दे पाऊंगी")[0]
+    # 'नहीं' is embedded in 'अनहीं' but not as a standalone token.
+    assert result["negation_missing"] is True
+
+
+def test_negation_fallback_emits_warning():
+    """No negation_token -> substring fallback used and a UserWarning is emitted."""
+    spans = [{"type": "negation", "text": "पूरी रकम नहीं दे पाऊँगी",
+              "negation_markers": ["नहीं"]}]
+    with pytest.warns(UserWarning, match="substring fallback"):
+        result = evaluate_spans(spans, "पूरी रकम नहीं दे पाऊंगी")[0]
+    assert result["negation_detection"] == "substring_fallback"
+    assert result["negation_missing"] is False
+
+
+def test_negation_token_kannada_whole_word():
+    """Kannada negation_token 'ಸಾಧ್ಯವಿಲ್ಲ' (a whole word) matched by token check."""
+    spans = [{"type": "negation", "text": "ಪೂರ್ತಿ ಹಣ ಕಟ್ಟಲು ಸಾಧ್ಯವಿಲ್ಲ",
+              "negation_token": "ಸಾಧ್ಯವಿಲ್ಲ", "negation_markers": ["ಲ್ಲ"]}]
+    kept = evaluate_spans(spans, "ಪೂರ್ತಿ ಹಣ ಕಟ್ಟಲು ಸಾಧ್ಯವಿಲ್ಲ")[0]
+    assert kept["negation_missing"] is False and kept["negation_detection"] == "token"
+    lost = evaluate_spans(spans, "ಪೂರ್ತಿ ಹಣ ಕಟ್ಟಲು ಸಾಧ್ಯ")[0]
+    assert lost["negation_missing"] is True
+
+
+# ---------------------------------------------------------------- script_check empty ref (Fix 6b)
+
+def test_script_check_empty_reference():
+    """Pure-numeric reference has no letters: script_mismatch must be False, not crash."""
+    result = script_check("500 1000", "five hundred one thousand")
+    assert result["script_mismatch"] is False
+    assert result["reference_script"] is None
+
+
+def test_script_check_empty_both():
+    result = script_check("", "")
+    assert result["script_mismatch"] is False
+
+
+# ---------------------------------------------------------------- char edit counts in records (Fix 6d)
+
+def test_error_rates_exposes_char_edit_counts():
+    """error_rates returns char_sub, char_del, char_ins."""
+    r = error_rates("one two three", "one too")
+    assert "char_sub" in r and "char_del" in r and "char_ins" in r
+    assert r["char_sub"] + r["char_del"] + r["char_ins"] > 0
+
+
+def test_scripts_json_negation_tokens_present_and_in_span():
+    """Every negation span in scripts.json must have negation_token and it must occur in the span text."""
+    data = json.loads((ROOT / "data" / "scripts.json").read_text(encoding="utf-8"))
+    for sc in data["scenarios"]:
+        for turn in sc["turns"]:
+            for sp in turn.get("critical_spans", []):
+                if sp["type"] == "negation":
+                    assert "negation_token" in sp, f"missing negation_token on span: {sp['text']}"
+                    tok_n = normalize(sp["negation_token"])
+                    span_n = normalize(sp["text"])
+                    assert f" {tok_n} " in f" {span_n} " or span_n == tok_n, (
+                        f"negation_token {sp['negation_token']!r} not a whole token in span {sp['text']!r}"
+                    )

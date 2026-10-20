@@ -2,6 +2,16 @@
 """RecoveryCall QA API spike: Timbre TTS -> phone-channel simulation -> Prisma STT -> metrics.
 
     python run_spike.py synthesize | degrade | transcribe | report | all  [--mock]
+
+STT result cache notes
+----------------------
+* Keys are SHA-256(audio bytes) + language_code + format, so regenerated audio at the
+  same path always produces a different key.
+* Successful results and definitive 400s are cached.  403s are NOT cached (the key may
+  be temporarily revoked or misconfigured; always retry).
+* A cached non-OK (400) result prints a "[WARN cached-failure]" line.
+* --rerun-failures deletes only the non-OK cache entries so a selective retry is possible
+  without --force (which would discard all cached successes too).
 """
 
 from __future__ import annotations
@@ -153,12 +163,14 @@ def cmd_degrade(args, paths: Paths, client=None) -> None:
         audio.write_wav(sdir / "phone_noisy_pre.wav", noisy, sr)
         audio.encode_ulaw(sdir / "phone_noisy_pre.wav", sdir / "phone_noisy_ulaw.wav")
         audio.decode_to_pcm(sdir / "phone_noisy_ulaw.wav", sdir / "phone_noisy.wav")
+        snr_note = "pre-codec; post-codec SNR is lower"
         m["variants"] = {
             "clean": {"path": str((sdir / "clean.wav").relative_to(ROOT)), "sample_rate": 16000, "snr": None},
             "phone": {"path": str((sdir / "phone.wav").relative_to(ROOT)), "sample_rate": 8000, "snr": None,
                       "chain": "highpass 300 Hz, lowpass 3400 Hz, 8 kHz, G.711 mu-law encode, decode to s16le"},
             "phone_noisy": {"path": str((sdir / "phone_noisy.wav").relative_to(ROOT)), "sample_rate": 8000,
-                            "snr": snr, "chain": "as phone, plus band-limited pink noise mixed before mu-law"},
+                            "snr": snr, "snr_measurement_note": snr_note,
+                            "chain": "as phone, plus band-limited pink noise mixed before mu-law"},
             "phone_ulaw_container": {"path": str((sdir / "phone_ulaw.wav").relative_to(ROOT)), "sample_rate": 8000,
                                      "snr": None, "chain": "phone signal uploaded as mu-law WAV (no decode)"},
         }
@@ -169,6 +181,8 @@ def cmd_degrade(args, paths: Paths, client=None) -> None:
                 dst = sdir / "chunks" / f"{v}_c{ch['chunk']}.wav"
                 audio.cut(sdir / f"{v}.wav", dst, ch["start_s"], ch["end_s"])
                 ch["files"][v] = str(dst.relative_to(ROOT))
+        # phone_ulaw_container: cut only chunk 0 (one probe per scenario).
+        # Dependency: first["files"]["phone"] must be written above before this encode runs.
         first = m["chunks"][0]
         ulaw_dst = sdir / "chunks" / f"phone_ulaw_container_c{first['chunk']}.wav"
         audio.encode_ulaw(ROOT / first["files"]["phone"], ulaw_dst)
@@ -210,17 +224,28 @@ def chunk_reference(m: dict, ch: dict) -> tuple[str, list[dict]]:
 def score(rec: dict) -> dict:
     """Fill metric fields on a result record (in place) from its transcript and reference."""
     rec.update({"wer": None, "cer": None, "sub": None, "del": None, "ins": None, "ref_words": None,
+                "char_sub": None, "char_del": None, "char_ins": None,
                 "script_mismatch": None, "script": None, "spans": [], "in_wer_aggregate": False})
     if rec["transcript"] is None:
         return rec
     rates = error_rates(rec["reference"], rec["transcript"])
-    rec.update({k: rates[k] for k in ("wer", "cer", "sub", "del", "ins", "ref_words")})
+    rec.update({k: rates[k] for k in ("wer", "cer", "sub", "del", "ins", "ref_words",
+                                       "char_sub", "char_del", "char_ins")})
     sc = script_check(rec["reference"], rec["transcript"])
     rec["script"] = sc
     rec["script_mismatch"] = sc["script_mismatch"]
     rec["spans"] = evaluate_spans(rec["critical_spans"], rec["transcript"])
     rec["in_wer_aggregate"] = rec["format"] == "verbatim" and not rec["script_mismatch"]
     return rec
+
+
+def stt_cache_path(cache_dir: Path, audio_path: Path, language_code: str, fmt: str) -> tuple[Path, str]:
+    """Cache file for one STT request, keyed on the audio's content (not its path), language and format.
+
+    Returns (cache file, full SHA-256 hex digest of the audio bytes).
+    """
+    digest = hashlib.sha256(Path(audio_path).read_bytes()).hexdigest()
+    return cache_dir / f"{digest[:16]}_{language_code}_{fmt}.json", digest
 
 
 def cmd_transcribe(args, paths: Paths, client: GnaniClient) -> None:
@@ -233,8 +258,7 @@ def cmd_transcribe(args, paths: Paths, client: GnaniClient) -> None:
         rel = ch["files"][job["variant"]]
         apath = ROOT / rel
         reference, spans = chunk_reference(m, ch)
-        digest = hashlib.sha256(apath.read_bytes()).hexdigest()
-        cache_file = paths.stt_cache / f"{digest[:16]}_{job['language_code']}_{job['format']}.json"
+        cache_file, digest = stt_cache_path(paths.stt_cache, apath, job["language_code"], job["format"])
         snr = m["variants"][job["variant"]]["snr"]
         rec = {
             "scenario": m["scenario"], "chunk": ch["chunk"], "turns": ch["turns"], "variant": job["variant"],
@@ -249,14 +273,18 @@ def cmd_transcribe(args, paths: Paths, client: GnaniClient) -> None:
             api = json.loads(cache_file.read_text(encoding="utf-8"))
             cached += 1
             api["from_cache"] = True
+            if not api.get("ok"):
+                label = f"{rec['scenario']} c{rec['chunk']} {rec['variant']} {rec['language_code']} {rec['format']}"
+                log(f"[WARN cached-failure] {label}: HTTP {api.get('http_status')} {(api.get('error') or {}).get('type')}")
         else:
             if isinstance(client.session, MockSession):
                 client.session.register_reference(apath, reference, MOCK_CORRUPTION[job["variant"]])
             res = client.transcribe(apath, job["language_code"], job["format"])
             calls += 1
             api = {**res.to_dict(), "from_cache": False, "at": time.strftime("%Y-%m-%dT%H:%M:%S")}
-            # Only cache successes and definitive client errors; transient failures get retried next run.
-            if res.ok or res.http_status in (400, 403):
+            # Cache successes and definitive 400s (invalid request, not retryable).
+            # Do NOT cache 403s: the key may be temporarily revoked; always retry.
+            if res.ok or res.http_status == 400:
                 cache_file.write_text(json.dumps(api, ensure_ascii=False, indent=2), encoding="utf-8")
         rec.update({"http_status": api["http_status"], "latency_ms": api["latency_ms"],
                     "attempts": api["attempts"], "request_id": api["request_id"],
@@ -287,7 +315,8 @@ def aggregate(recs: list[dict]) -> dict:
     words = sum(r["ref_words"] for r in recs)
     edits = sum(r["sub"] + r["del"] + r["ins"] for r in recs)
     chars = sum(len(normalize(r["reference"])) for r in recs)
-    cedits = sum(round(r["cer"] * len(normalize(r["reference"]))) for r in recs)
+    # Sum raw character edit counts stored per record (avoids rounding error from cer*ref_chars).
+    cedits = sum(r["char_sub"] + r["char_del"] + r["char_ins"] for r in recs)
     spans = [s for r in recs for s in r["spans"]]
     return {
         "runs": len(recs), "ref_words": words,
@@ -333,6 +362,10 @@ def cmd_report(args, paths: Paths, client=None) -> None:
                  f"{a['del']} | {a['ins']} | {a['spans_exact']}/{a['spans_total']} | {a['negation_missing']} |")
     L.append("\nThe variant rows mix scenarios and language codes. Use the breakdown below for like-for-like "
              "comparisons. `phone_ulaw_container` covers only the first chunk of each scenario.\n")
+    L.append("> **Cross-chunk-length comparison note:** `phone_ulaw_container` is excluded from any comparison "
+             "of chunk lengths (e.g. 28 s vs 12 s). At different chunk lengths the boundary of chunk 0 shifts, "
+             "so the `phone_ulaw_container` run covers a different set of turns and therefore a different "
+             "reference string. Comparing its WER across chunk-length settings is not like-for-like.\n")
 
     L.append("### By scenario, language code and variant\n")
     L.append("| scenario | lang | variant | runs | WER | CER | S/D/I | excluded (script mismatch / failed) |")
@@ -451,14 +484,45 @@ def cmd_report(args, paths: Paths, client=None) -> None:
     log(f"report: wrote {paths.report.relative_to(ROOT)} and re-scored {paths.results.relative_to(ROOT)}")
 
 
+# --------------------------------------------------------------------------- rerun-failures
+
+
+def cmd_rerun_failures(paths: Paths) -> None:
+    """Delete only the non-OK (failed) entries from the STT cache.
+
+    This lets a selective retry proceed without --force, which would also discard all
+    the successful cached results.
+    """
+    if not paths.stt_cache.exists():
+        log("rerun-failures: STT cache directory does not exist, nothing to do")
+        return
+    removed = 0
+    for cf in sorted(paths.stt_cache.iterdir()):
+        if cf.suffix != ".json":
+            continue
+        try:
+            entry = json.loads(cf.read_text(encoding="utf-8"))
+        except (ValueError, OSError):
+            continue
+        if not entry.get("ok"):
+            cf.unlink()
+            removed += 1
+            log(f"  removed cached failure: {cf.name}")
+    log(f"rerun-failures: removed {removed} failed cache entr{'y' if removed == 1 else 'ies'}")
+
+
 # --------------------------------------------------------------------------- main
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("command", choices=["synthesize", "degrade", "transcribe", "report", "all"])
+    ap.add_argument("command", choices=["synthesize", "degrade", "transcribe", "report", "all",
+                                        "rerun-failures"])
     ap.add_argument("--mock", action="store_true", help="fake both APIs offline; writes to outputs/mock and cache/tts_mock")
     ap.add_argument("--force", action="store_true", help="ignore the STT result cache (TTS cache is always used)")
+    ap.add_argument("--rerun-failures", dest="rerun_failures_flag", action="store_true",
+                    help="delete only the non-OK STT cache entries, then run transcribe (or use the "
+                         "'rerun-failures' command alone to just clear them)")
     ap.add_argument("--max-chunk-s", type=float, default=audio.MAX_CHUNK_S,
                     help=f"max upload chunk length in seconds, split at turn boundaries (default {audio.MAX_CHUNK_S}, "
                          "max 30); applied by synthesize and degrade")
@@ -466,6 +530,11 @@ def main() -> None:
     if not 1.0 <= args.max_chunk_s <= 30.0:
         ap.error("--max-chunk-s must be between 1 and 30")
     paths = Paths(args.mock)
+    # --rerun-failures: clear non-OK cache entries, then continue with the requested command.
+    if args.rerun_failures_flag or args.command == "rerun-failures":
+        cmd_rerun_failures(paths)
+        if args.command == "rerun-failures":
+            return
     needs_client = args.command in ("synthesize", "transcribe", "all")
     try:
         if needs_client:

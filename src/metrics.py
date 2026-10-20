@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import unicodedata
+import warnings
 from collections import Counter
 from difflib import SequenceMatcher
 
@@ -80,15 +81,20 @@ def script_profile(text: str) -> Counter:
 def script_check(reference: str, hypothesis: str) -> dict:
     """script_mismatch is True when most hypothesis letters are not in the reference's dominant script."""
     ref_prof, hyp_prof = script_profile(reference), script_profile(hypothesis)
+    # Guard: reference may contain no letters (e.g. purely numeric reference).
     ref_script = ref_prof.most_common(1)[0][0] if ref_prof else None
     hyp_script = hyp_prof.most_common(1)[0][0] if hyp_prof else None
     total = sum(hyp_prof.values())
-    share = hyp_prof.get(ref_script, 0) / total if total else None
+    if ref_script is None:
+        # No letters in reference: cannot determine script mismatch.
+        share = None
+    else:
+        share = hyp_prof.get(ref_script, 0) / total if total else None
     return {
         "reference_script": ref_script,
         "hypothesis_script": hyp_script,
         "hypothesis_share_in_reference_script": round(share, 3) if share is not None else None,
-        "script_mismatch": bool(total and share < 0.5),
+        "script_mismatch": bool(ref_script is not None and total and share is not None and share < 0.5),
     }
 
 
@@ -112,14 +118,39 @@ def match_span(span: str, transcript: str) -> dict:
 
 
 def evaluate_spans(spans: list[dict], transcript: str) -> list[dict]:
-    """Match each critical span; for negation spans, flag when no negation marker survives in the best match."""
+    """Match each critical span; for negation spans, flag when no negation marker survives in the best match.
+
+    Negation detection priority:
+      1. If the span has a "negation_token" field, check for that token by whole-word
+         match on the normalized best_match (most precise; use for single words / suffixes
+         that are unambiguous when space-delimited).
+      2. Otherwise fall back to substring matching on each "negation_markers" entry and
+         emit a warning so the caller knows the less-precise path was taken.
+    """
     out = []
     for sp in spans:
         res = {"type": sp["type"], "span": sp["text"], **match_span(sp["text"], transcript)}
         if sp["type"] == "negation":
-            markers = [normalize(m) for m in sp.get("negation_markers", [])]
-            present = any(m and m in res["best_match"] for m in markers)
-            res["negation_markers"] = sp.get("negation_markers", [])
+            token = sp.get("negation_token")
+            markers = sp.get("negation_markers", [])
+            best_norm = res["best_match"]
+            if token is not None:
+                # Whole-token match: pad with spaces so partial-word hits are avoided.
+                tok_n = normalize(token)
+                present = bool(tok_n and f" {tok_n} " in f" {best_norm} ")
+                res["negation_token"] = token
+                res["negation_detection"] = "token"
+            else:
+                # Fallback: substring match on each marker.
+                norm_markers = [normalize(m) for m in markers]
+                present = any(m and m in best_norm for m in norm_markers)
+                warnings.warn(
+                    f"negation span {sp['text']!r} has no negation_token; "
+                    "using substring fallback for negation detection",
+                    stacklevel=2,
+                )
+                res["negation_detection"] = "substring_fallback"
+            res["negation_markers"] = markers
             res["negation_missing"] = not present
         out.append(res)
     return out

@@ -86,3 +86,26 @@ def test_load_api_key_from_env_file(tmp_path, monkeypatch):
     assert load_api_key(env) == "abc123"
     with pytest.raises(ConfigError):
         load_api_key(tmp_path / "missing.env")
+
+
+# ---------------------------------------------------------------- Fix 4: success=true + transcript null/"" -> ok=True
+
+def test_transcribe_success_with_null_transcript(tmp_path):
+    """success=true with transcript=null (silence) must return ok=True, transcript=''."""
+    body = {"success": True, "request_id": "r_silence", "transcript": None}
+    ok_resp = _MockResponse(200, json.dumps(body).encode(), "application/json")
+    c = _client([ok_resp])
+    res = c.transcribe(_wav(tmp_path), "hi-IN")
+    assert res.ok is True
+    assert res.transcript == ""
+    assert res.request_id == "r_silence"
+
+
+def test_transcribe_success_with_empty_string_transcript(tmp_path):
+    """success=true with transcript='' must return ok=True, transcript=''."""
+    body = {"success": True, "request_id": "r_empty", "transcript": ""}
+    ok_resp = _MockResponse(200, json.dumps(body).encode(), "application/json")
+    c = _client([ok_resp])
+    res = c.transcribe(_wav(tmp_path), "hi-IN")
+    assert res.ok is True
+    assert res.transcript == ""

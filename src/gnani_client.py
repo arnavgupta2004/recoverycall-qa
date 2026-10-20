@@ -122,7 +122,7 @@ class GnaniClient:
                 resp, transport_error = None, {"type": type(exc).__name__, "message": str(exc)[:300]}
             finally:
                 latency = (time.perf_counter() - t0) * 1000.0
-            retryable = transport_error is not None or resp.status_code in RETRY_STATUSES
+            retryable = transport_error is not None or (resp is not None and resp.status_code in RETRY_STATUSES)
             if not retryable or attempt == MAX_TRIES:
                 return resp, latency, attempt, transport_error
             delay = self.backoff_base_s * (2 ** (attempt - 1)) * (1 + random.random() * 0.25)
@@ -182,9 +182,11 @@ class GnaniClient:
             except ValueError:
                 return ApiResult(False, 200, latency, attempts,
                                  error={"type": "NON_JSON_200", "message": (resp.text or "")[:300]})
-            if body.get("success") is True and isinstance(body.get("transcript"), str):
+            if body.get("success") is True:
+                # transcript may be None (silence) or "" (empty audio); treat both as ok.
+                transcript = body.get("transcript") or ""
                 return ApiResult(True, 200, latency, attempts, request_id=body.get("request_id"),
-                                 transcript=body["transcript"])
+                                 transcript=transcript)
             return ApiResult(False, 200, latency, attempts, request_id=body.get("request_id"),
                              error={"type": "UNEXPECTED_200_BODY",
                                     "message": json.dumps(body, ensure_ascii=False)[:300]})
