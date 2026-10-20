@@ -35,6 +35,8 @@ python run_spike.py all                  # the four steps above in order
 
 `--force` makes `transcribe` ignore its result cache. The TTS cache is always honoured.
 
+`--max-chunk-s N` (default 28, max 30) sets the longest upload chunk; chunks are always split at turn boundaries. `degrade` re-plans the chunks from the manifest, so changing it needs no new TTS calls: `python run_spike.py degrade --max-chunk-s 12 && python run_spike.py transcribe && python run_spike.py report`. In the first real run, Prisma dropped the last two words of a 24.8 s Kannada chunk that it transcribed fully when the turn was sent alone, so shorter chunks are worth comparing.
+
 ### Credit protection
 
 - **TTS:** each turn's raw API audio is cached at `cache/tts/<scenario>/turnNN_<hash>.wav`. The hash covers text, voice, language, model and speed. A rerun skips any turn that already exists, and editing one turn's text re-synthesizes only that turn. `cache/` is git-ignored, and deleting `outputs/` does not delete it.

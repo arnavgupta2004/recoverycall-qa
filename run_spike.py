@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import shutil
 import sys
 import time
 from collections import defaultdict
@@ -107,7 +108,8 @@ def cmd_synthesize(args, paths: Paths, client: GnaniClient) -> None:
             "primary_stt_language_code": sc.get("primary_stt_language_code", sc["stt_language_codes"][0]),
             "sample_rate": audio.CLEAN_SR, "gap_s": audio.GAP_S, "duration_s": round(total, 3),
             "clean_wav": str((sdir / "clean.wav").relative_to(ROOT)), "turns": turn_meta,
-            "chunks": audio.plan_chunks(offsets, total),
+            "max_chunk_s": args.max_chunk_s,
+            "chunks": audio.plan_chunks(offsets, total, max_s=args.max_chunk_s),
         }
         (sdir / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
         log(f"  {sid}: {len(turn_meta)} turns, {total:.1f}s, {len(manifest['chunks'])} upload chunk(s)")
@@ -137,6 +139,10 @@ def cmd_degrade(args, paths: Paths, client=None) -> None:
     for n, m in enumerate(load_manifests(paths)):
         sdir = paths.scenario_dir(m["scenario"])
         offsets = [(t["start_s"], t["end_s"]) for t in m["turns"]]
+        # Re-plan chunks so --max-chunk-s takes effect without re-synthesizing.
+        m["max_chunk_s"] = args.max_chunk_s
+        m["chunks"] = audio.plan_chunks(offsets, m["duration_s"], max_s=args.max_chunk_s)
+        shutil.rmtree(sdir / "chunks", ignore_errors=True)
         # phone: band-limit + 8 kHz -> mu-law -> decode back to PCM for upload
         audio.bandlimit_8k(sdir / "clean.wav", sdir / "phone_pre.wav")
         audio.encode_ulaw(sdir / "phone_pre.wav", sdir / "phone_ulaw.wav")
@@ -236,6 +242,7 @@ def cmd_transcribe(args, paths: Paths, client: GnaniClient) -> None:
             "audio_sha256": digest, "duration_s": round(audio.wav_duration(apath), 3)
             if job["variant"] != "phone_ulaw_container" else round(ch["end_s"] - ch["start_s"], 3),
             "measured_snr_db": snr["measured_snr_db"] if snr else None,
+            "max_chunk_s": m.get("max_chunk_s", audio.MAX_CHUNK_S),
             "reference": reference, "critical_spans": spans,
         }
         if cache_file.exists() and not args.force:
@@ -452,7 +459,12 @@ def main() -> None:
     ap.add_argument("command", choices=["synthesize", "degrade", "transcribe", "report", "all"])
     ap.add_argument("--mock", action="store_true", help="fake both APIs offline; writes to outputs/mock and cache/tts_mock")
     ap.add_argument("--force", action="store_true", help="ignore the STT result cache (TTS cache is always used)")
+    ap.add_argument("--max-chunk-s", type=float, default=audio.MAX_CHUNK_S,
+                    help=f"max upload chunk length in seconds, split at turn boundaries (default {audio.MAX_CHUNK_S}, "
+                         "max 30); applied by synthesize and degrade")
     args = ap.parse_args()
+    if not 1.0 <= args.max_chunk_s <= 30.0:
+        ap.error("--max-chunk-s must be between 1 and 30")
     paths = Paths(args.mock)
     needs_client = args.command in ("synthesize", "transcribe", "all")
     try:
