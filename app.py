@@ -1,175 +1,269 @@
-"""RecoveryCall QA — single-page audit app (Gradio, for Hugging Face Spaces).
+"""RecoveryCall QA — web API + static single-page frontend (FastAPI, for Google Cloud Run).
 
-    python app.py                 # real APIs for live runs (keys from env / .env / HF secrets)
-    RCQA_MOCK=1 python app.py     # everything offline: mock STT, LLM and TTS
+    uvicorn app:app --port 8080                       # real APIs for live runs (keys from env / .env)
+    RCQA_MOCK=1 UPLOAD_PASSCODE=local-test uvicorn app:app --port 8080   # live runs use mock STT/LLM/TTS
 
-Bundled samples are served from cached results (labelled "(cached example)"). Live runs (a sample
-or an upload) need UPLOAD_PASSCODE (live features are disabled when it is unset) and are rate-limited
-per IP. Uploads are deleted right after analysis and never cached; nothing is written to disk except
-the audit JSON offered for download, which Gradio's cache deletes after at most 10 minutes.
+Endpoints
+    GET  /                        the page (static/index.html)
+    GET  /api/config              live analysis enabled?, limits, languages
+    GET  /api/samples             the four bundled samples (cached results; no API calls)
+    GET  /api/samples/{id}        cached result + audio URLs
+    GET  /api/samples/{id}/audio  sample audio (WAV);  /summary: cached spoken summary (WAV)
+    POST /api/analyse             multipart: language, passcode, audio file OR sample_id.
+                                  Server-sent events: stage (transcribing, coverage, concerns,
+                                  summary), then done (audit result) or error.
+
+Safety: live analysis needs UPLOAD_PASSCODE (disabled when unset) and is rate-limited per client
+IP (rightmost X-Forwarded-For hop); uploads are capped at 20 MB and 2 minutes, written only to a
+per-request temporary directory that is deleted before the stream ends, and never cached. Logs
+carry counts and timings only — no keys, transcript text, quotes or file names.
 """
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import os
+import queue
 import tempfile
-import time
+import threading
 from pathlib import Path
 
-os.environ.setdefault("GRADIO_ANALYTICS_ENABLED", "False")   # no telemetry; must be set before importing gradio
+from fastapi import FastAPI, File, Form, Request, UploadFile
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 
-import gradio as gr  # noqa: E402
-
-from src.pipeline import LANGUAGES, AnalysisError, analyse, audit_json, live_services, mock_services
-from src.render import (CSS, JS_ON_LOAD, analysis_log_line, audio_data_uri, details_markdown, render_result,
-                        wav_data_uri)
-from src.webguard import (MAX_AUDIO_S, RateLimiter, check_upload, client_ip, passcode_configured, passcode_ok)
+from src.pipeline import (LANGUAGES, LLM_UNAVAILABLE_NOTICE, AnalysisError, analyse, audit_json, live_services,
+                          mock_services)
+from src.webguard import (ALLOWED_EXTENSIONS, MAX_AUDIO_S, MAX_UPLOAD_BYTES, RateLimiter, client_ip,
+                          passcode_configured, passcode_ok)
+from src.webutil import analysis_log_line, wav_data_uri
 
 ROOT = Path(__file__).resolve().parent
+STATIC = ROOT / "static"
 MOCK = os.environ.get("RCQA_MOCK") == "1"
 SAMPLES = json.loads((ROOT / "samples" / "samples.json").read_text(encoding="utf-8"))
-CACHE_DIR = ROOT / "samples" / ("cache_mock" if MOCK else "cache")
+CACHE_DIR = ROOT / "samples" / "cache"          # real cached results; serving them makes no API calls
+STAGES = ["transcribing", "coverage", "concerns", "summary"]
+SAMPLE_CARDS = {"D": "Hindi · noisy phone line", "B": "Kannada", "C": "Hindi", "A": "Hinglish · compliant"}
 LIVE_LIMIT = RateLimiter(limit=int(os.environ.get("LIVE_RUNS_PER_HOUR", "5")), window_s=3600)
-DOWNLOAD_DIR = Path(tempfile.mkdtemp(prefix="rcqa_dl_"))
-
-BANNER = ("**Fictional or test audio only. Uploads are not stored. Live analysis sends the transcript to "
-          "Google Gemini.**  \nFlags are potential conduct concerns for human review; claims of police, arrest "
-          "or court action are marked to verify. This tool gives no score and no legal conclusion.")
-LANG_CHOICES = [(f"{name} ({code})", code) for code, name in
-                (("hi-IN", "Hindi"), ("kn-IN", "Kannada"), ("en-IN", "Hinglish / English"))]
-SAMPLE_CHOICES = [(s["title"], sid) for sid, s in SAMPLES.items()]
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("rcqa")
-log.info("cached samples available in %s: %s", CACHE_DIR.relative_to(ROOT),
+log.info("cached samples available in samples/cache: %s",
          sorted(sid for sid in SAMPLES if (CACHE_DIR / f"{sid}.json").exists()) or "none")
 
-
-def _download_file(result: dict, stem: str) -> str:
-    """Write the audit JSON for download; files older than 10 minutes are swept on every call."""
-    now = time.time()
-    for old in DOWNLOAD_DIR.glob("*.json"):
-        if now - old.stat().st_mtime > 600:
-            old.unlink(missing_ok=True)
-    stamp = time.strftime("%Y%m%d_%H%M%S")
-    path = DOWNLOAD_DIR / f"audit_{stem}_{stamp}.json"
-    path.write_text(audit_json(result), encoding="utf-8")
-    return str(path)
+app = FastAPI(title="RecoveryCall QA", docs_url=None, redoc_url=None, openapi_url=None)
+app.mount("/static", StaticFiles(directory=STATIC), name="static")
 
 
-def _outputs(result: dict, audio_path: Path, cached: bool, stem: str, summary_wav: bytes | None):
-    html_out = render_result(result, audio_data_uri(audio_path), wav_data_uri(summary_wav) if summary_wav else None,
-                             cached)
-    return (html_out, gr.update(value=_download_file(result, stem), visible=True), details_markdown(result, cached),
-            "")
+def _error(status: int, message: str) -> JSONResponse:
+    return JSONResponse({"error": message}, status_code=status)
 
 
-def _error(msg: str):
-    return "", gr.update(value=None, visible=False), "", f"⚠️ {msg}"
+@app.get("/")
+def index() -> FileResponse:
+    return FileResponse(STATIC / "index.html", headers={"Cache-Control": "no-cache"})
 
 
-def show_cached(sample_id: str):
-    s = SAMPLES[sample_id]
+@app.get("/api/config")
+def config() -> dict:
+    return {"live_enabled": passcode_configured(), "max_audio_s": MAX_AUDIO_S,
+            "max_upload_mb": MAX_UPLOAD_BYTES // (1024 * 1024),
+            "languages": [{"code": c, "name": n} for c, n in LANGUAGES.items()],
+            "samples_for_live": [{"id": sid, "card": card} for sid, card in SAMPLE_CARDS.items()],
+            "llm_unavailable_notice": LLM_UNAVAILABLE_NOTICE}
+
+
+def _cached(sample_id: str) -> dict | None:
     f = CACHE_DIR / f"{sample_id}.json"
-    if not f.exists():
-        return _error(f"The cached result for sample {sample_id} has not been built yet "
-                      f"(python build_samples.py build --only {sample_id}).")
-    result = json.loads(f.read_text(encoding="utf-8"))
+    return json.loads(f.read_text(encoding="utf-8")) if sample_id in SAMPLES and f.exists() else None
+
+
+@app.get("/api/samples")
+def samples() -> list[dict]:
+    out = []
+    for sid in SAMPLE_CARDS:
+        r = _cached(sid)
+        if r is None:
+            continue
+        out.append({"id": sid, "card": SAMPLE_CARDS[sid], "title": SAMPLES[sid]["title"], "language": r["language"],
+                    "language_name": r["language_name"], "duration_s": r["duration_s"], "flags": len(r["flags"]),
+                    "coverage_warnings": len(r["coverage_warnings"]),
+                    # positions (fraction of the call) for the card sketch: flag pins and coverage gaps
+                    "pins": [{"at": round(f["start_s"] / r["duration_s"], 3),
+                              "tone": "violet" if f["concern_type"] == "authority_or_legal_action_claim" else "amber"}
+                             for f in r["flags"]],
+                    "gaps": [[round(w["start_s"] / r["duration_s"], 3), round(w["end_s"] / r["duration_s"], 3)]
+                             for w in r["coverage_warnings"]]})
+    return out
+
+
+@app.get("/api/samples/{sample_id}")
+def sample(sample_id: str):
+    r = _cached(sample_id)
+    if r is None:
+        return _error(404, "unknown sample")
     log.info("cached example served: sample=%s api_calls=0", sample_id)
-    wav = CACHE_DIR / f"{sample_id}_summary.wav"
-    return _outputs(result, ROOT / s["audio"], True, f"sample{sample_id}", wav.read_bytes() if wav.exists() else None)
+    return {"id": sample_id, "card": SAMPLE_CARDS.get(sample_id), "title": SAMPLES[sample_id]["title"],
+            "cached": True, "result": r, "audio_url": f"/api/samples/{sample_id}/audio",
+            "summary_audio_url": (f"/api/samples/{sample_id}/summary"
+                                  if (CACHE_DIR / f"{sample_id}_summary.wav").exists() else None)}
 
 
-def _live_gate(passcode: str, request: gr.Request) -> str | None:
-    """Return a user-facing refusal, or None if a live run may start. Logs only the refusal class."""
+@app.get("/api/samples/{sample_id}/audio")
+def sample_audio(sample_id: str):
+    if sample_id not in SAMPLES:
+        return _error(404, "unknown sample")
+    return FileResponse(ROOT / SAMPLES[sample_id]["audio"], media_type="audio/wav")
+
+
+@app.get("/api/samples/{sample_id}/summary")
+def sample_summary(sample_id: str):
+    f = CACHE_DIR / f"{sample_id}_summary.wav"
+    if sample_id not in SAMPLES or not f.exists():
+        return _error(404, "no cached summary")
+    return FileResponse(f, media_type="audio/wav")
+
+
+# --------------------------------------------------------------------------- live analysis
+
+
+class _StageBackend:
+    """Wraps the LLM backend so its call marks the 'concerns' stage; behaviour is otherwise unchanged."""
+
+    def __init__(self, inner, mark):
+        self.inner, self.mark, self.name = inner, mark, inner.name
+
+    def complete(self, system: str, user: str) -> str:
+        self.mark("concerns")
+        return self.inner.complete(system, user)
+
+
+def _instrument(services, emit) -> None:
+    """Report pipeline progress by observing the services analyse() calls (src/pipeline.py is unchanged):
+    segment STT = transcribing, re-split piece STT = coverage, LLM = concerns, TTS = summary.
+    The stream itself announces 'transcribing' first, so tracking starts there."""
+    reached = {"i": 0}
+
+    def mark(stage: str) -> None:
+        i = STAGES.index(stage)
+        if i > reached["i"]:
+            for s in STAGES[reached["i"] + 1: i]:
+                emit("stage", {"stage": s, "status": "done"})
+            emit("stage", {"stage": STAGES[reached["i"]], "status": "done"})
+            reached["i"] = i
+            emit("stage", {"stage": stage, "status": "active"})
+
+    transcribe, synthesize = services.transcribe, services.synthesize
+
+    def t(path, language, start_s, end_s):
+        mark("coverage" if "_piece" in Path(path).name else "transcribing")
+        return transcribe(path, language, start_s, end_s)
+
+    services.transcribe = t
+    if services.llm_backend is not None:
+        services.llm_backend = _StageBackend(services.llm_backend, mark)
+    if synthesize is not None:
+        def s(text, voice, language):
+            mark("summary")
+            return synthesize(text, voice, language)
+        services.synthesize = s
+
+
+def _live_services(sample_id: str | None):
+    if MOCK:
+        return mock_services(reference=SAMPLES[sample_id]["reference_turns"] if sample_id else None)
+    return live_services(ROOT / ".env")
+
+
+async def _save_upload(upload: UploadFile, dst: Path) -> str | None:
+    """Stream the upload to dst, enforcing the size cap. Returns an error message or None."""
+    size = 0
+    with dst.open("wb") as f:
+        while chunk := await upload.read(1024 * 1024):
+            size += len(chunk)
+            if size > MAX_UPLOAD_BYTES:
+                return f"The file is larger than {MAX_UPLOAD_BYTES // (1024 * 1024)} MB."
+            f.write(chunk)
+    return None if size else "The uploaded file is empty."
+
+
+def _sse(event: str, data: dict) -> str:
+    return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
+
+
+@app.post("/api/analyse")
+async def analyse_endpoint(request: Request, language: str = Form(...), passcode: str = Form(""),
+                           sample_id: str | None = Form(None), audio: UploadFile | None = File(None)):
+    if language not in LANGUAGES:
+        return _error(400, "Choose Hindi, Kannada or Hinglish / English.")
     if not passcode_configured():
         log.info("live request refused: reason=disabled")
-        return "Live analysis is disabled on this deployment (no UPLOAD_PASSCODE set). Cached examples still work."
+        return _error(403, "Live analysis is disabled on this deployment. The cached examples still work.")
     if not passcode_ok(passcode):
         log.info("live request refused: reason=passcode")
-        return "Wrong or missing passcode for live analysis."
+        return _error(403, "Wrong or missing passcode.")
+    if (audio is None) == (sample_id is None):
+        return _error(400, "Send either an audio file or a sample id.")
+    if sample_id is not None and sample_id not in SAMPLES:
+        return _error(404, "unknown sample")
+    if audio is not None and Path(audio.filename or "").suffix.lower() not in ALLOWED_EXTENSIONS:
+        return _error(400, "Only WAV or MP3 files are accepted.")
     ok, wait = LIVE_LIMIT.try_acquire(client_ip(request))
     if not ok:
         log.info("live request refused: reason=rate_limit")
-        return f"Live analysis limit reached for your connection. Try again in about {max(1, wait // 60)} min."
-    log.info("live request accepted")
-    return None
+        return _error(429, f"Live analysis limit reached. Try again in about {max(1, wait // 60)} min.")
 
-
-def _services():
-    return mock_services() if MOCK else live_services(ROOT / ".env")
-
-
-def _run(path: Path, language: str, filename: str, stem: str, services):
-    try:
-        result = analyse(path, language, services, filename=filename, max_duration_s=MAX_AUDIO_S)
-    except AnalysisError as exc:
-        return _error(str(exc))
-    except Exception as exc:  # never show internals (or anything near a key) to the user
-        log.error("analysis failed: %s", type(exc).__name__)
-        return _error("The analysis failed. Please try again later.")
-    log.info("%s", analysis_log_line(result))
-    return _outputs(result, path, False, stem, result["summary"]["audio_wav"])
-
-
-def run_live_sample(sample_id: str, language: str, passcode: str, request: gr.Request):
-    denied = _live_gate(passcode, request)
-    if denied:
-        return _error(denied)
-    s = SAMPLES[sample_id]
-    services = mock_services(reference=s["reference_turns"]) if MOCK else _services()
-    return _run(ROOT / s["audio"], language, f"{sample_id}.wav", f"sample{sample_id}_live", services)
-
-
-def run_upload(file_path: str | None, language: str, passcode: str, request: gr.Request):
-    try:
-        problem = check_upload(file_path)
+    tmp = tempfile.TemporaryDirectory(prefix="rcqa_up_")
+    if audio is not None:
+        name = Path(audio.filename).name
+        path = Path(tmp.name) / f"upload{Path(name).suffix.lower()}"
+        problem = await _save_upload(audio, path)
         if problem:
-            return _error(problem)
-        denied = _live_gate(passcode, request)
-        if denied:
-            return _error(denied)
-        name = Path(file_path).name
-        return _run(Path(file_path), language, name, Path(name).stem[:40], _services())
-    finally:
-        if file_path:  # uploads are not stored: remove Gradio's temp copy as soon as we are done
-            Path(file_path).unlink(missing_ok=True)
+            tmp.cleanup()
+            return _error(400, problem)
+    else:
+        name, path = f"{sample_id}.wav", ROOT / SAMPLES[sample_id]["audio"]
+    log.info("live request accepted")
 
+    events: queue.Queue = queue.Queue()
+    services = _live_services(sample_id)
+    _instrument(services, lambda e, d: events.put((e, d)))
 
-def on_sample_change(sample_id: str):
-    return SAMPLES[sample_id]["language"]
+    def work() -> None:
+        try:
+            result = analyse(path, language, services, filename=name, max_duration_s=MAX_AUDIO_S)
+            for s in STAGES:
+                events.put(("stage", {"stage": s, "status": "done"}))
+            log.info("%s", analysis_log_line(result))
+            wav = result["summary"]["audio_wav"]
+            events.put(("done", {"result": json.loads(audit_json(result)), "cached": False,
+                                 "summary_audio": wav_data_uri(wav) if wav else None,
+                                 "audio_url": f"/api/samples/{sample_id}/audio" if sample_id else None}))
+        except AnalysisError as exc:
+            events.put(("error", {"message": str(exc)}))
+        except Exception as exc:  # never show internals (or anything near a key) to the client or the log
+            log.error("analysis failed: %s", type(exc).__name__)
+            events.put(("error", {"message": "The analysis failed. Please try again later."}))
+        finally:
+            tmp.cleanup()          # the upload and every temp file are gone before the final event is sent
+            events.put(None)
 
+    threading.Thread(target=work, daemon=True).start()
 
-with gr.Blocks(title="RecoveryCall QA", delete_cache=(300, 600), analytics_enabled=False) as demo:
-    gr.Markdown("# RecoveryCall QA\nAudit a debt-recovery call: transcript, flagged passages, coverage warnings.")
-    gr.Markdown(BANNER)
-    language = gr.Radio(LANG_CHOICES, value="hi-IN", label="Call language (no auto-detect)")
-    with gr.Group():
-        sample = gr.Dropdown(SAMPLE_CHOICES, value="D", label="Sample calls")
-        with gr.Row():
-            btn_cached = gr.Button("Show cached example", variant="primary")
-            btn_live = gr.Button("Run live")
-    with gr.Accordion("Upload your own audio (live)", open=False):
-        upload = gr.File(label="WAV or MP3, max 2 minutes", file_types=[".wav", ".mp3"], type="filepath")
-        btn_upload = gr.Button("Analyse upload")
-    passcode = gr.Textbox(label="Passcode for live analysis", type="password",
-                          placeholder="required for Run live and uploads")
-    status = gr.Markdown()
-    result_html = gr.HTML(js_on_load=JS_ON_LOAD, apply_default_css=True)
-    download = gr.File(label="Download audit JSON", visible=False, interactive=False)
-    with gr.Accordion("Details", open=False):
-        details = gr.Markdown()
+    async def stream():
+        yield _sse("stage", {"stage": STAGES[0], "status": "active"})
+        while True:
+            try:
+                item = await asyncio.to_thread(events.get, True, 10)
+            except queue.Empty:
+                yield ": keep-alive\n\n"
+                continue
+            if item is None:
+                break
+            yield _sse(*item)
 
-    outputs = [result_html, download, details, status]
-    sample.change(on_sample_change, sample, language)
-    btn_cached.click(show_cached, sample, outputs)
-    btn_live.click(run_live_sample, [sample, language, passcode], outputs, concurrency_limit=2)
-    btn_upload.click(run_upload, [upload, language, passcode], outputs, concurrency_limit=2)
-    demo.load(show_cached, sample, outputs)
-
-
-if __name__ == "__main__":
-    # Host/port come from GRADIO_SERVER_NAME / GRADIO_SERVER_PORT (set by Spaces); default 127.0.0.1:7860.
-    demo.queue(default_concurrency_limit=2).launch(theme=gr.themes.Soft(), css=CSS)
+    return StreamingResponse(stream(), media_type="text/event-stream",
+                             headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})

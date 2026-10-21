@@ -1,4 +1,4 @@
-"""Web guards and HTML rendering (no Gradio server needed)."""
+"""Web guards and the numbers-only analysis log line."""
 
 import json
 from pathlib import Path
@@ -6,7 +6,6 @@ from pathlib import Path
 import pytest
 
 from src.pipeline import analyse, mock_services
-from src.render import render_result
 from src.webguard import RateLimiter, check_upload, client_ip, passcode_ok
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -30,11 +29,16 @@ def test_rate_limiter_per_key():
     assert rl.try_acquire("a")[0]          # window slid
 
 
-def test_client_ip_prefers_forwarded_for():
+def test_client_ip_uses_rightmost_forwarded_hop():
     class R:
-        headers = {"x-forwarded-for": "203.0.113.9, 10.0.0.1"}
-        client = type("C", (), {"host": "10.0.0.1"})()
+        headers = {"x-forwarded-for": "1.2.3.4, 203.0.113.9"}        # client-forged 1.2.3.4, proxy-appended last
+        client = type("C", (), {"host": "169.254.1.1"})()
     assert client_ip(R()) == "203.0.113.9"
+    assert client_ip(R(), trusted_hops=1) == "1.2.3.4"
+    class NoHeader:
+        headers = {}
+        client = type("C", (), {"host": "127.0.0.1"})()
+    assert client_ip(NoHeader()) == "127.0.0.1"
     assert client_ip(None) == "unknown"
 
 
@@ -54,40 +58,9 @@ def result():
     return analyse(ROOT / s["audio"], "hi-IN", mock_services(reference=s["reference_turns"]), make_summary_audio=False)
 
 
-def test_render_highlights_and_seek_targets(result):
-    page = render_result(result, "data:audio/mpeg;base64,AAAA", None, cached=True)
-    assert "(cached example)" in page
-    assert page.count("<mark") >= 1 and 'data-seek="' in page
-    assert "untranscribed speech at" in page
-    assert "illegal" not in page.lower() and "violation" not in page.lower() and "risk score" not in page.lower()
-
-
-def test_render_escapes_transcript_html(result):
-    r = json.loads(json.dumps({k: v for k, v in result.items() if k != "summary"}))
-    r["summary"] = {"text": "<b>x</b>", "status": "ok"}
-    r["transcript"][0]["text"] = '<script>alert(1)</script> घर आएँगे'
-    r["flags"] = []
-    page = render_result(r, None, None, cached=False)
-    assert "<script>alert(1)</script>" not in page and "&lt;script&gt;" in page
-    assert "<b>x</b>" not in page
-
-
-def test_details_show_verifier_rejections_and_cached_note():
-    from src.render import details_markdown
-    r = json.loads((ROOT / "samples" / "cache" / "B.json").read_text(encoding="utf-8"))
-    r["detectors"]["llm_quotes_rejected"] = [
-        {"type": "abusive_language", "quote": "a | b *x*", "reason": "quote not verbatim in segment"},
-        {"type": "risk_score", "quote": "q", "reason": "unknown category"}]
-    md = details_markdown(r, cached=True)
-    assert "1 AI flag rejected: quote not found in transcript" in md
-    assert "0 API calls" in md and "a \\| b \\*x\\*" in md and "other rejection (unknown category)" in md
-    r["detectors"]["llm_quotes_rejected"] = []
-    assert "0 AI flags rejected: quote not found in transcript" in details_markdown(r)
-
-
 def test_analysis_log_line_is_numbers_only(result):
     import re
-    from src.render import analysis_log_line
+    from src.webutil import analysis_log_line
     r = dict(result)
     r["detectors"] = {**result["detectors"], "llm_status": "error: HTTP 400 quote “घर आएँगे” rejected"}
     line = analysis_log_line(r)

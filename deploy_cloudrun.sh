@@ -23,7 +23,7 @@ gcloud run deploy "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$I
   --allow-unauthenticated \
   --min-instances 0 --max-instances 1 --concurrency 20 \
   --cpu 1 --memory 1Gi --timeout 300 \
-  --set-env-vars GRADIO_ANALYTICS_ENABLED=False,LIVE_RUNS_PER_HOUR=5 \
+  --set-env-vars LIVE_RUNS_PER_HOUR=5 \
   --set-secrets GNANI_API_KEY=GNANI_API_KEY:latest,GEMINI_API_KEY=GEMINI_API_KEY:latest,UPLOAD_PASSCODE=UPLOAD_PASSCODE:latest
 
 gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format "value(status.url)"

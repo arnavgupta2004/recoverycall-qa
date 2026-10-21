@@ -228,43 +228,48 @@ python eval_classifier_text.py --split dev --no-llm        # rules only
   - The compliant and hard-negative false-flag rates count conduct flags only.
   - Dev results are context only.
 
-## Web app (T4): RecoveryCall QA single page
+## Web app: RecoveryCall QA single page
 
-`app.py` (Gradio 6.30) wraps `src/pipeline.analyse(audio_path, language)`. The pipeline runs in this order:
+The app is a **FastAPI** backend (`app.py`) that serves a static single-page frontend (`static/`: plain JavaScript, no build step). The frontend uses wavesurfer.js 7.12.12, pinned from jsDelivr, and the fonts Inter, Noto Sans Devanagari and Noto Sans Kannada. The backend wraps `src/pipeline.analyse(audio_path, language)`, which runs in this order:
 
-1. ffmpeg decode to 16 kHz mono.
-2. Energy VAD into segments of at most 12 s (`src/vad.py`).
+1. ffmpeg decode.
+2. Energy VAD into segments of at most 12 s.
 3. Prisma STT, using `en-IN` for Hinglish.
-4. Coverage check and re-split recovery (`src/coverage.py`, shared with `experiment.py`).
-5. Frozen rules (`src/classifier.py`) together with verified Gemini flags (`src/llm_tagger.py`), merged by `src/hybrid.py`.
-6. Spoken summary from a per-language template, voiced by Timbre v2.5: Hemraj for hi-IN, Kavin for kn-IN, Pranav for en-IN.
-
-Gemini is capped at 20 s per call. If it fails or times out, the page shows "Advanced check unavailable — showing rule-based flags only" and keeps the rule flags.
+4. Coverage check and re-split recovery.
+5. Frozen rules together with verified Gemini flags (20 s cap, with a rules-only fallback notice).
+6. Timbre spoken summary.
 
 ```bash
-python -m venv .venv && .venv/bin/pip install -r requirements-dev.txt   # runtime deps + pytest, matplotlib
-RCQA_MOCK=1 UPLOAD_PASSCODE=local-test .venv/bin/python app.py   # fully offline: mock STT, LLM and TTS
-.venv/bin/python app.py                                         # real APIs for live runs (keys from .env or env)
-.venv/bin/python build_samples.py build --mock                  # cached mock results for all samples (git-ignored)
-.venv/bin/python build_samples.py build --only A B C            # real cached results (STT served from outputs/stt_cache)
+python -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
+RCQA_MOCK=1 UPLOAD_PASSCODE=local-test .venv/bin/uvicorn app:app --port 7860   # live runs use mock STT/LLM/TTS
+.venv/bin/uvicorn app:app --port 7860                                         # real APIs for live runs (keys from .env)
 ```
 
-- **Samples.** A (Hinglish), B (Kannada), C (Hindi) and D (C at 10 dB SNR, where the coverage check fires) live in `samples/`. They are served from `samples/cache/` and labelled "(cached example)". Only D's cached result exists so far.
-- **Live analysis.** "Run live" on a sample, or an upload (WAV or MP3, at most 2 minutes and 20 MB), needs `UPLOAD_PASSCODE`; live features are disabled when it is unset. Live runs are rate-limited to `LIVE_RUNS_PER_HOUR` (default 5) per client IP, so the Timbre summary is rate-limited with them. Live runs never read or write the STT or LLM caches.
-- **Data handling.**
-  - Uploads are deleted right after analysis, and every intermediate file lives in a per-request temporary directory that is removed before the response.
-  - The audit JSON offered for download is swept after 10 minutes, and Gradio's own cache is cleared every 5 minutes (`delete_cache`).
-  - Keys come only from the environment (`.env` locally, Secret Manager on Cloud Run). They are never logged; the app logs only counts and timings.
-- **Results page.**
-  - The transcript is shown by segment with timestamps, with flagged quotes highlighted by category. Clicking a flag, a highlight or a timestamp seeks the player.
-  - Each flag in the list shows its category, quote, time, label, "to verify against the RBI circular" and which detector found it (rules, LLM or both).
-  - Coverage warnings and the out-of-hours check (only when the file name has `YYYYMMDD_HHMMSS`; 08:00–19:00 IST) appear above the flags.
-  - The spoken summary is shown as audio and text, and the audit JSON can be downloaded.
-  - A collapsible Details panel shows the latency per stage and the API call counts.
-  - There is no score and no verdict wording.
-- **One live run, sample D (2026-10-21), forced fresh STT:**
-  - Total 9.4 s: decode 0.07 s, VAD 0.01 s, STT 1.7 s for 2 segments, recovery 1.3 s for 3 pieces, rules under 0.01 s, Gemini 4.5 s, Timbre summary 1.8 s.
-  - API calls: 5 STT (2 segments + 3 recovery pieces), 1 Gemini, 1 Timbre.
+| endpoint | what it returns |
+|---|---|
+| `GET /api/samples` | the four bundled calls, with flag and coverage-gap positions for the card sketches |
+| `GET /api/samples/{id}` | the cached result, plus `/audio` and `/summary` URLs. These views make 0 API calls and log `cached example served … api_calls=0`. |
+| `POST /api/analyse` | multipart `language`, `passcode`, and either `audio` (WAV or MP3) or `sample_id`. The response is a server-sent event stream: `stage` events (transcribing → coverage → concerns → summary), then `done` with the audit result and the spoken summary, or `error`. |
+
+Stage progress comes from wrapping the services `analyse()` already receives: segment STT calls, re-split piece STT calls, the LLM call and the TTS call. `src/pipeline.py` is unchanged.
+
+**Safety rules:**
+- **Passcode:** live analysis needs `UPLOAD_PASSCODE`, and is disabled when it's unset.
+- **Rate limit:** per client IP, taken from the **rightmost** `X-Forwarded-For` hop. The left part of that header can be forged; `XFF_TRUSTED_HOPS` handles extra trusted proxies.
+- **Limits:** 20 MB and 2 minutes per upload.
+- **No persistence:** uploads are written only to a per-request temporary directory, which is deleted before the stream ends. The player uses the browser's local copy of the file, and the audit JSON is built in the browser.
+- **Logs:** counts and timings only.
+- **Wording:** unchanged — potential conduct concern, verify claim, "to verify against the RBI circular", no score.
+
+**Page:**
+- **Start screen:** four sample cards, each labelled "cached example", plus "Analyse your own audio" behind a passcode dialog. The dialog can also run a sample live.
+- **Timeline:** a waveform with segment boundaries, amber and violet flag pins, and hatched low-coverage stretches. Clicking anywhere seeks.
+- **Transcript:** segment bubbles with timestamps and underlined, clickable quotes. Speakers aren't separated, because the pipeline has no diarization.
+- **Findings:** a card per flag (detector Rules, AI or Both), rejected AI flags shown struck through, plus coverage and call-time cards.
+- **Also:** the spoken summary, the audit JSON download, a Details panel with stage timings and API calls, and a step indicator for live runs.
+- **Layout:** light and dark mode. On phones it stacks timeline, findings, then transcript.
+
+Screenshots are in `docs/screenshots/`.
 
 ### Deploy to Google Cloud Run
 
@@ -283,4 +288,4 @@ The deployment is set up like this:
   - A cold start (first request after about 3.5 h idle) took 11.4 s to first byte; a warm request took 0.1 s.
   - All four cached samples loaded with 0 API calls (logged as `cached example served … api_calls=0`).
   - A log audit of 203 entries found no API key, passcode or transcript text.
-- **Logs:** `gcloud run services logs read recoverycall-qa --region asia-south1 --project recoverycall-qa-1021-308c`. They contain counts and timings only: `analysis done: … calls=… total_ms=…` and `cached example served: sample=X api_calls=0`.
+- **Logs:** `gcloud run services logs read recoverycall-qa --region asia-south1 --project recoverycall-qa-1021-308c`. They contain counts and timings only: `analysis done: … | calls … | latency_ms …`, `live request accepted` or `live request refused: reason=…`, and `cached example served: sample=X api_calls=0`.

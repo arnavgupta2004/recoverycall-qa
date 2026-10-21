@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RecoveryCall QA</title>
+  <meta name="description" content="Review debt-recovery calls: transcript, flagged passages and coverage gaps for human review.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600&family=Noto+Sans+Kannada:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="/static/app.css">
+  <script type="module" src="/static/app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar__inner">
+      <button class="wordmark" id="home" type="button" aria-label="RecoveryCall QA — back to all calls">
+        <span class="wordmark__mark" aria-hidden="true"></span>RecoveryCall&nbsp;QA
+      </button>
+      <button class="iconbtn" id="theme" type="button" aria-label="Switch light or dark theme">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <p class="notice-strip wrap" id="banner">
+    Fictional or test audio only. Uploads are not stored. Live analysis sends the transcript to Google Gemini.
+  </p>
+
+  <main class="wrap">
+    <!-- Start: sample cards -->
+    <section id="view-start" class="view">
+      <div class="intro">
+        <h1>Review a recovery call</h1>
+        <p>Each call is transcribed in short segments, checked for gaps in the transcript, and scanned for passages a
+          person should review. Nothing here is a verdict or a score.</p>
+      </div>
+      <div class="cards" id="cards" aria-live="polite"></div>
+    </section>
+
+    <!-- Live run progress -->
+    <section id="view-live" class="view" hidden>
+      <div class="live">
+        <p class="eyebrow" id="live-label">Live analysis</p>
+        <h1 id="live-title">Analysing call</h1>
+        <ol class="steps" id="steps">
+          <li data-stage="transcribing"><span class="steps__dot"></span><span>Transcribing</span></li>
+          <li data-stage="coverage"><span class="steps__dot"></span><span>Coverage check</span></li>
+          <li data-stage="concerns"><span class="steps__dot"></span><span>Concerns</span></li>
+          <li data-stage="summary"><span class="steps__dot"></span><span>Spoken summary</span></li>
+          <li data-stage="done"><span class="steps__dot"></span><span>Done</span></li>
+        </ol>
+        <p class="live__msg" id="live-msg" role="status"></p>
+        <button class="btn btn--ghost" id="live-back" type="button" hidden>Back to calls</button>
+      </div>
+    </section>
+
+    <!-- Result -->
+    <section id="view-result" class="view" hidden>
+      <div class="result-head">
+        <div>
+          <p class="eyebrow" id="r-eyebrow"></p>
+          <h1 id="r-title"></h1>
+          <p class="result-head__meta" id="r-meta"></p>
+        </div>
+        <div class="result-head__actions">
+          <button class="btn btn--ghost" id="r-back" type="button">All calls</button>
+          <button class="btn" id="r-download" type="button">Download audit JSON</button>
+        </div>
+      </div>
+      <div id="r-notices"></div>
+
+      <div class="layout">
+        <section class="panel timeline" aria-label="Call timeline">
+          <div class="timeline__bar">
+            <button class="play" id="play" type="button" aria-label="Play">
+              <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+              <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+            </button>
+            <span class="time" id="time">0:00 / 0:00</span>
+            <ul class="legend" aria-label="Legend">
+              <li><i class="sw sw--amber"></i>Conduct concern</li>
+              <li><i class="sw sw--violet"></i>Verify claim</li>
+              <li><i class="sw sw--hatch"></i>Coverage gap</li>
+            </ul>
+          </div>
+          <div id="wave" class="wave" aria-hidden="true"></div>
+          <p class="hint">Click the waveform, a pin, a timestamp or an underlined quote to listen from that point.</p>
+        </section>
+
+        <section class="panel findings" aria-label="Findings">
+          <h2>Findings</h2>
+          <p class="findings__count" id="f-count"></p>
+          <div id="f-list"></div>
+          <div class="summary" id="summary">
+            <h3>Spoken summary</h3>
+            <audio id="summary-audio" controls preload="none"></audio>
+            <p id="summary-text"></p>
+          </div>
+          <details class="details" id="details">
+            <summary>Details</summary>
+            <div id="details-body"></div>
+          </details>
+        </section>
+
+        <section class="panel transcript" aria-label="Transcript">
+          <h2>Transcript</h2>
+          <p class="transcript__note">Segments as transcribed (≤ 12 s each). Speakers are not separated by the pipeline.</p>
+          <div id="t-list"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap foot">
+    Flags are potential conduct concerns for human review; claims of police, arrest or court action are marked to
+    verify. Every regulatory reference is to verify against the RBI circular.
+  </footer>
+
+  <!-- Live analysis dialog -->
+  <dialog id="dlg" aria-labelledby="dlg-title">
+    <form id="dlg-form" method="dialog">
+      <h2 id="dlg-title">Analyse your own audio</h2>
+      <p class="dlg__lead" id="dlg-lead">Live analysis calls the speech and language APIs. It needs the passcode and is
+        limited per connection.</p>
+      <fieldset>
+        <legend>Call language</legend>
+        <div class="seg" id="dlg-lang"></div>
+      </fieldset>
+      <fieldset>
+        <legend>Audio</legend>
+        <div class="seg">
+          <label><input type="radio" name="src" value="upload" checked> Upload a file</label>
+          <label><input type="radio" name="src" value="sample"> Run a sample live</label>
+        </div>
+        <label class="field" id="f-upload">
+          <span>WAV or MP3, up to 2 minutes</span>
+          <input type="file" id="dlg-file" accept=".wav,.mp3,audio/wav,audio/mpeg">
+        </label>
+        <label class="field" id="f-sample" hidden>
+          <span>Sample</span>
+          <select id="dlg-sample"></select>
+        </label>
+      </fieldset>
+      <label class="field">
+        <span>Passcode</span>
+        <input type="password" id="dlg-pass" autocomplete="off" required>
+      </label>
+      <p class="dlg__err" id="dlg-err" role="alert"></p>
+      <div class="dlg__actions">
+        <button class="btn btn--ghost" value="cancel" formnovalidate type="submit">Cancel</button>
+        <button class="btn" id="dlg-go" value="go" type="submit">Analyse</button>
+      </div>
+    </form>
+  </dialog>
+</body>
+</html>

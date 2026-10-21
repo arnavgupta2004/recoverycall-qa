@@ -47,14 +47,24 @@ class RateLimiter:
             return True, 0
 
 
-def client_ip(request) -> str:
-    """Best-effort client IP: first X-Forwarded-For hop (Spaces runs behind a proxy), else the socket peer."""
+def client_ip(request, trusted_hops: int | None = None) -> str:
+    """Client IP for rate limiting, from X-Forwarded-For.
+
+    Proxies append the address they received the request from, so the rightmost entries are
+    written by infrastructure and anything to their left can be forged by the client. Cloud
+    Run's front end appends the client address it saw, so the default takes the LAST entry;
+    set XFF_TRUSTED_HOPS=n when n further trusted proxies (e.g. a load balancer) append after it.
+    Falls back to the socket peer when the header is absent (local runs).
+    """
     if request is None:
         return "unknown"
+    if trusted_hops is None:
+        trusted_hops = int(os.environ.get("XFF_TRUSTED_HOPS", "0"))
     headers = getattr(request, "headers", None) or {}
     fwd = headers.get("x-forwarded-for") if hasattr(headers, "get") else None
-    if fwd:
-        return fwd.split(",")[0].strip()
+    hops = [h.strip() for h in fwd.split(",") if h.strip()] if fwd else []
+    if hops:
+        return hops[max(0, len(hops) - 1 - trusted_hops)]
     client = getattr(request, "client", None)
     return getattr(client, "host", None) or "unknown"
 
