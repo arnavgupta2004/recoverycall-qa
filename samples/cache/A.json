@@ -1,0 +1,121 @@
+{
+  "app_version": "t4-2026-10-21",
+  "generated_at": "2026-10-21T12:57:59Z",
+  "language": "en-IN",
+  "language_name": "Hinglish / English",
+  "filename": "A.wav",
+  "audio_sha256": "bdea42066f5ae194571f9ff7ec8549fdafc786a70828a072491f8407037191b0",
+  "duration_s": 26.1,
+  "detectors": {
+    "rules": "rules v1, frozen 2026-10-21 (commit 12cb3b1)",
+    "llm": "gemini:gemini-3.5-flash-lite",
+    "llm_prompt_version": "2026-10-21.v1",
+    "llm_status": "ok",
+    "llm_quotes_rejected": [],
+    "flags_dropped_by_quote_check": 0
+  },
+  "notices": [],
+  "segments": [
+    {
+      "segment": 0,
+      "start_s": 0.0,
+      "end_s": 8.1,
+      "speech_s": 7.19,
+      "http_status": 200,
+      "stt_error": null,
+      "flagged": false,
+      "density_first": 14.186369958275382,
+      "density_final": 14.186369958275382,
+      "threshold": 7.433,
+      "untranscribed": [],
+      "recovered": false,
+      "transcript_first": "namaste mein sunrise finance se priya baat kar rahi hoon kya meri baat rohan ji se ho rahi hai haan ji mein rohan bol raha hoon"
+    },
+    {
+      "segment": 1,
+      "start_s": 8.1,
+      "end_s": 16.25,
+      "speech_s": 6.81,
+      "http_status": 200,
+      "stt_error": null,
+      "flagged": false,
+      "density_first": 16.886930983847286,
+      "density_final": 16.886930983847286,
+      "threshold": 7.433,
+      "untranscribed": [],
+      "recovered": false,
+      "transcript_first": "aapki emi ke barah hazaar paanch sau rupay pandrah november ko due hai iss mahine thodi problem hai kya mein do hafte baad pay kar sakta hoon"
+    },
+    {
+      "segment": 2,
+      "start_s": 16.25,
+      "end_s": 26.1,
+      "speech_s": 8.4,
+      "http_status": 200,
+      "stt_error": null,
+      "flagged": false,
+      "density_first": 11.785714285714285,
+      "density_final": 11.785714285714285,
+      "threshold": 7.433,
+      "untranscribed": [],
+      "recovered": false,
+      "transcript_first": "bilkul aapko aaj he poora payment karna zaruri nahi hai mein aapke liye ek payment plan bhej deti hoon aapka din shubh ho"
+    }
+  ],
+  "transcript": [
+    {
+      "start_s": 0.0,
+      "end_s": 8.1,
+      "text": "namaste mein sunrise finance se priya baat kar rahi hoon kya meri baat rohan ji se ho rahi hai haan ji mein rohan bol raha hoon",
+      "origin": "segment",
+      "segment": 0,
+      "segment_id": "r00"
+    },
+    {
+      "start_s": 8.1,
+      "end_s": 16.25,
+      "text": "aapki emi ke barah hazaar paanch sau rupay pandrah november ko due hai iss mahine thodi problem hai kya mein do hafte baad pay kar sakta hoon",
+      "origin": "segment",
+      "segment": 1,
+      "segment_id": "r01"
+    },
+    {
+      "start_s": 16.25,
+      "end_s": 26.1,
+      "text": "bilkul aapko aaj he poora payment karna zaruri nahi hai mein aapke liye ek payment plan bhej deti hoon aapka din shubh ho",
+      "origin": "segment",
+      "segment": 2,
+      "segment_id": "r02"
+    }
+  ],
+  "flags": [],
+  "coverage_warnings": [],
+  "out_of_hours": {
+    "checked": false,
+    "reason": "no YYYYMMDD_HHMMSS timestamp in the file name"
+  },
+  "api_calls": {
+    "stt": 0,
+    "stt_cache_hits": 3,
+    "llm": 1,
+    "tts": 1
+  },
+  "latency_ms": {
+    "decode": 72.4,
+    "vad": 12.4,
+    "stt": 3.6,
+    "coverage_recovery": 0.1,
+    "rules": 0.2,
+    "llm": 4813.6,
+    "summary_tts": 1520.1,
+    "total": 6423.7
+  },
+  "temp_files_removed": true,
+  "wording": "Flags are potential conduct concerns for human review; authority claims are to verify. No score or legal conclusion is produced.",
+  "summary": {
+    "text": "RecoveryCall QA summary, for human review. No potential conduct concerns were flagged. These are potential concerns only, for a human reviewer to check against the RBI circular.",
+    "voice": "Pranav",
+    "language": "en-IN",
+    "status": "ok"
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "app_version": "t4-2026-10-21",
+  "generated_at": "2026-10-21T12:58:05Z",
+  "language": "kn-IN",
+  "language_name": "Kannada",
+  "filename": "B.wav",
+  "audio_sha256": "132fc13e72883f3b1e78a5edd702d49fedc274a87978301bc2c72f63b2d9fbcf",
+  "duration_s": 24.82,
+  "detectors": {
+    "rules": "rules v1, frozen 2026-10-21 (commit 12cb3b1)",
+    "llm": "gemini:gemini-3.5-flash-lite",
+    "llm_prompt_version": "2026-10-21.v1",
+    "llm_status": "ok",
+    "llm_quotes_rejected": [
+      {
+        "segment_id": "r02",
+        "type": "abusive_language",
+        "quote": "ನಿಮಗೆ ಎಲ್ಲರಿಗೂ ನೀವು ಮೋಸ ಮಾಡಿದ್ದೀರಿ",
+        "reason": "quote not verbatim in segment"
+      }
+    ],
+    "flags_dropped_by_quote_check": 0
+  },
+  "notices": [],
+  "segments": [
+    {
+      "segment": 0,
+      "start_s": 0.0,
+      "end_s": 10.105,
+      "speech_s": 7.82,
+      "http_status": 200,
+      "stt_error": null,
+      "flagged": false,
+      "density_first": 13.427109974424551,
+      "density_final": 13.427109974424551,
+      "threshold": 7.184,
+      "untranscribed": [],
+      "recovered": false,
+      "transcript_first": "ನಮಸ್ಕಾರ ನಾನು ಸನ್ ರೈಸ್ ಫೈನಾನ್ಸಿನಿಂದ ಮಾತನಾಡುತ್ತಿದ್ದೇನೆ ಹೌದು ಹೇಳಿ ನಿಮ್ಮ ಸಾಲದ ಹದಿನೆಂಟು ಸಾವಿರ ರೂಪಾಯಿ ಬಾಕಿಯಿದೆ ಇವತ್ತೇ ಕಟ್ಟಬೇಕು"
+    },
+    {
+      "segment": 1,
+      "start_s": 10.105,
+      "end_s": 21.305,
+      "speech_s": 9.26,
+      "http_status": 200,
+      "stt_error": null,
+      "flagged": false,
+      "density_first": 15.33477321814255,
+      "density_final": 15.33477321814255,
+      "threshold": 7.184,
+      "untranscribed": [],
+      "recovered": false,
+      "transcript_first": "ನಾನೀಗ ಪೂರ್ತಿ ಹಣ ಕಟ್ಟಲು ಸಾಧ್ಯವಿಲ್ಲ ಮುಂದಿನ ವಾರ ಕಟ್ಟುತ್ತೇನೆ ಇವತ್ತು ಸಂಜೆಯೊಳಗೆ ಹಣ ಬರದಿದ್ದರೆ ನಮ್ಮ ಹುಡುಗರು ನಿಮ್ಮ ಮನೆಗೆ ಬರುತ್ತಾರೆ ಆಮೇಲೆ ಏನಾಗುತ್ತೆ ನೋಡಿ ದಯವಿಟ್ಟು ಹಾಗೆ ಮಾಡಬೇಡಿ"
+    },
+    {
+      "segment": 2,
+      "start_s": 21.305,
+      "end_s": 24.82,
+      "speech_s": 3.21,
+      "http_status": 200,
+      "stt_error": null,
+      "flagged": false,
+      "density_first": 16.510903426791277,
+      "density_final": 16.510903426791277,
+      "threshold": 7.184,
+      "untranscribed": [],
+      "recovered": false,
+      "transcript_first": "ನಿಮ್ಮ ಆಫೀಸ್ನಲ್ಲಿ ಎಲ್ಲರಿಗೂ ನೀವು ಮೋಸ ಮಾಡಿದ್ದೀರಿ ಅಂತ ಹೇಳುತ್ತೇವೆ"
+    }
+  ],
+  "transcript": [
+    {
+      "start_s": 0.0,
+      "end_s": 10.105,
+      "text": "ನಮಸ್ಕಾರ ನಾನು ಸನ್ ರೈಸ್ ಫೈನಾನ್ಸಿನಿಂದ ಮಾತನಾಡುತ್ತಿದ್ದೇನೆ ಹೌದು ಹೇಳಿ ನಿಮ್ಮ ಸಾಲದ ಹದಿನೆಂಟು ಸಾವಿರ ರೂಪಾಯಿ ಬಾಕಿಯಿದೆ ಇವತ್ತೇ ಕಟ್ಟಬೇಕು",
+      "origin": "segment",
+      "segment": 0,
+      "segment_id": "r00"
+    },
+    {
+      "start_s": 10.105,
+      "end_s": 21.305,
+      "text": "ನಾನೀಗ ಪೂರ್ತಿ ಹಣ ಕಟ್ಟಲು ಸಾಧ್ಯವಿಲ್ಲ ಮುಂದಿನ ವಾರ ಕಟ್ಟುತ್ತೇನೆ ಇವತ್ತು ಸಂಜೆಯೊಳಗೆ ಹಣ ಬರದಿದ್ದರೆ ನಮ್ಮ ಹುಡುಗರು ನಿಮ್ಮ ಮನೆಗೆ ಬರುತ್ತಾರೆ ಆಮೇಲೆ ಏನಾಗುತ್ತೆ ನೋಡಿ ದಯವಿಟ್ಟು ಹಾಗೆ ಮಾಡಬೇಡಿ",
+      "origin": "segment",
+      "segment": 1,
+      "segment_id": "r01"
+    },
+    {
+      "start_s": 21.305,
+      "end_s": 24.82,
+      "text": "ನಿಮ್ಮ ಆಫೀಸ್ನಲ್ಲಿ ಎಲ್ಲರಿಗೂ ನೀವು ಮೋಸ ಮಾಡಿದ್ದೀರಿ ಅಂತ ಹೇಳುತ್ತೇವೆ",
+      "origin": "segment",
+      "segment": 2,
+      "segment_id": "r02"
+    }
+  ],
+  "flags": [
+    {
+      "concern_type": "intimidation_or_threats",
+      "quote": "ಮನೆಗೆ ಬರುತ್ತಾರೆ",
+      "segment_id": "r01",
+      "start_s": 10.105,
+      "end_s": 21.305,
+      "time": "0:10",
+      "label": "potential conduct concern — human review required",
+      "regulatory_note": "to verify against the RBI circular",
+      "detector": "both",
+      "char_start": 106,
+      "char_end": 121
+    },
+    {
+      "concern_type": "third_party_contact_threat",
+      "quote": "ಆಫೀಸ್ನಲ್ಲಿ ಎಲ್ಲರಿಗೂ",
+      "segment_id": "r02",
+      "start_s": 21.305,
+      "end_s": 24.82,
+      "time": "0:21",
+      "label": "potential conduct concern — human review required",
+      "regulatory_note": "to verify against the RBI circular",
+      "detector": "both",
+      "char_start": 6,
+      "char_end": 25
+    }
+  ],
+  "coverage_warnings": [],
+  "out_of_hours": {
+    "checked": false,
+    "reason": "no YYYYMMDD_HHMMSS timestamp in the file name"
+  },
+  "api_calls": {
+    "stt": 0,
+    "stt_cache_hits": 3,
+    "llm": 1,
+    "tts": 1
+  },
+  "latency_ms": {
+    "decode": 40.7,
+    "vad": 3.5,
+    "stt": 4.1,
+    "coverage_recovery": 0.4,
+    "rules": 0.3,
+    "llm": 3810.9,
+    "summary_tts": 2423.6,
+    "total": 6285.3
+  },
+  "temp_files_removed": true,
+  "wording": "Flags are potential conduct concerns for human review; authority claims are to verify. No score or legal conclusion is produced.",
+  "summary": {
+    "text": "ರಿಕವರಿ ಕಾಲ್ ಕ್ಯೂಎ ಸಾರಾಂಶ, ಮಾನವ ಪರಿಶೀಲನೆಗಾಗಿ. ಸಂಭಾವ್ಯ ಬೆದರಿಕೆ ಎಂದು ಒಂದು ಭಾಗವನ್ನು ಗುರುತಿಸಲಾಗಿದೆ. ಕುಟುಂಬ, ಕಚೇರಿ ಅಥವಾ ನೆರೆಹೊರೆಯವರನ್ನು ಸಂಪರ್ಕಿಸುವ ಸಂಭಾವ್ಯ ಬೆದರಿಕೆ ಎಂದು ಒಂದು ಭಾಗವನ್ನು ಗುರುತಿಸಲಾಗಿದೆ. ಇವು ಕೇವಲ ಸಂಭಾವ್ಯ ಕಾಳಜಿಗಳು; ಮಾನವ ಪರಿಶೀಲಕರು ಆರ್‌ಬಿಐ ಸುತ್ತೋಲೆಯೊಂದಿಗೆ ಪರಿಶೀಲಿಸಬೇಕು.",
+    "voice": "Kavin",
+    "language": "kn-IN",
+    "status": "ok"
+  }
+}
