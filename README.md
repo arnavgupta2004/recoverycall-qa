@@ -278,4 +278,9 @@ The deployment is set up like this:
   - To rotate a secret: `printf %s "$NEW" | gcloud secrets versions add NAME --data-file=- --project …`, then redeploy.
 - **Budget:** ₹100 a month on this project, with alerts at 50%, 90% and 100% of actual spend and 100% of forecast, emailed to billing admins.
 - **Deploy:** `PROJECT=recoverycall-qa-1021-308c ./deploy_cloudrun.sh` builds with Cloud Build and deploys.
+- **Live URL:** https://recoverycall-qa-711436060077.asia-south1.run.app (revision `recoverycall-qa-00002-wqj`, 2026-10-21).
+- **Measured on 2026-10-21:**
+  - A cold start (first request after about 3.5 h idle) took 11.4 s to first byte; a warm request took 0.1 s.
+  - All four cached samples loaded with 0 API calls (logged as `cached example served … api_calls=0`).
+  - A log audit of 203 entries found no API key, passcode or transcript text.
 - **Logs:** `gcloud run services logs read recoverycall-qa --region asia-south1 --project recoverycall-qa-1021-308c`. They contain counts and timings only: `analysis done: … calls=… total_ms=…` and `cached example served: sample=X api_calls=0`.
