@@ -26,14 +26,13 @@ import numpy as np
 import run_spike
 from run_spike import Paths, current_spans, load_manifests, load_scripts, log, stt_cache_path
 from src import audio, vad
+from src.coverage import FLAG_FRACTION, char_count, check_segment, density, fine_pieces  # noqa: F401
 from src.gnani_client import ConfigError, MockSession, make_client
-from src.metrics import evaluate_spans, normalize, turn_missing
+from src.metrics import evaluate_spans, turn_missing
 
 ROOT = run_spike.ROOT
 SNRS = [20, 15, 10, 5]
 N_SEEDS = 3
-FLAG_FRACTION = 0.5
-MIN_JUDGE_SPEECH_S = 0.5   # segments/pieces with less detected speech are not judged
 DROPPED_BELOW, PARTIAL_BELOW = 0.5, 0.8
 ABORT_STATUSES = {403, 429, 500, 503}
 
@@ -54,10 +53,6 @@ def conditions(manifest: dict, n: int, snrs: list[int], n_seeds: int) -> list[di
         for k in range(n_seeds):
             out.append({"condition": f"snr{snr}_s{k}", "snr_target": snr, "seed": seed_for(n, k)})
     return out
-
-
-def char_count(text: str) -> int:
-    return len(normalize(text).replace(" ", ""))
 
 
 # --------------------------------------------------------------------------- prepare
@@ -110,17 +105,6 @@ def cmd_prepare(args, paths: Paths) -> None:
     (base / "plan.json").write_text(json.dumps({"vad_coarse": vad.COARSE.to_dict(), "vad_fine": vad.FINE.to_dict(),
                                                 "conditions": plan}, ensure_ascii=False, indent=2), encoding="utf-8")
     log(f"prepare: wrote {(base / 'plan.json').relative_to(ROOT)}")
-
-
-def fine_pieces(x: np.ndarray, sr: int, seg: dict, threshold_db: float) -> list[dict]:
-    """Re-split one coarse segment at shorter pauses; times are absolute (seconds in the call)."""
-    a, b = seg["start_s"], seg["end_s"]
-    sub = x[int(round(a * sr)): int(round(b * sr))]
-    pieces, _ = vad.segment(sub, sr, vad.FINE, threshold_db=threshold_db)
-    for p in pieces:
-        p["start_s"], p["end_s"] = round(a + p["start_s"], 3), round(a + p["end_s"], 3)
-        p["regions"] = [(round(a + s, 3), round(a + e, 3)) for s, e in p["regions"]]
-    return pieces
 
 
 def load_plan(paths: Paths) -> dict:
@@ -244,12 +228,6 @@ def transcribe_cached(client, paths: Paths, path: Path, lang: str, force: bool, 
     return api
 
 
-def density(text: str | None, speech_s: float) -> float | None:
-    if text is None or speech_s < MIN_JUDGE_SPEECH_S:
-        return None
-    return char_count(text) / speech_s
-
-
 def cmd_run(args, paths: Paths, client) -> None:
     plan = load_plan(paths)
     baseline = cmd_baseline(paths)["baseline"]
@@ -268,29 +246,23 @@ def cmd_run(args, paths: Paths, client) -> None:
                 mock_text = mock_reference(m, s["start_s"], s["end_s"], c["condition"], key, False) if args.mock else None
                 api = transcribe_cached(client, paths, ROOT / s["path"], lang, args.force, counters, mock_text)
                 first = api["transcript"]
-                d0 = density(first, s["speech_s"])
+
+                def transcribe_piece(j, p, samples, s=s, m=m, c=c, lang=lang):
+                    f = ROOT / Path(s["path"]).parent / f"seg{s['segment']:02d}_pieces" / f"piece{j:02d}.wav"
+                    f.parent.mkdir(exist_ok=True)
+                    audio.write_wav(f, samples, sr)
+                    key = f"{c['scenario']}:{c['condition']}:{s['segment']}:{j}"
+                    mt = mock_reference(m, p["start_s"], p["end_s"], c["condition"], key, True) if args.mock else None
+                    before = counters["calls"]
+                    papi = transcribe_cached(client, paths, f, lang, args.force, counters, mt)
+                    counters["recovery_calls"] += counters["calls"] - before
+                    return papi["transcript"], {"path": str(f.relative_to(ROOT)), "http_status": papi["http_status"]}
+
                 rec = {**{k: s[k] for k in ("segment", "start_s", "end_s", "speech_s", "path")},
                        "http_status": api["http_status"], "request_id": api["request_id"], "error": api["error"],
-                       "transcript_first": first, "density_first": d0, "threshold": round(thr, 3),
-                       "flagged": d0 is not None and d0 < thr, "recovery": None,
-                       "transcript_final": first, "density_final": d0, "untranscribed": []}
-                if first is None and s["speech_s"] >= MIN_JUDGE_SPEECH_S:
-                    rec["untranscribed"] = [{"start_s": s["start_s"], "end_s": s["end_s"], "speech_s": s["speech_s"],
-                                             "reason": f"STT error {api['http_status']}"}]
-                if rec["flagged"]:
-                    rec["recovery"] = recover(client, paths, args, c, s, x, sr, m, lang, thr, d0, counters)
-                    if rec["recovery"]["kept"]:
-                        rec["transcript_final"] = rec["recovery"]["transcript"]
-                        rec["density_final"] = rec["recovery"]["density"]
-                    if rec["density_final"] is None or rec["density_final"] < thr:
-                        # Never drop silently: name the speech that is still not transcribed.
-                        low = [p for p in rec["recovery"]["pieces"] if p["below_threshold"]] if rec["recovery"]["kept"] else []
-                        rec["untranscribed"] = ([{"start_s": p["start_s"], "end_s": p["end_s"], "speech_s": p["speech_s"]}
-                                                 for p in low] or
-                                                [{"start_s": s["start_s"], "end_s": s["end_s"], "speech_s": s["speech_s"]}])
-                    elif rec["recovery"]["kept"]:
-                        rec["untranscribed"] = [{"start_s": p["start_s"], "end_s": p["end_s"], "speech_s": p["speech_s"]}
-                                                for p in rec["recovery"]["pieces"] if p["below_threshold"]]
+                       **check_segment(x, sr, s, first, thr, c["vad"]["threshold_db"], transcribe_piece,
+                                       stt_error=f"STT error {api['http_status']}")}
+                d0 = rec["density_first"]
                 seg_out.append(rec)
                 fmt = lambda v: "–" if v is None else f"{v:.1f}"
                 log(f"  {c['scenario'][:1]} {c['condition']:<10} seg{s['segment']:02d} {s['start_s']:5.1f}-{s['end_s']:5.1f}s "
@@ -311,32 +283,6 @@ def cmd_run(args, paths: Paths, client) -> None:
         f"{counters['cached']} from cache -> {(exp_dir(paths) / 'results.json').relative_to(ROOT)}")
     if aborted:
         sys.exit(1)
-
-
-def recover(client, paths, args, c, s, x, sr, m, lang, thr, d0, counters) -> dict:
-    """Re-split a flagged segment at shorter pauses and transcribe the pieces; keep only if density improves."""
-    pieces = fine_pieces(x, sr, s, c["vad"]["threshold_db"])
-    pdir = ROOT / Path(s["path"]).parent / f"seg{s['segment']:02d}_pieces"
-    pdir.mkdir(exist_ok=True)
-    texts, out = [], []
-    for j, p in enumerate(pieces):
-        f = pdir / f"piece{j:02d}.wav"
-        audio.write_wav(f, vad.cut_padded(x, sr, p["start_s"], p["end_s"], vad.FINE.pad_s), sr)
-        key = f"{c['scenario']}:{c['condition']}:{s['segment']}:{j}"
-        mock_text = mock_reference(m, p["start_s"], p["end_s"], c["condition"], key, True) if args.mock else None
-        before = counters["calls"]
-        api = transcribe_cached(client, paths, f, lang, args.force, counters, mock_text)
-        counters["recovery_calls"] += counters["calls"] - before
-        t = api["transcript"] or ""
-        texts.append(t)
-        d = density(t, p["speech_s"])
-        out.append({"piece": j, "start_s": p["start_s"], "end_s": p["end_s"], "speech_s": p["speech_s"],
-                    "path": str(f.relative_to(ROOT)), "http_status": api["http_status"], "transcript": t,
-                    "density": d, "below_threshold": d is not None and d < thr})
-    joined = " ".join(t for t in texts if t)
-    d_new = density(joined, s["speech_s"])
-    return {"pieces": out, "transcript": joined, "density": d_new,
-            "kept": d_new is not None and (d0 is None or d_new > d0)}
 
 
 # --------------------------------------------------------------------------- report (evaluation only)

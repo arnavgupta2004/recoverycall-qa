@@ -28,6 +28,7 @@ from pathlib import Path
 from src import audio
 from src.gnani_client import ConfigError, GnaniClient, MockSession, make_client
 from src.metrics import error_rates, evaluate_spans, normalize, script_check
+from src.stt_cache import stt_cache_path  # noqa: F401  (re-exported; used by experiment.py and tests)
 
 ROOT = Path(__file__).resolve().parent
 SCRIPTS = ROOT / "data" / "scripts.json"
@@ -247,15 +248,6 @@ def score(rec: dict) -> dict:
     rec["spans"] = evaluate_spans(rec["critical_spans"], rec["transcript"])
     rec["in_wer_aggregate"] = rec["format"] == "verbatim" and not rec["script_mismatch"]
     return rec
-
-
-def stt_cache_path(cache_dir: Path, audio_path: Path, language_code: str, fmt: str) -> tuple[Path, str]:
-    """Cache file for one STT request, keyed on the audio's content (not its path), language and format.
-
-    Returns (cache file, full SHA-256 hex digest of the audio bytes).
-    """
-    digest = hashlib.sha256(Path(audio_path).read_bytes()).hexdigest()
-    return cache_dir / f"{digest[:16]}_{language_code}_{fmt}.json", digest
 
 
 def cmd_transcribe(args, paths: Paths, client: GnaniClient) -> None:

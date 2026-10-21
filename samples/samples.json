@@ -1,0 +1,201 @@
+{
+  "A": {
+    "title": "A — Hinglish payment reminder (compliant)",
+    "language": "en-IN",
+    "audio": "samples/audio/A.wav",
+    "reference_turns": [
+      {
+        "start_s": 0.0,
+        "end_s": 5.6,
+        "speaker": "agent",
+        "text": "Namaste, main Sunrise Finance se Priya baat kar rahi hoon. Kya meri baat Rohan ji se ho rahi hai?"
+      },
+      {
+        "start_s": 5.95,
+        "end_s": 8.03,
+        "speaker": "customer",
+        "text": "Haan ji, main Rohan bol raha hoon."
+      },
+      {
+        "start_s": 8.38,
+        "end_s": 12.38,
+        "speaker": "agent",
+        "text": "Aapki EMI ke barah hazaar paanch sau rupaye pandrah November ko due hain."
+      },
+      {
+        "start_s": 12.73,
+        "end_s": 16.09,
+        "speaker": "customer",
+        "text": "Is mahine thodi problem hai, kya main do hafte baad pay kar sakta hoon?"
+      },
+      {
+        "start_s": 16.44,
+        "end_s": 21.88,
+        "speaker": "agent",
+        "text": "Bilkul, aapko aaj hi poora payment karna zaroori nahi hai. Main aapke liye ek payment plan bhej deti hoon."
+      },
+      {
+        "start_s": 22.23,
+        "end_s": 23.51,
+        "speaker": "customer",
+        "text": "Theek hai, thank you."
+      },
+      {
+        "start_s": 23.86,
+        "end_s": 26.1,
+        "speaker": "agent",
+        "text": "Dhanyavaad, aapka din shubh ho."
+      }
+    ]
+  },
+  "B": {
+    "title": "B — Kannada call with intimidation",
+    "language": "kn-IN",
+    "audio": "samples/audio/B.wav",
+    "reference_turns": [
+      {
+        "start_s": 0.0,
+        "end_s": 3.84,
+        "speaker": "agent",
+        "text": "ನಮಸ್ಕಾರ, ನಾನು ಸನ್‌ರೈಸ್ ಫೈನಾನ್ಸ್‌ನಿಂದ ಮಾತನಾಡುತ್ತಿದ್ದೇನೆ."
+      },
+      {
+        "start_s": 4.19,
+        "end_s": 5.47,
+        "speaker": "customer",
+        "text": "ಹೌದು, ಹೇಳಿ."
+      },
+      {
+        "start_s": 5.82,
+        "end_s": 9.98,
+        "speaker": "agent",
+        "text": "ನಿಮ್ಮ ಸಾಲದ ಹದಿನೆಂಟು ಸಾವಿರ ರೂಪಾಯಿ ಬಾಕಿ ಇದೆ. ಇವತ್ತೇ ಕಟ್ಟಬೇಕು."
+      },
+      {
+        "start_s": 10.33,
+        "end_s": 13.85,
+        "speaker": "customer",
+        "text": "ನಾನು ಈಗ ಪೂರ್ತಿ ಹಣ ಕಟ್ಟಲು ಸಾಧ್ಯವಿಲ್ಲ, ಮುಂದಿನ ವಾರ ಕಟ್ಟುತ್ತೇನೆ."
+      },
+      {
+        "start_s": 14.2,
+        "end_s": 19.32,
+        "speaker": "agent",
+        "text": "ಇವತ್ತು ಸಂಜೆಯೊಳಗೆ ಹಣ ಬರದಿದ್ದರೆ ನಮ್ಮ ಹುಡುಗರು ನಿಮ್ಮ ಮನೆಗೆ ಬರುತ್ತಾರೆ, ಆಮೇಲೆ ಏನಾಗುತ್ತೆ ನೋಡಿ."
+      },
+      {
+        "start_s": 19.67,
+        "end_s": 21.11,
+        "speaker": "customer",
+        "text": "ದಯವಿಟ್ಟು ಹಾಗೆ ಮಾಡಬೇಡಿ."
+      },
+      {
+        "start_s": 21.46,
+        "end_s": 24.82,
+        "speaker": "agent",
+        "text": "ನಿಮ್ಮ ಆಫೀಸಿನಲ್ಲಿ ಎಲ್ಲರಿಗೂ ನೀವು ಮೋಸ ಮಾಡಿದ್ದೀರಿ ಅಂತ ಹೇಳುತ್ತೇವೆ."
+      }
+    ]
+  },
+  "C": {
+    "title": "C — Hindi call with a family threat",
+    "language": "hi-IN",
+    "audio": "samples/audio/C.wav",
+    "reference_turns": [
+      {
+        "start_s": 0.0,
+        "end_s": 3.04,
+        "speaker": "agent",
+        "text": "हैलो, मैं सनराइज़ फ़ाइनेंस की रिकवरी टीम से बोल रहा हूँ।"
+      },
+      {
+        "start_s": 3.39,
+        "end_s": 4.67,
+        "speaker": "customer",
+        "text": "जी, बताइए।"
+      },
+      {
+        "start_s": 5.02,
+        "end_s": 7.58,
+        "speaker": "agent",
+        "text": "आपके खाते पर बयालीस हज़ार पाँच सौ रुपये बकाया हैं।"
+      },
+      {
+        "start_s": 7.93,
+        "end_s": 11.29,
+        "speaker": "customer",
+        "text": "मैं इस महीने पूरी रकम नहीं दे पाऊँगी, मेरी नौकरी चली गई है।"
+      },
+      {
+        "start_s": 11.64,
+        "end_s": 14.84,
+        "speaker": "agent",
+        "text": "अगर आज शाम तक पैसे नहीं आए, तो हमारे लोग आपके घर आएँगे।"
+      },
+      {
+        "start_s": 15.19,
+        "end_s": 17.75,
+        "speaker": "agent",
+        "text": "हम आपके पति को और आपकी बेटी के स्कूल में भी फ़ोन करेंगे।"
+      },
+      {
+        "start_s": 18.1,
+        "end_s": 20.18,
+        "speaker": "customer",
+        "text": "प्लीज़ मेरे परिवार को इसमें मत लाइए।"
+      }
+    ]
+  },
+  "D": {
+    "title": "D — Hindi call C at 10 dB noise (coverage check fires)",
+    "language": "hi-IN",
+    "audio": "samples/audio/D.wav",
+    "reference_turns": [
+      {
+        "start_s": 0.0,
+        "end_s": 3.04,
+        "speaker": "agent",
+        "text": "हैलो, मैं सनराइज़ फ़ाइनेंस की रिकवरी टीम से बोल रहा हूँ।"
+      },
+      {
+        "start_s": 3.39,
+        "end_s": 4.67,
+        "speaker": "customer",
+        "text": "जी, बताइए।",
+        "mock_omit_in_long_requests": true
+      },
+      {
+        "start_s": 5.02,
+        "end_s": 7.58,
+        "speaker": "agent",
+        "text": "आपके खाते पर बयालीस हज़ार पाँच सौ रुपये बकाया हैं।",
+        "mock_omit_in_long_requests": true
+      },
+      {
+        "start_s": 7.93,
+        "end_s": 11.29,
+        "speaker": "customer",
+        "text": "मैं इस महीने पूरी रकम नहीं दे पाऊँगी, मेरी नौकरी चली गई है।",
+        "mock_omit_in_long_requests": true
+      },
+      {
+        "start_s": 11.64,
+        "end_s": 14.84,
+        "speaker": "agent",
+        "text": "अगर आज शाम तक पैसे नहीं आए, तो हमारे लोग आपके घर आएँगे।"
+      },
+      {
+        "start_s": 15.19,
+        "end_s": 17.75,
+        "speaker": "agent",
+        "text": "हम आपके पति को और आपकी बेटी के स्कूल में भी फ़ोन करेंगे।"
+      },
+      {
+        "start_s": 18.1,
+        "end_s": 20.18,
+        "speaker": "customer",
+        "text": "प्लीज़ मेरे परिवार को इसमें मत लाइए।"
+      }
+    ]
+  }
+}

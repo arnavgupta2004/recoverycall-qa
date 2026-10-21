@@ -1,3 +1,14 @@
+---
+title: RecoveryCall QA
+emoji: 📞
+colorFrom: blue
+colorTo: gray
+sdk: gradio
+sdk_version: 6.30.0
+app_file: app.py
+pinned: false
+---
+
 # RecoveryCall QA: Gnani API spike
 
 A minimal Python spike for the Gnani AI Internship Challenge. It tests four things:
@@ -227,3 +238,53 @@ python eval_classifier_text.py --split dev --no-llm        # rules only
   - `authority_or_legal_action_claim` is a verify flag with separate precision and recall.
   - The compliant and hard-negative false-flag rates count conduct flags only.
   - Dev results are context only.
+
+## Web app (T4): RecoveryCall QA single page
+
+`app.py` (Gradio 6.30) wraps `src/pipeline.analyse(audio_path, language)`. The pipeline runs in this order:
+
+1. ffmpeg decode to 16 kHz mono.
+2. Energy VAD into segments of at most 12 s (`src/vad.py`).
+3. Prisma STT, using `en-IN` for Hinglish.
+4. Coverage check and re-split recovery (`src/coverage.py`, shared with `experiment.py`).
+5. Frozen rules (`src/classifier.py`) together with verified Gemini flags (`src/llm_tagger.py`), merged by `src/hybrid.py`.
+6. Spoken summary from a per-language template, voiced by Timbre v2.5: Hemraj for hi-IN, Kavin for kn-IN, Pranav for en-IN.
+
+Gemini is capped at 20 s per call. If it fails or times out, the page shows "Advanced check unavailable — showing rule-based flags only" and keeps the rule flags.
+
+```bash
+python -m venv .venv && .venv/bin/pip install -r requirements.txt
+RCQA_MOCK=1 UPLOAD_PASSCODE=local-test .venv/bin/python app.py   # fully offline: mock STT, LLM and TTS
+.venv/bin/python app.py                                         # real APIs for live runs (keys from .env or env)
+.venv/bin/python build_samples.py build --mock                  # cached mock results for all samples (git-ignored)
+.venv/bin/python build_samples.py build --only A B C            # real cached results (STT served from outputs/stt_cache)
+```
+
+- **Samples.** A (Hinglish), B (Kannada), C (Hindi) and D (C at 10 dB SNR, where the coverage check fires) live in `samples/`. They are served from `samples/cache/` and labelled "(cached example)". Only D's cached result exists so far.
+- **Live analysis.** "Run live" on a sample, or an upload (WAV or MP3, at most 2 minutes and 20 MB), needs `UPLOAD_PASSCODE`; live features are disabled when it is unset. Live runs are rate-limited to `LIVE_RUNS_PER_HOUR` (default 5) per client IP, so the Timbre summary is rate-limited with them. Live runs never read or write the STT or LLM caches.
+- **Data handling.**
+  - Uploads are deleted right after analysis, and every intermediate file lives in a per-request temporary directory that is removed before the response.
+  - The audit JSON offered for download is swept after 10 minutes, and Gradio's own cache is cleared every 5 minutes (`delete_cache`).
+  - Keys come only from the environment (`.env` locally, Space secrets when deployed). They are never logged; the app logs only counts and timings.
+- **Results page.**
+  - The transcript is shown by segment with timestamps, with flagged quotes highlighted by category. Clicking a flag, a highlight or a timestamp seeks the player.
+  - Each flag in the list shows its category, quote, time, label, "to verify against the RBI circular" and which detector found it (rules, LLM or both).
+  - Coverage warnings and the out-of-hours check (only when the file name has `YYYYMMDD_HHMMSS`; 08:00–19:00 IST) appear above the flags.
+  - The spoken summary is shown as audio and text, and the audit JSON can be downloaded.
+  - A collapsible Details panel shows the latency per stage and the API call counts.
+  - There is no score and no verdict wording.
+- **One live run, sample D (2026-10-21), forced fresh STT:**
+  - Total 9.4 s: decode 0.07 s, VAD 0.01 s, STT 1.7 s for 2 segments, recovery 1.3 s for 3 pieces, rules under 0.01 s, Gemini 4.5 s, Timbre summary 1.8 s.
+  - API calls: 5 STT (2 segments + 3 recovery pieces), 1 Gemini, 1 Timbre.
+
+### Deploy to Hugging Face Spaces (free tier)
+
+1. Create a Space with the Gradio SDK, then push this repository to it. The YAML header at the top of this README configures the Space, and `packages.txt` installs ffmpeg.
+2. Under Settings → Variables and secrets, add these **secrets**:
+   - `GNANI_API_KEY`
+   - `GEMINI_API_KEY`
+   - `UPLOAD_PASSCODE` (leave it out to disable live analysis entirely)
+
+   Optionally add the variables `LIVE_RUNS_PER_HOUR` and `GEMINI_MODEL`.
+3. Build the cached samples before pushing (`build_samples.py build`), so visitors see results without any API calls.
+4. The Space uses `GRADIO_SERVER_NAME` and `GRADIO_SERVER_PORT` automatically. Never commit `.env`.

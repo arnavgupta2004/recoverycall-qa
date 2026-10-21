@@ -127,6 +127,8 @@ class GeminiBackend:
     api_key: str = field(repr=False)
     model: str = DEFAULT_MODEL
     min_interval_s: float = 4.5          # stay under free-tier per-minute limits
+    read_timeout_s: float = READ_TIMEOUT_S
+    max_tries: int = MAX_TRIES
     session: Any = field(default_factory=requests.Session, repr=False)
     sleep = staticmethod(time.sleep)
     _last: float = 0.0
@@ -142,7 +144,7 @@ class GeminiBackend:
                 "generation_config": {"temperature": 0, "thinking_level": "minimal", "max_output_tokens": 2048},
                 "response_format": {"type": "text", "mime_type": "application/json", "schema": RESPONSE_SCHEMA}}
         headers = {"x-goog-api-key": self.api_key, "Content-Type": "application/json"}
-        for attempt in range(1, MAX_TRIES + 1):
+        for attempt in range(1, self.max_tries + 1):
             wait = self.min_interval_s - (time.monotonic() - self._last)
             if wait > 0:
                 self.sleep(wait)
@@ -150,7 +152,7 @@ class GeminiBackend:
             self.calls += 1
             try:
                 resp = self.session.post(API_URL, headers=headers, data=json.dumps(body, ensure_ascii=False).encode(),
-                                         timeout=(CONNECT_TIMEOUT_S, READ_TIMEOUT_S))
+                                         timeout=(CONNECT_TIMEOUT_S, self.read_timeout_s))
             except requests.RequestException as exc:
                 err = f"{type(exc).__name__}: {str(exc)[:200]}"
                 status = None
@@ -167,7 +169,7 @@ class GeminiBackend:
                 except ValueError:
                     err = f"HTTP {status} {resp.text[:300]}"
             self.events.append(err[:120])
-            if (status is not None and status not in RETRY_STATUSES) or attempt == MAX_TRIES:
+            if (status is not None and status not in RETRY_STATUSES) or attempt == self.max_tries:
                 raise LLMError(err)
             self.sleep(min(60.0, 5.0 * 2 ** (attempt - 1)) * (1 + random.random() * 0.25))
         raise LLMError("unreachable")
@@ -211,11 +213,12 @@ class MockBackend:
         return json.dumps({"flags": flags}, ensure_ascii=False)
 
 
-def make_backend(mock: bool, env_file: Path | None = None):
+def make_backend(mock: bool, env_file: Path | None = None, **overrides):
+    """Mock or Gemini backend; overrides (e.g. read_timeout_s, max_tries, min_interval_s) apply to Gemini."""
     if mock:
         return MockBackend()
     return GeminiBackend(api_key=load_api_key(env_file, "GEMINI_API_KEY"),
-                         model=os.environ.get("GEMINI_MODEL", DEFAULT_MODEL))
+                         model=os.environ.get("GEMINI_MODEL", DEFAULT_MODEL), **overrides)
 
 
 def _cache_key(backend_name: str, language: str, segments: list[dict]) -> str:
