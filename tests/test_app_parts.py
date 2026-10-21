@@ -83,3 +83,16 @@ def test_details_show_verifier_rejections_and_cached_note():
     assert "0 API calls" in md and "a \\| b \\*x\\*" in md and "other rejection (unknown category)" in md
     r["detectors"]["llm_quotes_rejected"] = []
     assert "0 AI flags rejected: quote not found in transcript" in details_markdown(r)
+
+
+def test_analysis_log_line_is_numbers_only(result):
+    import re
+    from src.render import analysis_log_line
+    r = dict(result)
+    r["detectors"] = {**result["detectors"], "llm_status": "error: HTTP 400 quote “घर आएँगे” rejected"}
+    line = analysis_log_line(r)
+    assert re.fullmatch(r"[A-Za-z0-9_=.:| -]+", line), line          # ASCII tokens only: no transcript or quotes
+    assert "llm=error" in line and "घर" not in line
+    for stage in ("decode", "vad", "stt", "coverage_recovery", "rules", "llm", "summary_tts", "total"):
+        assert re.search(rf"latency_ms .*\b{stage}=\d+", line), stage
+    assert re.search(r"calls stt=\d+ stt_cache_hits=\d+ llm=\d+ tts=\d+", line)

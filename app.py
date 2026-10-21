@@ -23,7 +23,8 @@ os.environ.setdefault("GRADIO_ANALYTICS_ENABLED", "False")   # no telemetry; mus
 import gradio as gr  # noqa: E402
 
 from src.pipeline import LANGUAGES, AnalysisError, analyse, audit_json, live_services, mock_services
-from src.render import CSS, JS_ON_LOAD, audio_data_uri, details_markdown, render_result, wav_data_uri
+from src.render import (CSS, JS_ON_LOAD, analysis_log_line, audio_data_uri, details_markdown, render_result,
+                        wav_data_uri)
 from src.webguard import (MAX_AUDIO_S, RateLimiter, check_upload, client_ip, passcode_configured, passcode_ok)
 
 ROOT = Path(__file__).resolve().parent
@@ -82,13 +83,18 @@ def show_cached(sample_id: str):
 
 
 def _live_gate(passcode: str, request: gr.Request) -> str | None:
+    """Return a user-facing refusal, or None if a live run may start. Logs only the refusal class."""
     if not passcode_configured():
+        log.info("live request refused: reason=disabled")
         return "Live analysis is disabled on this deployment (no UPLOAD_PASSCODE set). Cached examples still work."
     if not passcode_ok(passcode):
+        log.info("live request refused: reason=passcode")
         return "Wrong or missing passcode for live analysis."
     ok, wait = LIVE_LIMIT.try_acquire(client_ip(request))
     if not ok:
+        log.info("live request refused: reason=rate_limit")
         return f"Live analysis limit reached for your connection. Try again in about {max(1, wait // 60)} min."
+    log.info("live request accepted")
     return None
 
 
@@ -104,9 +110,7 @@ def _run(path: Path, language: str, filename: str, stem: str, services):
     except Exception as exc:  # never show internals (or anything near a key) to the user
         log.error("analysis failed: %s", type(exc).__name__)
         return _error("The analysis failed. Please try again later.")
-    log.info("analysis done: lang=%s duration=%ss flags=%d llm=%s calls=%s total_ms=%s", language,
-             result["duration_s"], len(result["flags"]), result["detectors"]["llm_status"], result["api_calls"],
-             result["latency_ms"]["total"])
+    log.info("%s", analysis_log_line(result))
     return _outputs(result, path, False, stem, result["summary"]["audio_wav"])
 
 

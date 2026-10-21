@@ -190,3 +190,14 @@ def details_markdown(result: dict, cached: bool = False) -> str:
                                                 else f"skipped — {hours['reason']}"))
     return "\n\n".join(blocks)
 
+
+
+def analysis_log_line(result: dict) -> str:
+    """One log line per analysis: language, counts, LLM status class, API calls, per-stage ms. Numbers only, no text
+    from the call (no transcript, quotes, file name or error messages)."""
+    status = str(result["detectors"]["llm_status"]).split(":")[0].split(" ")[0]   # ok / timeout / error / disabled
+    calls = " ".join(f"{k}={int(v)}" for k, v in result["api_calls"].items())
+    stages = " ".join(f"{k}={int(round(v))}" for k, v in result["latency_ms"].items())
+    return (f"analysis done: lang={result['language']} duration_s={result['duration_s']:.1f} "
+            f"segments={len(result['segments'])} flags={len(result['flags'])} "
+            f"coverage_warnings={len(result['coverage_warnings'])} llm={status} | calls {calls} | latency_ms {stages}")
