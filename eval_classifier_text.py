@@ -1,201 +1,214 @@
 #!/usr/bin/env python3
-"""Run the rules classifier on script TEXT (no audio) for one split and report call-level results.
+"""Compare rules-only, LLM-only and hybrid tagging on script TEXT (no audio) for one split.
 
-    python eval_classifier_text.py --split dev
-    python eval_classifier_text.py --split held_out
+    python eval_classifier_text.py --split dev --llm-mock     # offline, no key
+    python eval_classifier_text.py --split dev                # real LLM (GEMINI_API_KEY), cached
+    python eval_classifier_text.py --split dev --no-llm       # rules only
+
+Splits: "dev" = original dev + dev_v2 (spent held-out v1) from data/scripts_dev.json; dev numbers
+are context only, never headline results. "held_out" = data/scripts_held_out.json (a future,
+externally written v2; none exists yet).
 
 Scoring
 -------
 * Conduct categories (intimidation_or_threats, abusive_language, third_party_contact_threat):
   per-call TP/FP/FN against the manifest's concern_types. The false-flag rate on compliant
   (and hard-negative) calls counts ONLY these three categories.
-* authority_or_legal_action_claim is a VERIFY flag: scored separately against the manifest's
-  authority_mention (any agent mention of police, arrest, FIR, court or legal notice, lawful
-  or not), with its own precision and recall.
+* authority_or_legal_action_claim is a VERIFY flag, scored separately against the manifest's
+  authority_mention (any agent mention of police, arrest, FIR, court or legal notice).
+* LLM flags whose quote is not a verbatim substring of the named segment are rejected by the
+  quote verifier before scoring; rejections are reported.
 
-Output: outputs/eval/classifier_text_report_<split>.md
+Output: outputs/eval/classifier_compare_<split>[_mock].md
 """
 
 from __future__ import annotations
 
 import argparse
 import json
-from collections import defaultdict
+import sys
+from collections import Counter, defaultdict
 from pathlib import Path
 
-from src.classifier import classify
+from src.classifier import classify, verify_quote
 from src.concern_rules import ABUSIVE, AUTHORITY, INTIMIDATION, THIRD_PARTY
+from src.gnani_client import ConfigError
+from src.hybrid import merge_flags
+from src.llm_tagger import make_backend, tag
 
 ROOT = Path(__file__).resolve().parent
 MANIFEST = ROOT / "data" / "dataset_manifest.json"
-SCRIPTS = {"dev": ROOT / "data" / "scripts_dev.json", "held_out": ROOT / "data" / "scripts_held_out.json"}
+SPLITS = {"dev": (ROOT / "data" / "scripts_dev.json", {"dev", "dev_v2"}),
+          "held_out": (ROOT / "data" / "scripts_held_out.json", {"held_out"})}
 OUT_DIR = ROOT / "outputs" / "eval"
 CONDUCT = [INTIMIDATION, ABUSIVE, THIRD_PARTY]
+CATS = CONDUCT + [AUTHORITY]
 
 
 def turns_to_segments(scenario: dict) -> list[dict]:
-    """One classifier segment per turn (text only, synthetic 6 s timing)."""
+    """One segment per turn (text only, synthetic 6 s timing)."""
     return [{"segment_id": f"turn{i:02d}", "text": t["text"], "start_s": float(i * 6), "end_s": float((i + 1) * 6)}
             for i, t in enumerate(scenario["turns"])]
 
 
-def prf(tp: int, fp: int, fn: int) -> tuple[str, str]:
-    p = f"{tp / (tp + fp):.2f}" if tp + fp else "—"
-    r = f"{tp / (tp + fn):.2f}" if tp + fn else "—"
-    return p, r
-
-
-def evaluate(split: str) -> dict:
-    scripts = json.loads(SCRIPTS[split].read_text(encoding="utf-8"))["scenarios"]
-    manifest = {c["id"]: c for c in json.loads(MANIFEST.read_text(encoding="utf-8"))["calls"] if c["split"] == split}
-    missing = [s["id"] for s in scripts if s["id"] not in manifest]
+def run(split: str, backend, cache_dir: Path) -> tuple[list[dict], list[str]]:
+    path, splits = SPLITS[split]
+    if not path.exists():
+        raise SystemExit(f"{path.relative_to(ROOT)} does not exist (no {split} set has been written yet)")
+    manifest = {c["id"]: c for c in json.loads(MANIFEST.read_text(encoding="utf-8"))["calls"] if c["split"] in splits}
+    scenarios = [s for s in json.loads(path.read_text(encoding="utf-8"))["scenarios"] if s["id"] in manifest]
+    missing = set(manifest) - {s["id"] for s in scenarios}
     if missing:
-        raise SystemExit(f"scripts missing from manifest ({split}): {missing}")
+        raise SystemExit(f"manifest calls without scripts: {sorted(missing)}")
+    modes = ["rules"] + (["llm", "hybrid"] if backend is not None else [])
     calls = []
-    for sc in scripts:
-        meta = manifest[sc["id"]]
-        flags = classify(turns_to_segments(sc), meta["language"])
-        for f in flags:
-            f["turn"] = int(f["segment_id"][4:])
-            f["turn_text"] = sc["turns"][f["turn"]]["text"]
-            f["speaker"] = sc["turns"][f["turn"]]["speaker"]
-        calls.append({"id": sc["id"], "meta": meta, "scenario": sc, "flags": flags,
-                      "flagged": {f["concern_type"] for f in flags}})
-    return {"split": split, "calls": calls}
+    for sc in scenarios:
+        meta, segs = manifest[sc["id"]], turns_to_segments(sc)
+        rules = classify(segs, meta["language"])
+        out = {"id": sc["id"], "meta": meta, "scenario": sc, "segments": segs, "flags": {"rules": rules}}
+        if backend is not None:
+            res = tag(segs, meta["language"], backend, cache_dir)
+            out.update(llm_rejected=res["rejected"], llm_error=res["error"], llm_from_cache=res["from_cache"])
+            out["flags"]["llm"] = res["flags"]
+            out["flags"]["hybrid"] = merge_flags(rules, res["flags"], segs)
+        calls.append(out)
+    return calls, modes
 
 
-def report(res: dict) -> str:
-    split, calls = res["split"], res["calls"]
+def score(calls: list[dict], mode: str) -> dict:
     tp, fp, fn = defaultdict(int), defaultdict(int), defaultdict(int)
     misses, false_flags = [], []
     for c in calls:
-        meta, flagged = c["meta"], c["flagged"]
-        expected = set(meta["concern_types"]) & set(CONDUCT)
-        for cat in CONDUCT:
-            if cat in expected and cat in flagged:
+        got = {f["concern_type"] for f in c["flags"][mode]}
+        expected = (set(c["meta"]["concern_types"]) & set(CONDUCT)) | ({AUTHORITY} if c["meta"].get("authority_mention") else set())
+        for cat in CATS:
+            if cat in expected and cat in got:
                 tp[cat] += 1
             elif cat in expected:
                 fn[cat] += 1
                 misses.append((c, cat))
-            elif cat in flagged:
+            elif cat in got:
                 fp[cat] += 1
                 false_flags.append((c, cat))
-        exp_auth, got_auth = bool(meta.get("authority_mention")), AUTHORITY in flagged
-        if exp_auth and got_auth:
-            tp[AUTHORITY] += 1
-        elif exp_auth:
-            fn[AUTHORITY] += 1
-            misses.append((c, AUTHORITY))
-        elif got_auth:
-            fp[AUTHORITY] += 1
-            false_flags.append((c, AUTHORITY))
-
     compliant = [c for c in calls if c["meta"]["compliant"]]
-    hard_neg = [c for c in calls if c["meta"]["hard_negative"]]
-    conduct_ff = lambda cs: [c for c in cs if c["flagged"] & set(CONDUCT)]
+    hard = [c for c in calls if c["meta"]["hard_negative"]]
+    conduct_hit = lambda c: any(f["concern_type"] in CONDUCT for f in c["flags"][mode])
+    return {"tp": tp, "fp": fp, "fn": fn, "misses": misses, "false_flags": false_flags,
+            "ff_compliant": [c for c in compliant if conduct_hit(c)], "n_compliant": len(compliant),
+            "ff_hard": [c for c in hard if conduct_hit(c)], "n_hard": len(hard),
+            "bad_quotes": [(c["id"], f) for c in calls for f in c["flags"][mode]
+                           if not verify_quote(f["quote"], next(s["text"] for s in c["segments"]
+                                                                if s["segment_id"] == f["segment_id"]))]}
 
-    title = {"dev": "dev set", "held_out": "HELD-OUT set"}[split]
-    L = [f"# Classifier text evaluation — {title}", ""]
+
+def ratio(a: int, b: int) -> str:
+    return f"{a / b:.2f}" if b else "—"
+
+
+def tag_of(c: dict) -> str:
+    m = c["meta"]
+    t = [m["language"], m["split"], "compliant" if m["compliant"] else "concerning"]
+    if m["hard_negative"]:
+        t.append("hard negative")
+    if m.get("needs_native_review"):
+        t.append("needs native review")
+    return ", ".join(t)
+
+
+def report(split: str, calls: list[dict], modes: list[str], backend_name: str | None, mock: bool) -> str:
+    S = {m: score(calls, m) for m in modes}
+    L = [f"# Rules vs LLM vs hybrid — {split} set (text only)", ""]
     if split == "dev":
-        L += ["> **DEV SET ONLY** — rules were built on these scripts. Do not report these numbers as headline results.", ""]
-    else:
-        L += ["> **Held-out set.** Rules were frozen (src/concern_rules.py, 2026-10-21) before these scripts were "
-              "written, and labels were fixed (prepare_labels.py) before the classifier was run on them. "
-              f"{len(calls)} short synthetic scripts evaluated on text only, so these are small counts, not a "
-              "benchmark: one call moves a rate by 5–10 points.", ""]
-    langs = sorted({c["meta"]["language"] for c in calls})
-    L += [f"Calls: {len(calls)} ({', '.join(f'{l}: {sum(c['meta']['language'] == l for c in calls)}' for l in langs)}); "
-          f"compliant {len(compliant)}, hard negatives {len(hard_neg)}, concerning {len(calls) - len(compliant)}. "
-          "Scoring is per call: a category counts as flagged if any turn produced a flag of that type.", ""]
+        L += ["> **DEV SET — context only.** Rules v1 were built on the original dev scripts, and dev_v2 is held-out v1, "
+              "already spent (baseline in docs/baseline_rules_v1.md). Do not report these numbers as headline results.", ""]
+    if mock:
+        L += ["> **MOCK LLM.** The LLM column comes from a keyword mock that also respells some quotes on purpose; it tests "
+              "the pipeline (verifier, cache, merge), not any model.", ""]
+    langs = Counter(c["meta"]["language"] for c in calls)
+    splits = Counter(c["meta"]["split"] for c in calls)
+    L += [f"Calls: {len(calls)} ({', '.join(f'{k}: {v}' for k, v in sorted(splits.items()))}; "
+          f"{', '.join(f'{k}: {v}' for k, v in sorted(langs.items()))}). LLM backend: {backend_name or 'not run'}. "
+          "Per-call scoring: a category counts as flagged if any segment produced a flag of that type.", ""]
 
-    L += ["## Conduct categories", "", "| Category | TP | FP | FN | Precision | Recall |", "|---|---|---|---|---|---|"]
-    for cat in CONDUCT:
-        p, r = prf(tp[cat], fp[cat], fn[cat])
-        L.append(f"| `{cat}` | {tp[cat]} | {fp[cat]} | {fn[cat]} | {p} | {r} |")
-    p, r = prf(tp[AUTHORITY], fp[AUTHORITY], fn[AUTHORITY])
-    L += ["", "## Authority / legal-action claims (verify flag, scored separately)", "",
-          "Ground truth: the agent mentions police, arrest, FIR, court or a legal notice (lawful mentions in compliant "
-          "calls included). A hit means the call was routed to a human to verify the claim; it is not a conduct finding.",
-          "", "| | TP | FP | FN | Precision | Recall |", "|---|---|---|---|---|---|",
-          f"| `{AUTHORITY}` | {tp[AUTHORITY]} | {fp[AUTHORITY]} | {fn[AUTHORITY]} | {p} | {r} |", ""]
+    L += ["## Per-category TP / FP / FN", "",
+          "| category | " + " | ".join(f"{m} TP/FP/FN | {m} P | {m} R" for m in modes) + " |",
+          "|---|" + "---|---|---|" * len(modes)]
+    for cat in CATS:
+        row = [f"`{cat}`" + (" (verify flag)" if cat == AUTHORITY else "")]
+        for m in modes:
+            t, f, n = S[m]["tp"][cat], S[m]["fp"][cat], S[m]["fn"][cat]
+            row += [f"{t}/{f}/{n}", ratio(t, t + f), ratio(t, t + n)]
+        L.append("| " + " | ".join(row) + " |")
+    row = ["**conduct total**"]
+    for m in modes:
+        t, f, n = (sum(S[m][k][c] for c in CONDUCT) for k in ("tp", "fp", "fn"))
+        row += [f"**{t}/{f}/{n}**", ratio(t, t + f), ratio(t, t + n)]
+    L.append("| " + " | ".join(row) + " |")
 
-    ffc, ffh = conduct_ff(compliant), conduct_ff(hard_neg)
-    rate = lambda a, b: f"{a}/{b} ({a / b:.0%})" if b else "—"
-    auth_on_compliant = [c for c in compliant if AUTHORITY in c["flagged"]]
-    L += ["## False flags on compliant calls (conduct categories only)", "",
-          f"- Compliant calls with a conduct flag: **{rate(len(ffc), len(compliant))}**",
-          f"- Hard-negative calls with a conduct flag: **{rate(len(ffh), len(hard_neg))}**",
-          f"- Compliant calls with an authority verify flag: {rate(len(auth_on_compliant), len(compliant))} "
-          f"({sum(bool(c['meta'].get('authority_mention')) for c in auth_on_compliant)} of them correctly — the agent "
-          "did mention a legal notice / police / court)", ""]
+    L += ["", "## False flags on compliant calls (conduct categories only)", "",
+          "| | " + " | ".join(modes) + " |", "|---|" + "---|" * len(modes),
+          "| compliant calls with a conduct flag | " + " | ".join(
+              f"{len(S[m]['ff_compliant'])}/{S[m]['n_compliant']}" for m in modes) + " |",
+          "| hard-negative calls with a conduct flag | " + " | ".join(
+              f"{len(S[m]['ff_hard'])}/{S[m]['n_hard']}" for m in modes) + " |",
+          "| flags whose quote is not verbatim (after verification) | " + " | ".join(
+              str(len(S[m]["bad_quotes"])) for m in modes) + " |", ""]
 
-    def call_tag(c) -> str:
-        m = c["meta"]
-        tags = [m["language"], "compliant" if m["compliant"] else "concerning"]
-        if m["hard_negative"]:
-            tags.append("hard negative")
-        if m.get("needs_native_review"):
-            tags.append("needs native review")
-        return ", ".join(tags)
+    if "llm" in modes:
+        rej = [(c, r) for c in calls for r in c["llm_rejected"]]
+        errs = [(c["id"], c["llm_error"]) for c in calls if c["llm_error"]]
+        n_out = sum(len(c["flags"]["llm"]) for c in calls) + len(rej)
+        L += ["## Quote-verifier rejections (LLM)", "",
+              f"{len(rej)} of {n_out} LLM outputs rejected "
+              f"({', '.join(f'{k}: {v}' for k, v in Counter(r['reason'] for _, r in rej).items()) or 'none'}). "
+              f"Responses from cache: {sum(c['llm_from_cache'] for c in calls)}/{len(calls)}.", ""]
+        for c, r in rej:
+            L.append(f"- {c['id']} {r.get('segment_id')} `{r.get('type')}` — {r['reason']}: “{r.get('quote')}”")
+        if errs:
+            L += ["", "**LLM call errors** (these calls have no LLM flags):", ""]
+            L += [f"- {cid}: {e}" for cid, e in errs]
+        hy = Counter(f["source"] for c in calls for f in c["flags"]["hybrid"])
+        L += ["", f"Hybrid flag sources: {dict(hy)} (rules+llm = both found an overlapping span of the same type).", ""]
 
-    L += ["## Every miss (false negative)", ""]
-    if not misses:
-        L.append("None.")
-    for c, cat in misses:
-        spans = [s for s in c["meta"].get("concern_spans", []) if s["type"] == cat]
-        L.append(f"- **{c['id']}** ({call_tag(c)}) — missed `{cat}`")
-        if spans:
-            for s in spans:
-                L.append(f"  - labelled span, turn {s['turn']}: “{s['text']}”")
-        else:
-            agent = [f"t{i}: {t['text']}" for i, t in enumerate(c["scenario"]["turns"]) if t["speaker"] == "agent"]
-            L.append("  - no span labelled for this category (dev labels are call-level); agent turns: "
-                     + " | ".join(agent))
-        other = [f for f in c["flags"]]
-        if other:
-            L.append("  - flags it did raise: " + "; ".join(f"`{f['concern_type']}` on “{f['quote']}”" for f in other))
-    L += ["", "## Every false flag", ""]
-    if not false_flags:
-        L.append("None.")
-    for c, cat in false_flags:
-        for f in [f for f in c["flags"] if f["concern_type"] == cat]:
-            L.append(f"- **{c['id']}** ({call_tag(c)}) — `{cat}` on turn {f['turn']} ({f['speaker']}): quote “{f['quote']}”")
-            L.append(f"  - turn text: “{f['turn_text']}”")
+    for m in modes:
+        L += [f"## {m}: every miss and false flag", ""]
+        for c, cat in S[m]["misses"]:
+            spans = [s for s in c["meta"].get("concern_spans", []) if s["type"] == cat]
+            where = "; ".join(f"t{s['turn']} “{s['text']}”" for s in spans) or "no span labelled (call-level dev label)"
+            L.append(f"- MISS **{c['id']}** ({tag_of(c)}) `{cat}` — {where}")
+        for c, cat in S[m]["false_flags"]:
+            for f in [f for f in c["flags"][m] if f["concern_type"] == cat]:
+                L.append(f"- FALSE FLAG **{c['id']}** ({tag_of(c)}) `{cat}` on {f['segment_id']}: “{f['quote']}”")
+        if not S[m]["misses"] and not S[m]["false_flags"]:
+            L.append("None.")
+        L.append("")
 
-    bad = [(c["id"], f) for c in calls for f in c["flags"] if f["quote"] not in f["turn_text"]]
-    L += ["", "## Quote check", "", f"- Flags: {sum(len(c['flags']) for c in calls)}; quotes not found verbatim in "
-          f"their turn: {len(bad)}", ""]
-    for cid, f in bad:
-        L.append(f"  - {cid} turn {f['turn']}: {f['quote']!r}")
-
-    L += ["## Per-call results", "", "| id | lang | compliant | hard neg | expected conduct | flagged conduct | "
-          "authority expected | authority flagged | conduct correct |", "|---|---|---|---|---|---|---|---|---|"]
-    for c in calls:
-        m = c["meta"]
-        exp = set(m["concern_types"]) & set(CONDUCT)
-        got = c["flagged"] & set(CONDUCT)
-        L.append(f"| {c['id']}{' ¹' if m.get('needs_native_review') else ''} | {m['language']} | "
-                 f"{'✓' if m['compliant'] else ''} | {'✓' if m['hard_negative'] else ''} | "
-                 f"{', '.join(sorted(exp)) or '—'} | {', '.join(sorted(got)) or '—'} | "
-                 f"{'✓' if m.get('authority_mention') else ''} | {'✓' if AUTHORITY in c['flagged'] else ''} | "
-                 f"{'✓' if exp == got else '✗'} |")
-    L += ["", "¹ Kannada script — pending native speaker review; Kannada results are provisional.", "",
-          "## Limitations", "",
-          "- Text only: no TTS, no STT. Results on transcribed audio will be lower (spelling variants, omissions).",
-          "- Call-level scoring: a category flagged on the wrong turn of a call that has that category still counts as TP.",
-          "- The classifier sees every turn, including the borrower's (no speaker separation at runtime).",
-          "- Small synthetic sets: treat every rate as a count of a handful of calls."]
+    L += ["## Limitations", "",
+          "- Text only: no TTS or STT. Transcribed audio will be harder (spelling variants, omissions).",
+          "- Call-level scoring: a category flagged on the wrong segment of a call that has it still counts as a TP.",
+          "- The taggers see every turn, including the borrower's; there is no speaker separation at runtime.",
+          "- Small synthetic set; Kannada scripts await native review. Treat every number as a handful of calls."]
     return "\n".join(L) + "\n"
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--split", choices=["dev", "held_out"], required=True)
+    ap.add_argument("--split", choices=list(SPLITS), required=True)
+    g = ap.add_mutually_exclusive_group()
+    g.add_argument("--llm-mock", action="store_true", help="use the offline mock LLM")
+    g.add_argument("--no-llm", action="store_true", help="rules only")
     args = ap.parse_args()
-    res = evaluate(args.split)
+    backend = None
+    if not args.no_llm:
+        try:
+            backend = make_backend(args.llm_mock, ROOT / ".env")
+        except ConfigError as exc:
+            sys.exit(f"error: {exc} For this script: --llm-mock (offline) or --no-llm (rules only).")
+    cache_dir = ROOT / "outputs" / ("llm_cache_mock" if args.llm_mock else "llm_cache")
+    calls, modes = run(args.split, backend, cache_dir)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    out = OUT_DIR / f"classifier_text_report_{args.split}.md"
-    out.write_text(report(res), encoding="utf-8")
+    out = OUT_DIR / f"classifier_compare_{args.split}{'_mock' if args.llm_mock else ''}.md"
+    out.write_text(report(args.split, calls, modes, backend.name if backend else None, args.llm_mock), encoding="utf-8")
     print(f"wrote {out.relative_to(ROOT)}")
 
 

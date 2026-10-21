@@ -236,3 +236,60 @@ class TestOutputShape:
             for key in ("concern_type", "quote", "segment_id", "start_s", "end_s",
                         "label", "regulatory_note"):
                 assert key in f, f"Missing key {key!r} in flag: {f}"
+
+
+# ── Quote extraction: a flag quotes the matched phrase, not the whole turn ──────
+
+import json as _json
+import unicodedata as _ud
+from pathlib import Path as _Path
+
+from src.classifier import _normalize_with_map, _recover_original_quote, verify_quote
+from src.metrics import normalize as _normalize
+
+
+class TestQuoteExtraction:
+    def test_map_matches_normalize_on_every_dev_turn(self):
+        dev = _json.loads((_Path(__file__).resolve().parents[1] / "data" / "scripts_dev.json").read_text(encoding="utf-8"))
+        for sc in dev["scenarios"]:
+            for t in sc["turns"]:
+                text = _ud.normalize("NFC", t["text"])
+                norm, src = _normalize_with_map(text)
+                assert norm == _normalize(text)
+                assert len(src) == len(norm)
+
+    def test_multiword_phrase_across_punctuation_is_narrow(self):
+        text = "नौकरी गई या क्या — यह हमारी समस्या नहीं है। अगर पैसा नहीं आया, तो हमारे लोग आपके घर आएँगे और सब देखेंगे।"
+        assert _recover_original_quote(text, _normalize("हमारे लोग आपके घर")) == "हमारे लोग आपके घर"
+
+    def test_case_and_inner_punctuation_preserved_from_original(self):
+        text = "Uske saath, hum aapke EMPLOYER ko, formal letter bhejenge."
+        assert _recover_original_quote(text, _normalize("employer ko formal letter")) == "EMPLOYER ko, formal letter"
+
+    def test_zwnj_inside_phrase(self):
+        text = "ನಾನು ಸನ್‌ರೈಸ್ ಫೈನಾನ್ಸ್‌ನಿಂದ ಮಾತನಾಡುತ್ತಿದ್ದೇನೆ"
+        quote = _recover_original_quote(text, _normalize("ಸನ್ರೈಸ್"))
+        assert quote == "ಸನ್‌ರೈಸ್" and quote in text
+
+    def test_word_boundary_does_not_match_inside_longer_word(self):
+        text = "लड़कियों को मत भेजो, हम लड़के भेजेंगे"
+        assert _recover_original_quote(text, _normalize("लड़के"), whole_word=True) == "लड़के"
+
+    def test_unmatched_phrase_falls_back_to_full_text(self):
+        text = "कोई मेल नहीं"
+        assert _recover_original_quote(text, _normalize("पुलिस")) == text
+
+    def test_classifier_quotes_are_short_and_verbatim(self):
+        text = ("Genuine problem hai toh nikalo paise. Nahi diya toh hamare log kal subah aapke ghar ke bahar "
+                "khade honge — neighbours ko dikhayenge kin logo ne hamare saath fraud kiya.")
+        flags = classify([{"segment_id": "s0", "text": text, "start_s": 0.0, "end_s": 6.0}], "en-IN")
+        assert flags
+        for f in flags:
+            assert verify_quote(f["quote"], text)
+            assert len(f["quote"]) < len(text)
+
+    def test_verify_quote(self):
+        assert verify_quote("घर आएँगे", "हमारे लोग घर आएँगे")
+        assert not verify_quote("घर आयेंगे", "हमारे लोग घर आएँगे")   # paraphrase / respelling rejected
+        assert not verify_quote("", "anything")
+        assert not verify_quote("   ", "a   b")

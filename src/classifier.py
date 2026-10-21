@@ -32,10 +32,10 @@ variants, ZWNJ, punctuation differences and case do not break rule matching.
 
 Quote extraction
 ----------------
-The returned "quote" is the shortest matching run in the *original* (un-normalized) text.
-For "substring" rules this is the original text slice aligned to the normalized match.
-For "word_boundary" rules (single tokens) the original word is recovered the same way.
-If alignment fails (shouldn't happen given correct rules), the full segment text is used.
+The returned "quote" is the matched phrase as it appears in the *original* segment text: the
+normalized match is mapped back character by character (_normalize_with_map), so the quote is
+always a verbatim substring of the segment. The full segment text is used only if alignment
+fails (a non-NFC segment whose composed and decomposed spellings differ).
 """
 
 from __future__ import annotations
@@ -43,7 +43,7 @@ from __future__ import annotations
 import unicodedata
 from typing import Any
 
-from src.metrics import normalize
+from src.metrics import EXTRA_PUNCT, normalize
 from src.concern_rules import (
     ALL_CATEGORIES,
     AUTHORITY,
@@ -93,43 +93,56 @@ def _rules_for_text(text: str, language: str) -> list[dict]:
     return RULES_LATIN
 
 
-def _recover_original_quote(original: str, norm_original: str, norm_phrase: str) -> str:
-    """Find the original-text span corresponding to a normalized phrase match.
+def _normalize_with_map(text: str) -> tuple[str, list[int]]:
+    """Apply src.metrics.normalize to text in one pass, recording each output char's source index.
 
-    Strategy: walk character-by-character through the original text, maintaining
-    a parallel position in the normalized string. When the normalized position
-    reaches the start of norm_phrase, record the original start. When the
-    normalized position passes the end, record the original end.
-
-    Falls back to the full segment text if alignment fails.
+    Mirrors normalize(): drop format chars (Cf), lowercase, punctuation (P*, । ॥) and whitespace
+    to single spaces, strip. NFC is applied by the caller; positions refer to the string passed in.
     """
-    # Build a mapping: norm_pos -> list of (orig_start, orig_end) char ranges.
-    # We map each normalized character back to its originating original position.
-    norm_chars: list[tuple[int, int]] = []  # list of (orig_start, orig_end) per norm char
-    orig_i = 0
-    orig_buf = ""  # accumulates normalized output for current orig character window
+    out: list[str] = []
+    src: list[int] = []
+    for i, ch in enumerate(text):
+        if unicodedata.category(ch) == "Cf":
+            continue
+        for c in ch.lower():
+            if c.isspace() or unicodedata.category(c).startswith("P") or c in EXTRA_PUNCT:
+                if out and out[-1] != " ":
+                    out.append(" ")
+                    src.append(i)
+            else:
+                out.append(c)
+                src.append(i)
+    while out and out[-1] == " ":
+        out.pop()
+        src.pop()
+    return "".join(out), src
 
-    # We re-normalize character-by-character to build the alignment.
-    # This is approximate but sufficient for multi-word phrase alignment.
-    norm_text = ""
-    char_map: list[int] = []  # norm_text[i] came from original[char_map[i]]
-    for oi, och in enumerate(original):
-        n = normalize(och)
-        for nc in n:
-            norm_text += nc
-            char_map.append(oi)
 
-    # Find norm_phrase in norm_text
-    try:
-        start_norm = norm_text.index(norm_phrase)
-    except ValueError:
-        return original  # fallback
+def _recover_original_quote(original: str, norm_phrase: str, whole_word: bool = False) -> str:
+    """Return the shortest slice of `original` whose normalization is `norm_phrase`.
 
-    end_norm = start_norm + len(norm_phrase) - 1
-    orig_start = char_map[start_norm]
-    orig_end = char_map[end_norm] + 1  # exclusive
+    The slice runs from the first to the last character that produced the match, so it is
+    always a verbatim substring of the original segment text. Falls back to the full segment
+    text only if the phrase cannot be located (e.g. the original is not in NFC form and the
+    composed and decomposed spellings differ).
+    """
+    base = original if unicodedata.is_normalized("NFC", original) else None
+    if base is None:
+        return original
+    norm, src = _normalize_with_map(base)
+    target = f" {norm_phrase} " if whole_word else norm_phrase
+    hay = f" {norm} " if whole_word else norm
+    pos = hay.find(target)
+    if pos < 0:
+        return original
+    start = pos  # in `norm` coordinates (padding offsets cancel for whole_word)
+    end = start + len(norm_phrase) - 1
+    return base[src[start]: src[end] + 1]
 
-    return original[orig_start:orig_end].strip()
+
+def verify_quote(quote: str, segment_text: str) -> bool:
+    """A flag's quote is valid only if it occurs verbatim (non-empty) in its segment's text."""
+    return bool(quote and quote.strip()) and quote in segment_text
 
 
 def classify(
@@ -191,7 +204,7 @@ def classify(
             seen.add(dedup_key)
 
             # Recover original-text quote
-            quote = _recover_original_quote(text, norm_text, norm_phrase)
+            quote = _recover_original_quote(text, norm_phrase, whole_word=match_mode == "word_boundary")
 
             flags.append({
                 "concern_type": concern,

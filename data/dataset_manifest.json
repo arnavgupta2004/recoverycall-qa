@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "Ground-truth labels for the RecoveryCall QA dataset. 'split' is 'dev' (rules were built on this) or 'held_out' (headline evaluation; labels fixed before the classifier was run on it). 'compliant' is false when the call contains a conduct concern or a threatening authority claim. 'concern_types' lists the categories present. 'authority_mention' is true when the agent mentions police, arrest, FIR, court or a legal notice (including lawful mentions in compliant calls); it is scored as a verify flag, separately from the three conduct categories. 'concern_spans' quote the labelled text (turn index + exact substring); dev entries carry authority spans only. 'hard_negative' is true only for compliant calls containing firm-but-lawful language that must not be flagged. 'needs_native_review' is true for Kannada scripts pending native speaker review.",
+  "note": "Ground-truth labels for the RecoveryCall QA dataset. 'split' is 'dev' (original dev set; rules v1 were built on it), 'dev_v2' (held-out v1, spent after one evaluation on 2026-10-21 and merged into development; see docs/baseline_rules_v1.md) or 'held_out' (a future externally written set; none exists now). Labels follow the definition in prepare_labels.py: telling/showing family, employer, neighbours or contacts = third_party_contact_threat; visiting/harming/shaming in person = intimidation_or_threats; multi-label allowed. 'compliant' is false when the call contains a conduct concern or a threatening authority claim. 'concern_types' lists the categories present. 'authority_mention' is true when the agent mentions police, arrest, FIR, court or a legal notice (including lawful mentions in compliant calls); it is scored as a verify flag, separately from the three conduct categories. 'concern_spans' quote the labelled text (turn index + exact substring); dev entries carry authority spans only. 'hard_negative' is true only for compliant calls containing firm-but-lawful language that must not be flagged. 'needs_native_review' is true for Kannada scripts pending native speaker review. 'label_changes' logs every change from the delivered labels.",
   "concern_type_labels": {
     "intimidation_or_threats": "Physical threats, agents visiting, sending men to debtor's location",
     "abusive_language": "Slurs, derogatory or shaming language directed at the debtor",
@@ -482,7 +482,8 @@
     },
     {
       "id": "script_001",
-      "split": "held_out",
+      "split": "dev_v2",
+      "origin": "held_out_v1",
       "language": "hi-IN",
       "compliant": true,
       "hard_negative": true,
@@ -497,7 +498,8 @@
     },
     {
       "id": "script_002",
-      "split": "held_out",
+      "split": "dev_v2",
+      "origin": "held_out_v1",
       "language": "hi-IN",
       "compliant": true,
       "hard_negative": true,
@@ -512,7 +514,8 @@
     },
     {
       "id": "script_003",
-      "split": "held_out",
+      "split": "dev_v2",
+      "origin": "held_out_v1",
       "language": "hi-IN",
       "compliant": false,
       "hard_negative": false,
@@ -523,27 +526,38 @@
       "authority_mention": false,
       "concern_spans": [
         {
-          "type": "intimidation_or_threats",
-          "turn": 4,
-          "text": "हमारे लोग आपके घर आएँगे और आपके पड़ोसियों और मोहल्ले वालों को बता देंगे कि आप कर्ज़दार हैं और भुगतान से भाग रहे हैं।"
-        },
-        {
           "type": "third_party_contact_threat",
           "turn": 6,
           "text": "हम आपके ऑफिस में भी सूचित करेंगे — आपके HR को पता चल जाएगा।"
+        },
+        {
+          "type": "intimidation_or_threats",
+          "turn": 4,
+          "text": "हमारे लोग आपके घर आएँगे"
+        },
+        {
+          "type": "third_party_contact_threat",
+          "turn": 4,
+          "text": "आपके पड़ोसियों और मोहल्ले वालों को बता देंगे कि आप कर्ज़दार हैं और भुगतान से भाग रहे हैं।"
         }
       ],
-      "needs_native_review": false
+      "needs_native_review": false,
+      "label_changes": [
+        "dev_v2 definition: removed intimidation_or_threats span “हमारे लोग आपके घर आएँगे और आपके पड़ोसियों और मोहल्ले वालों को बता देंगे कि आप कर्ज़दार हैं और भुगतान से भाग रहे हैं।”",
+        "dev_v2 definition: added intimidation_or_threats span (turn 4) “हमारे लोग आपके घर आएँगे”",
+        "dev_v2 definition: added third_party_contact_threat span (turn 4) “आपके पड़ोसियों और मोहल्ले वालों को बता देंगे कि आप कर्ज़दार हैं और भुगतान से भाग रहे हैं।”",
+        "dev_v2 definition reason: split: house visit = intimidation; telling neighbours = third-party (consistent with 017)"
+      ]
     },
     {
       "id": "script_004",
-      "split": "held_out",
+      "split": "dev_v2",
+      "origin": "held_out_v1",
       "language": "hi-IN",
       "compliant": false,
       "hard_negative": false,
       "concern_types": [
-        "authority_or_legal_action_claim",
-        "intimidation_or_threats"
+        "authority_or_legal_action_claim"
       ],
       "authority_mention": true,
       "concern_spans": [
@@ -556,21 +570,20 @@
           "type": "authority_or_legal_action_claim",
           "turn": 4,
           "text": "धोखाधड़ी की धारा लगाई जा सकती है। आपने जानबूझकर लोन लिया और वापस नहीं किया — यह एक आपराधिक मामला बन सकता है। अभी भुगतान करें, नहीं तो FIR हो जाएगी।"
-        },
-        {
-          "type": "intimidation_or_threats",
-          "turn": 6,
-          "text": "आज रात तक ट्रांसफर करें।"
         }
       ],
       "needs_native_review": false,
       "label_changes": [
+        "dev_v2 definition: removed intimidation_or_threats span “आज रात तक ट्रांसफर करें।”",
+        "dev_v2 definition reason: a payment deadline is not visiting/harming/shaming in person; the call stays concerning via its FIR/police claims",
+        "removed intimidation_or_threats from concern_types (no span of that type remains)",
         "hard_negative True -> False (hard negatives are compliant calls only)"
       ]
     },
     {
       "id": "script_005",
-      "split": "held_out",
+      "split": "dev_v2",
+      "origin": "held_out_v1",
       "language": "hi-IN",
       "compliant": true,
       "hard_negative": true,
@@ -585,7 +598,8 @@
     },
     {
       "id": "script_006",
-      "split": "held_out",
+      "split": "dev_v2",
+      "origin": "held_out_v1",
       "language": "hi-IN",
       "compliant": false,
       "hard_negative": false,
@@ -610,7 +624,8 @@
     },
     {
       "id": "script_007",
-      "split": "held_out",
+      "split": "dev_v2",
+      "origin": "held_out_v1",
       "language": "hi-IN",
       "compliant": true,
       "hard_negative": true,
@@ -632,7 +647,8 @@
     },
     {
       "id": "script_008",
-      "split": "held_out",
+      "split": "dev_v2",
+      "origin": "held_out_v1",
       "language": "kn-IN",
       "compliant": true,
       "hard_negative": true,
@@ -647,7 +663,8 @@
     },
     {
       "id": "script_009",
-      "split": "held_out",
+      "split": "dev_v2",
+      "origin": "held_out_v1",
       "language": "kn-IN",
       "compliant": false,
       "hard_negative": false,
@@ -672,13 +689,15 @@
     },
     {
       "id": "script_010",
-      "split": "held_out",
+      "split": "dev_v2",
+      "origin": "held_out_v1",
       "language": "kn-IN",
       "compliant": false,
       "hard_negative": false,
       "concern_types": [
         "third_party_contact_threat",
-        "abusive_language"
+        "abusive_language",
+        "intimidation_or_threats"
       ],
       "authority_mention": false,
       "concern_spans": [
@@ -696,16 +715,31 @@
           "type": "third_party_contact_threat",
           "turn": 6,
           "text": "ನಿನ್ನ WhatsApp ಕಾಂಟ್ಯಾಕ್ಟ್ ಎಲ್ಲರಿಗೂ ಮೆಸೇಜ್ ಹೋಗ್ತದೆ ನಿನ್ನ ಸಾಲ ಬಗ್ಗೆ."
+        },
+        {
+          "type": "intimidation_or_threats",
+          "turn": 4,
+          "text": "ನಿನ್ನ ಮಗನ ಶಾಲೆಗೂ ಹೋಗ್ತೀನಿ."
+        },
+        {
+          "type": "third_party_contact_threat",
+          "turn": 4,
+          "text": "ನಿನ್ನ ಮಗನ ಶಾಲೆಗೂ ಹೋಗ್ತೀನಿ."
         }
       ],
       "needs_native_review": true,
       "label_changes": [
+        "dev_v2 definition: added intimidation_or_threats span (turn 4) “ನಿನ್ನ ಮಗನ ಶಾಲೆಗೂ ಹೋಗ್ತೀನಿ.”",
+        "dev_v2 definition: added third_party_contact_threat span (turn 4) “ನಿನ್ನ ಮಗನ ಶಾಲೆಗೂ ಹೋಗ್ತೀನಿ.”",
+        "dev_v2 definition reason: going to the son's school = in-person visit (intimidation) and contact with a third party",
+        "added intimidation_or_threats to concern_types (a span of that type exists)",
         "hard_negative True -> False (hard negatives are compliant calls only)"
       ]
     },
     {
       "id": "script_011",
-      "split": "held_out",
+      "split": "dev_v2",
+      "origin": "held_out_v1",
       "language": "kn-IN",
       "compliant": true,
       "hard_negative": true,
@@ -727,13 +761,15 @@
     },
     {
       "id": "script_012",
-      "split": "held_out",
+      "split": "dev_v2",
+      "origin": "held_out_v1",
       "language": "kn-IN",
       "compliant": false,
       "hard_negative": false,
       "concern_types": [
         "intimidation_or_threats",
-        "abusive_language"
+        "abusive_language",
+        "third_party_contact_threat"
       ],
       "authority_mention": false,
       "concern_spans": [
@@ -746,13 +782,24 @@
           "type": "intimidation_or_threats",
           "turn": 4,
           "text": "ನಮ್ಮ ರಿಕವರಿ ತಂಡ ನಿಮ್ಮ ಮನೆ ಬಾಗಿಲ ಮುಂದೆ ಬಂದು ಕೂರ್ತಾರೆ — ಅಕ್ಕ-ಪಕ್ಕದ ಮನೆಯವರ ಮುಂದೆ ಎಲ್ಲ ಬಯಲು ಮಾಡ್ತಾರೆ."
+        },
+        {
+          "type": "third_party_contact_threat",
+          "turn": 4,
+          "text": "ಅಕ್ಕ-ಪಕ್ಕದ ಮನೆಯವರ ಮುಂದೆ ಎಲ್ಲ ಬಯಲು ಮಾಡ್ತಾರೆ."
         }
       ],
-      "needs_native_review": true
+      "needs_native_review": true,
+      "label_changes": [
+        "dev_v2 definition: added third_party_contact_threat span (turn 4) “ಅಕ್ಕ-ಪಕ್ಕದ ಮನೆಯವರ ಮುಂದೆ ಎಲ್ಲ ಬಯಲು ಮಾಡ್ತಾರೆ.”",
+        "dev_v2 definition reason: exposing the borrower before neighbours = third-party, in addition to the doorstep visit",
+        "added third_party_contact_threat to concern_types (a span of that type exists)"
+      ]
     },
     {
       "id": "script_013",
-      "split": "held_out",
+      "split": "dev_v2",
+      "origin": "held_out_v1",
       "language": "kn-IN",
       "compliant": true,
       "hard_negative": true,
@@ -767,7 +814,8 @@
     },
     {
       "id": "script_014",
-      "split": "held_out",
+      "split": "dev_v2",
+      "origin": "held_out_v1",
       "language": "en-IN",
       "compliant": true,
       "hard_negative": true,
@@ -782,7 +830,8 @@
     },
     {
       "id": "script_015",
-      "split": "held_out",
+      "split": "dev_v2",
+      "origin": "held_out_v1",
       "language": "en-IN",
       "compliant": false,
       "hard_negative": false,
@@ -812,7 +861,8 @@
     },
     {
       "id": "script_016",
-      "split": "held_out",
+      "split": "dev_v2",
+      "origin": "held_out_v1",
       "language": "en-IN",
       "compliant": true,
       "hard_negative": true,
@@ -827,13 +877,15 @@
     },
     {
       "id": "script_017",
-      "split": "held_out",
+      "split": "dev_v2",
+      "origin": "held_out_v1",
       "language": "en-IN",
       "compliant": false,
       "hard_negative": false,
       "concern_types": [
         "abusive_language",
-        "intimidation_or_threats"
+        "intimidation_or_threats",
+        "third_party_contact_threat"
       ],
       "authority_mention": false,
       "concern_spans": [
@@ -851,16 +903,25 @@
           "type": "intimidation_or_threats",
           "turn": 6,
           "text": "hamare log kal subah aapke ghar ke bahar khade honge — neighbours ko dikhayenge kin logo ne hamare saath fraud kiya."
+        },
+        {
+          "type": "third_party_contact_threat",
+          "turn": 6,
+          "text": "neighbours ko dikhayenge kin logo ne hamare saath fraud kiya."
         }
       ],
       "needs_native_review": false,
       "label_changes": [
+        "dev_v2 definition: added third_party_contact_threat span (turn 6) “neighbours ko dikhayenge kin logo ne hamare saath fraud kiya.”",
+        "dev_v2 definition reason: showing neighbours = third-party, in addition to the house visit (consistent with 003)",
+        "added third_party_contact_threat to concern_types (a span of that type exists)",
         "hard_negative True -> False (hard negatives are compliant calls only)"
       ]
     },
     {
       "id": "script_018",
-      "split": "held_out",
+      "split": "dev_v2",
+      "origin": "held_out_v1",
       "language": "en-IN",
       "compliant": true,
       "hard_negative": true,
@@ -875,13 +936,13 @@
     },
     {
       "id": "script_019",
-      "split": "held_out",
+      "split": "dev_v2",
+      "origin": "held_out_v1",
       "language": "en-IN",
       "compliant": false,
       "hard_negative": false,
       "concern_types": [
-        "authority_or_legal_action_claim",
-        "intimidation_or_threats"
+        "authority_or_legal_action_claim"
       ],
       "authority_mention": true,
       "concern_spans": [
@@ -896,11 +957,6 @@
           "text": "aapko police station mein bulaya jaayega, aur woh call aapko hamaari nahi, police ki taraf se aayegi."
         },
         {
-          "type": "intimidation_or_threats",
-          "turn": 8,
-          "text": "Tab tak arrest ki preparation karo."
-        },
-        {
           "type": "authority_or_legal_action_claim",
           "turn": 8,
           "text": "Tab tak arrest ki preparation karo."
@@ -908,12 +964,16 @@
       ],
       "needs_native_review": false,
       "label_changes": [
-        "added authority_or_legal_action_claim span (turn 8)"
+        "added authority_or_legal_action_claim span (turn 8)",
+        "dev_v2 definition: removed intimidation_or_threats span “Tab tak arrest ki preparation karo.”",
+        "dev_v2 definition reason: an arrest claim alone is the authority verify flag, not intimidation",
+        "removed intimidation_or_threats from concern_types (no span of that type remains)"
       ]
     },
     {
       "id": "script_020",
-      "split": "held_out",
+      "split": "dev_v2",
+      "origin": "held_out_v1",
       "language": "en-IN",
       "compliant": false,
       "hard_negative": false,
@@ -943,10 +1003,17 @@
           "type": "third_party_contact_threat",
           "turn": 6,
           "text": "WhatsApp pe contacts bhi hain hamare paas — ek message mein sab pata chal jaata hai."
+        },
+        {
+          "type": "third_party_contact_threat",
+          "turn": 2,
+          "text": "building society ke log sab dekhenge."
         }
       ],
       "needs_native_review": false,
       "label_changes": [
+        "dev_v2 definition: added third_party_contact_threat span (turn 2) “building society ke log sab dekhenge.”",
+        "dev_v2 definition reason: building society people seeing = showing neighbours (third-party); the house visit stays intimidation",
         "added intimidation_or_threats to concern_types (a span of that type exists)",
         "hard_negative True -> False (hard negatives are compliant calls only)"
       ]

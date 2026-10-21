@@ -46,21 +46,21 @@ class ConfigError(RuntimeError):
     pass
 
 
-def load_api_key(env_file: Path | None = None) -> str:
-    """Return GNANI_API_KEY from the environment, falling back to a .env file."""
-    key = os.environ.get("GNANI_API_KEY", "").strip()
+def load_api_key(env_file: Path | None = None, var: str = "GNANI_API_KEY") -> str:
+    """Return the key named `var` from the environment, falling back to a .env file. Never logged."""
+    key = os.environ.get(var, "").strip()
     if not key and env_file is not None and env_file.exists():
         for line in env_file.read_text(encoding="utf-8").splitlines():
             line = line.strip()
             if not line or line.startswith("#") or "=" not in line:
                 continue
             name, _, value = line.partition("=")
-            if name.strip().removeprefix("export ").strip() == "GNANI_API_KEY":
+            if name.strip().removeprefix("export ").strip() == var:
                 key = value.strip().strip('"').strip("'")
                 break
     if not key:
         raise ConfigError(
-            "GNANI_API_KEY is not set. Export it or put it in .env (see .env.example), "
+            f"{var} is not set. Export it or put it in .env (see .env.example), "
             "or run with --mock to test offline."
         )
     return key

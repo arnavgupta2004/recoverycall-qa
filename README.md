@@ -198,16 +198,31 @@ Note: no `data/scripts.json` existed when this spike was built, so the file was 
 - **The mu-law container test** covers one chunk per scenario, with the primary language code only.
 - **The REST STT response has no word timestamps**, so spans are located by text matching, not by time.
 
-## Classifier text evaluation (dev and held-out)
+## Concern tagging: rules, LLM and hybrid
 
 ```bash
-python prepare_labels.py                          # convert the external held-out file + apply label rules (no classifier)
-python eval_classifier_text.py --split dev        # iteration aid; rules were built on dev
-python eval_classifier_text.py --split held_out   # headline; run once, after rules were frozen
+python prepare_labels.py                                   # rebuild labels: merge held-out v1 into dev as dev_v2 (no classifier)
+python eval_classifier_text.py --split dev --llm-mock      # rules vs LLM vs hybrid, offline mock LLM
+python eval_classifier_text.py --split dev                 # same with the real LLM (needs GEMINI_API_KEY; cached)
+python eval_classifier_text.py --split dev --no-llm        # rules only
 ```
 
-- `src/concern_rules.py` is frozen (2026-10-21, commit `12cb3b1`). Rules must not change after that commit.
-- Ground truth lives in `data/dataset_manifest.json`. The delivered held-out file is kept unchanged in `data/held_out_source/`. Every label change made on 2026-10-21 is written out per call in `prepare_labels.py` and recorded in `label_changes`.
-- **Conduct scoring:** three categories (intimidation, abusive language, third-party contact threat) are scored per call. The false-flag rate on compliant and hard-negative calls counts only these three.
-- **Authority scoring:** `authority_or_legal_action_claim` is a verify flag. Its ground truth is any agent mention of police, arrest, FIR, court or a legal notice, lawful or not. Precision and recall are reported separately.
-- The held-out result is versioned in `reports/classifier_text_held_out_2026-10-21.md`.
+- **Rules v1** (`src/concern_rules.py`) are frozen at `12cb3b1`. Their one held-out result is the baseline: conduct recall 5/17, 0 compliant false flags (`docs/baseline_rules_v1.md`).
+- **Held-out v1 is spent.** It is now `split=dev_v2` in `data/scripts_dev.json` and the manifest; the delivered file is kept in `data/held_out_source/`. Every label change is in `label_changes` and in `prepare_labels.py`.
+  - Third-party contact threat: telling or showing family, employer, neighbours or contacts.
+  - Intimidation: visiting, harming or shaming in person.
+  - One passage can carry both labels.
+- **Held-out v2** will be written externally to `data/scripts_held_out.json`. `--split held_out` evaluates it once it exists.
+- **Quotes:** a rules flag quotes the matched phrase, mapped back to the original text, not the whole turn.
+- **`src/llm_tagger.py`** calls the Gemini API free tier (default `gemini-3.5-flash-lite`, overridable with `GEMINI_MODEL`).
+  - The model gets the four category definitions and returns JSON `{segment_id, type, quote}` at temperature 0.
+  - Every quote must be a verbatim substring of its segment (`verify_quote`); anything else is dropped and reported.
+  - Responses are cached in `outputs/llm_cache/`, and `--llm-mock` runs offline.
+  - The key is read from `GEMINI_API_KEY` (environment or `.env`) and sent only in the request header.
+  - The request format follows the 2026-10-21 Interactions API docs and has not been run against the live API yet.
+- **Hybrid** (`src/hybrid.py`) is rules ∪ verified LLM flags. Same-type flags whose quotes overlap in the same segment are merged, keeping the rules quote. Labels and wording are unchanged.
+- **Scoring:**
+  - Conduct categories are scored per call.
+  - `authority_or_legal_action_claim` is a verify flag with separate precision and recall.
+  - The compliant and hard-negative false-flag rates count conduct flags only.
+  - Dev results are context only.
