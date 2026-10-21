@@ -42,6 +42,8 @@ SAMPLE_CHOICES = [(s["title"], sid) for sid, s in SAMPLES.items()]
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("rcqa")
+log.info("cached samples available in %s: %s", CACHE_DIR.relative_to(ROOT),
+         sorted(sid for sid in SAMPLES if (CACHE_DIR / f"{sid}.json").exists()) or "none")
 
 
 def _download_file(result: dict, stem: str) -> str:

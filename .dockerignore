@@ -5,8 +5,8 @@
 .git
 .venv
 .claude
-outputs
-cache
+/outputs
+/cache
 samples/cache_mock
 __pycache__
 **/__pycache__
