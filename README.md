@@ -283,6 +283,38 @@ The deployment is set up like this:
   - To rotate a secret: `printf %s "$NEW" | gcloud secrets versions add NAME --data-file=- --project …`, then redeploy.
 - **Budget:** ₹100 a month on this project, with alerts at 50%, 90% and 100% of actual spend and 100% of forecast, emailed to billing admins.
 - **Deploy:** `PROJECT=recoverycall-qa-1021-308c ./deploy_cloudrun.sh` builds with Cloud Build and deploys.
+- **Live URL:** https://recoverycall-qa-711436060077.asia-south1.run.app (revision `recoverycall-qa-00004-rg8`, FastAPI frontend, 2026-10-21).
+- **Measured on 2026-10-21 (revision 00004):**
+  - **Cold start:** after 20 minutes idle, the first page load took 2.6 s to first byte; Gradio had taken 11.4 s. The instance started at 18:27:12 UTC and the app was ready 2.4 s later. After that, a warm request takes 0.1 s.
+  - **Cached samples:** all four load with their waveform, flags and summary audio and 0 API calls, logged as `cached example served … api_calls=0`.
+  - **Log audit:** 88 entries with no API key, passcode or transcript text.
+  - **Live run, sample D (Gradio revision 00003, same pipeline):** 8.3 s total — STT 0.65 s, recovery 0.44 s, Gemini 5.0 s, Timbre 1.96 s — with 7 API calls (5 STT, 1 Gemini, 1 Timbre).
+- **Client IP:** Google doesn't document how Cloud Run fills `X-Forwarded-For` for direct `*.run.app` traffic. The app uses the rightmost entry, which is the real client whether Google's front end appends the address it saw or replaces the header. With an external load balancer in front, which appends `<client-ip>,<lb-ip>`, set `XFF_TRUSTED_HOPS=1`.
+- **Logs:** counts and timings only.
+- **Wording:** unchanged — potential conduct concern, verify claim, "to verify against the RBI circular", no score.
+
+**Page:**
+- **Start screen:** four sample cards, each labelled "cached example", plus "Analyse your own audio" behind a passcode dialog. The dialog can also run a sample live.
+- **Timeline:** a waveform with segment boundaries, amber and violet flag pins, and hatched low-coverage stretches. Clicking anywhere seeks.
+- **Transcript:** segment bubbles with timestamps and underlined, clickable quotes. Speakers aren't separated, because the pipeline has no diarization.
+- **Findings:** a card per flag (detector Rules, AI or Both), rejected AI flags shown struck through, plus coverage and call-time cards.
+- **Also:** the spoken summary, the audit JSON download, a Details panel with stage timings and API calls, and a step indicator for live runs.
+- **Layout:** light and dark mode. On phones it stacks timeline, findings, then transcript.
+
+Screenshots are in `docs/screenshots/`.
+
+### Deploy to Google Cloud Run
+
+Hugging Face no longer runs Gradio Spaces on the free CPU tier without PRO, so the app is deployed to **Cloud Run** in `asia-south1` (Mumbai, a Tier 1 pricing region) with its own GCP project (`recoverycall-qa-1021-308c`).
+
+The deployment is set up like this:
+- **Image:** the `Dockerfile` (Python 3.13 slim + ffmpeg + `requirements.txt`) holds only `app.py`, `src/` and `samples/`. `.dockerignore` and `.gcloudignore` keep `.env`, caches and outputs out of the build upload.
+- **Service:** public (`--allow-unauthenticated`), scale to zero (`--min-instances 0`), `--max-instances 1` so the in-memory rate limiter is exact and cost is bounded. It has 1 vCPU, 1 GiB of memory and a 300 s request timeout.
+- **Secrets:** `GNANI_API_KEY`, `GEMINI_API_KEY` and `UPLOAD_PASSCODE` live in **Secret Manager** and are exposed to the container as environment variables. Only the `rcqa-run` service account can read them.
+  - To read the passcode: `gcloud secrets versions access latest --secret=UPLOAD_PASSCODE --project recoverycall-qa-1021-308c`
+  - To rotate a secret: `printf %s "$NEW" | gcloud secrets versions add NAME --data-file=- --project …`, then redeploy.
+- **Budget:** ₹100 a month on this project, with alerts at 50%, 90% and 100% of actual spend and 100% of forecast, emailed to billing admins.
+- **Deploy:** `PROJECT=recoverycall-qa-1021-308c ./deploy_cloudrun.sh` builds with Cloud Build and deploys.
 - **Live URL:** https://recoverycall-qa-711436060077.asia-south1.run.app (revision `recoverycall-qa-00002-wqj`, 2026-10-21).
 - **Measured on 2026-10-21:**
   - A cold start (first request after about 3.5 h idle) took 11.4 s to first byte; a warm request took 0.1 s.
