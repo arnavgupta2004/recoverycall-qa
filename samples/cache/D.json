@@ -1,0 +1,148 @@
+{
+  "app_version": "t4-2026-10-21",
+  "generated_at": "2026-10-21T12:53:56Z",
+  "language": "hi-IN",
+  "language_name": "Hindi",
+  "filename": "D.wav",
+  "audio_sha256": "a6b765eb143c06b0da78edc277b40ed50e9118f2c7b92caa22d849f8fc698f75",
+  "duration_s": 20.18,
+  "detectors": {
+    "rules": "rules v1, frozen 2026-10-21 (commit 12cb3b1)",
+    "llm": "gemini:gemini-3.5-flash-lite",
+    "llm_prompt_version": "2026-10-21.v1",
+    "llm_status": "ok",
+    "llm_quotes_rejected": [],
+    "flags_dropped_by_quote_check": 0
+  },
+  "notices": [],
+  "segments": [
+    {
+      "segment": 0,
+      "start_s": 0.0,
+      "end_s": 11.365,
+      "speech_s": 7.28,
+      "http_status": 200,
+      "stt_error": null,
+      "flagged": true,
+      "density_first": 5.631868131868131,
+      "density_final": 17.032967032967033,
+      "threshold": 7.106,
+      "untranscribed": [],
+      "recovered": true,
+      "transcript_first": "हैलो मैं सनराइज फनैन्स की रिकवरी टीम से बोल रहा हूँ"
+    },
+    {
+      "segment": 1,
+      "start_s": 11.365,
+      "end_s": 20.18,
+      "speech_s": 6.28,
+      "http_status": 200,
+      "stt_error": null,
+      "flagged": false,
+      "density_first": 17.993630573248407,
+      "density_final": 17.993630573248407,
+      "threshold": 7.106,
+      "untranscribed": [],
+      "recovered": false,
+      "transcript_first": "अगर आज शाम तक पैसे नहीं आए तो हमारे लोग आपके घर आएंगे हम आपके पति को और आपकी बेटी को स्कूल में भी फ़ोन करेंगे प्लीज मेरे परिवार को इसमें मत लाइये"
+    }
+  ],
+  "transcript": [
+    {
+      "start_s": 0.0,
+      "end_s": 4.78,
+      "text": "हैलो मैं सनराइज फनैन्स की रिकवरी टीम से बोल रहा हूँ",
+      "origin": "re-split piece",
+      "segment": 0,
+      "segment_id": "r00"
+    },
+    {
+      "start_s": 4.78,
+      "end_s": 9.91,
+      "text": "आपके खाते पर बयालीस हज़ार पांच सौ रुपए बकाए हैं मैं इस महीने पूरी रकम नहीं दे पाऊंगी",
+      "origin": "re-split piece",
+      "segment": 0,
+      "segment_id": "r01"
+    },
+    {
+      "start_s": 9.91,
+      "end_s": 11.365,
+      "text": "मेरी नौकरी चली गई है।",
+      "origin": "re-split piece",
+      "segment": 0,
+      "segment_id": "r02"
+    },
+    {
+      "start_s": 11.365,
+      "end_s": 20.18,
+      "text": "अगर आज शाम तक पैसे नहीं आए तो हमारे लोग आपके घर आएंगे हम आपके पति को और आपकी बेटी को स्कूल में भी फ़ोन करेंगे प्लीज मेरे परिवार को इसमें मत लाइये",
+      "origin": "segment",
+      "segment": 1,
+      "segment_id": "r03"
+    }
+  ],
+  "flags": [
+    {
+      "concern_type": "intimidation_or_threats",
+      "quote": "घर आएंगे",
+      "segment_id": "r03",
+      "start_s": 11.365,
+      "end_s": 20.18,
+      "time": "0:11",
+      "label": "potential conduct concern — human review required",
+      "regulatory_note": "to verify against the RBI circular",
+      "detector": "both",
+      "char_start": 45,
+      "char_end": 53
+    },
+    {
+      "concern_type": "third_party_contact_threat",
+      "quote": "हम आपके पति को और आपकी बेटी को स्कूल में भी फ़ोन करेंगे",
+      "segment_id": "r03",
+      "start_s": 11.365,
+      "end_s": 20.18,
+      "time": "0:11",
+      "label": "potential conduct concern — human review required",
+      "regulatory_note": "to verify against the RBI circular",
+      "detector": "LLM",
+      "char_start": 54,
+      "char_end": 109
+    }
+  ],
+  "coverage_warnings": [
+    {
+      "kind": "recovered",
+      "start_s": 0.0,
+      "end_s": 11.365,
+      "text": "low transcript coverage at 0:00–0:11: re-transcribed in shorter pieces — listen and review"
+    }
+  ],
+  "out_of_hours": {
+    "checked": false,
+    "reason": "no YYYYMMDD_HHMMSS timestamp in the file name"
+  },
+  "api_calls": {
+    "stt": 5,
+    "stt_cache_hits": 0,
+    "llm": 1,
+    "tts": 1
+  },
+  "latency_ms": {
+    "decode": 69.6,
+    "vad": 6.5,
+    "stt": 1678.5,
+    "coverage_recovery": 1294.8,
+    "rules": 1.4,
+    "llm": 4517.5,
+    "summary_tts": 1817.6,
+    "total": 9387.3
+  },
+  "temp_files_removed": true,
+  "wording": "Flags are potential conduct concerns for human review; authority claims are to verify. No score or legal conclusion is produced.",
+  "summary": {
+    "text": "रिकवरी कॉल क्यूए सारांश, मानवीय समीक्षा के लिए। संभावित धमकी या डराने का एक अंश चिह्नित किया गया है। परिवार, दफ़्तर या पड़ोसियों से संपर्क की संभावित धमकी का एक अंश चिह्नित किया गया है। ऑडियो के एक हिस्से का ट्रांसक्रिप्ट अधूरा हो सकता है, कृपया सुनकर समीक्षा करें। ये केवल संभावित चिंताएँ हैं, जिन्हें मानवीय समीक्षक आरबीआई परिपत्र के अनुसार जाँचेंगे।",
+    "voice": "Hemraj",
+    "language": "hi-IN",
+    "status": "ok"
+  }
+}
