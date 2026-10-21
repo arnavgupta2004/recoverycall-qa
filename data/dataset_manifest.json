@@ -1,0 +1,343 @@
+{
+  "version": 1,
+  "note": "Ground-truth labels for the RecoveryCall QA dataset. 'split' is 'dev' (rules were built on this) or 'held_out' (headline evaluation). 'concern_types' lists the four classifier categories present; empty list means compliant. 'hard_negative' is true for compliant calls that contain firm-but-lawful language that must not be flagged. 'needs_native_review' is true for Kannada scripts pending native speaker review.",
+  "concern_type_labels": {
+    "intimidation_or_threats": "Physical threats, agents visiting, sending men to debtor's location",
+    "abusive_language": "Slurs, derogatory or shaming language directed at the debtor",
+    "third_party_contact_threat": "Threatening to contact family, employer, neighbours, or other third parties",
+    "authority_or_legal_action_claim": "Claiming police, arrest, court summons, or official legal process"
+  },
+  "calls": [
+    {
+      "id": "dev_hi_compliant_01",
+      "split": "dev",
+      "language": "hi-IN",
+      "compliant": true,
+      "hard_negative": false,
+      "concern_types": [],
+      "needs_native_review": false
+    },
+    {
+      "id": "dev_hi_compliant_02",
+      "split": "dev",
+      "language": "hi-IN",
+      "compliant": true,
+      "hard_negative": false,
+      "concern_types": [],
+      "needs_native_review": false
+    },
+    {
+      "id": "dev_hi_compliant_03",
+      "split": "dev",
+      "language": "hi-IN",
+      "compliant": true,
+      "hard_negative": false,
+      "concern_types": [],
+      "needs_native_review": false
+    },
+    {
+      "id": "dev_hi_compliant_04",
+      "split": "dev",
+      "language": "hi-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "needs_native_review": false,
+      "hard_negative_note": "CIBIL score mention — lawful consequence, not a threat"
+    },
+    {
+      "id": "dev_hi_compliant_05",
+      "split": "dev",
+      "language": "hi-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "needs_native_review": false,
+      "hard_negative_note": "Escalation mention — internal process, no physical threat or third-party contact"
+    },
+    {
+      "id": "dev_hi_compliant_06",
+      "split": "dev",
+      "language": "hi-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "needs_native_review": false,
+      "hard_negative_note": "Review queue mention — internal process only"
+    },
+    {
+      "id": "dev_hi_compliant_07",
+      "split": "dev",
+      "language": "hi-IN",
+      "compliant": true,
+      "hard_negative": false,
+      "concern_types": [],
+      "needs_native_review": false
+    },
+    {
+      "id": "dev_en_compliant_01",
+      "split": "dev",
+      "language": "en-IN",
+      "compliant": true,
+      "hard_negative": false,
+      "concern_types": [],
+      "needs_native_review": false
+    },
+    {
+      "id": "dev_en_compliant_02",
+      "split": "dev",
+      "language": "en-IN",
+      "compliant": true,
+      "hard_negative": false,
+      "concern_types": [],
+      "needs_native_review": false
+    },
+    {
+      "id": "dev_en_compliant_03",
+      "split": "dev",
+      "language": "en-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "needs_native_review": false,
+      "hard_negative_note": "CIBIL score mention — lawful consequence"
+    },
+    {
+      "id": "dev_en_compliant_04",
+      "split": "dev",
+      "language": "en-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "needs_native_review": false,
+      "hard_negative_note": "Escalation mention — internal process, no threats"
+    },
+    {
+      "id": "dev_en_compliant_05",
+      "split": "dev",
+      "language": "en-IN",
+      "compliant": true,
+      "hard_negative": false,
+      "concern_types": [],
+      "needs_native_review": false
+    },
+    {
+      "id": "dev_en_compliant_06",
+      "split": "dev",
+      "language": "en-IN",
+      "compliant": true,
+      "hard_negative": false,
+      "concern_types": [],
+      "needs_native_review": false
+    },
+    {
+      "id": "dev_kn_compliant_01",
+      "split": "dev",
+      "language": "kn-IN",
+      "compliant": true,
+      "hard_negative": false,
+      "concern_types": [],
+      "needs_native_review": true
+    },
+    {
+      "id": "dev_kn_compliant_02",
+      "split": "dev",
+      "language": "kn-IN",
+      "compliant": true,
+      "hard_negative": false,
+      "concern_types": [],
+      "needs_native_review": true
+    },
+    {
+      "id": "dev_kn_compliant_03",
+      "split": "dev",
+      "language": "kn-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "needs_native_review": true,
+      "hard_negative_note": "Credit score mention — lawful consequence"
+    },
+    {
+      "id": "dev_kn_compliant_04",
+      "split": "dev",
+      "language": "kn-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "needs_native_review": true,
+      "hard_negative_note": "Escalation mention — internal process only"
+    },
+    {
+      "id": "dev_kn_compliant_05",
+      "split": "dev",
+      "language": "kn-IN",
+      "compliant": true,
+      "hard_negative": false,
+      "concern_types": [],
+      "needs_native_review": true
+    },
+    {
+      "id": "dev_hi_concern_intimidation_01",
+      "split": "dev",
+      "language": "hi-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": ["intimidation_or_threats"],
+      "needs_native_review": false
+    },
+    {
+      "id": "dev_hi_concern_intimidation_02",
+      "split": "dev",
+      "language": "hi-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": ["intimidation_or_threats"],
+      "needs_native_review": false
+    },
+    {
+      "id": "dev_hi_concern_third_party_01",
+      "split": "dev",
+      "language": "hi-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": ["third_party_contact_threat"],
+      "needs_native_review": false
+    },
+    {
+      "id": "dev_hi_concern_third_party_02",
+      "split": "dev",
+      "language": "hi-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": ["third_party_contact_threat"],
+      "needs_native_review": false
+    },
+    {
+      "id": "dev_hi_concern_authority_01",
+      "split": "dev",
+      "language": "hi-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": ["authority_or_legal_action_claim"],
+      "needs_native_review": false
+    },
+    {
+      "id": "dev_hi_concern_authority_02",
+      "split": "dev",
+      "language": "hi-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": ["authority_or_legal_action_claim"],
+      "needs_native_review": false
+    },
+    {
+      "id": "dev_hi_concern_abusive_01",
+      "split": "dev",
+      "language": "hi-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": ["abusive_language"],
+      "needs_native_review": false
+    },
+    {
+      "id": "dev_hi_concern_mixed_01",
+      "split": "dev",
+      "language": "hi-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": ["intimidation_or_threats", "third_party_contact_threat"],
+      "needs_native_review": false
+    },
+    {
+      "id": "dev_en_concern_intimidation_01",
+      "split": "dev",
+      "language": "en-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": ["intimidation_or_threats"],
+      "needs_native_review": false
+    },
+    {
+      "id": "dev_en_concern_third_party_01",
+      "split": "dev",
+      "language": "en-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": ["third_party_contact_threat"],
+      "needs_native_review": false
+    },
+    {
+      "id": "dev_en_concern_authority_01",
+      "split": "dev",
+      "language": "en-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": ["authority_or_legal_action_claim"],
+      "needs_native_review": false
+    },
+    {
+      "id": "dev_en_concern_abusive_01",
+      "split": "dev",
+      "language": "en-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": ["abusive_language"],
+      "needs_native_review": false
+    },
+    {
+      "id": "dev_en_concern_mixed_01",
+      "split": "dev",
+      "language": "en-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": ["authority_or_legal_action_claim", "third_party_contact_threat"],
+      "needs_native_review": false
+    },
+    {
+      "id": "dev_kn_concern_intimidation_01",
+      "split": "dev",
+      "language": "kn-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": ["intimidation_or_threats"],
+      "needs_native_review": true
+    },
+    {
+      "id": "dev_kn_concern_third_party_01",
+      "split": "dev",
+      "language": "kn-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": ["third_party_contact_threat"],
+      "needs_native_review": true
+    },
+    {
+      "id": "dev_kn_concern_authority_01",
+      "split": "dev",
+      "language": "kn-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": ["authority_or_legal_action_claim"],
+      "needs_native_review": true
+    },
+    {
+      "id": "dev_kn_concern_abusive_01",
+      "split": "dev",
+      "language": "kn-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": ["abusive_language"],
+      "needs_native_review": true
+    },
+    {
+      "id": "dev_kn_concern_mixed_01",
+      "split": "dev",
+      "language": "kn-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": ["intimidation_or_threats", "third_party_contact_threat"],
+      "needs_native_review": true
+    }
+  ]
+}

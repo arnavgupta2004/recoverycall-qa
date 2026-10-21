@@ -1,0 +1,701 @@
+{
+  "version": 1,
+  "note": "All calls, people, companies and amounts are fictional. No real recordings, no real personal data, no voice cloning. Amounts are written as spoken words, per the Timbre docs. Each turn's text is both the TTS input and the STT reference. This is the DEV set: rules are built and iterated against these scripts. Do not report headline precision/recall from this set.",
+  "tts_model": "timbre-v2.5",
+  "tts_speed": 1.0,
+  "scenarios": [
+
+    {
+      "id": "dev_hi_compliant_01",
+      "title": "Hindi compliant: polite EMI reminder",
+      "tts_language": "hi-IN",
+      "stt_language_codes": ["hi-IN"],
+      "voices": {"agent": "Hemraj", "customer": "Chitra"},
+      "turns": [
+        {"speaker": "agent", "text": "नमस्ते, मैं क्षितिज फ़ाइनेंस से आरव बोल रहा हूँ। क्या मेरी बात मीरा जी से हो रही है?"},
+        {"speaker": "customer", "text": "हाँ, मैं मीरा बोल रही हूँ।"},
+        {"speaker": "agent", "text": "आपकी ईएमआई के पचीस हज़ार रुपये इस महीने की बीस तारीख़ को देय हैं।",
+         "critical_spans": [{"type": "amount", "text": "पचीस हज़ार रुपये"}]},
+        {"speaker": "customer", "text": "हाँ, मुझे याद है। मैं समय पर भुगतान कर दूँगी।"},
+        {"speaker": "agent", "text": "बहुत अच्छा। अगर कोई समस्या हो तो हमें पहले बता दीजिएगा, हम आपकी मदद करेंगे।"},
+        {"speaker": "customer", "text": "ठीक है, धन्यवाद।"},
+        {"speaker": "agent", "text": "आपका दिन शुभ हो।"}
+      ]
+    },
+
+    {
+      "id": "dev_hi_compliant_02",
+      "title": "Hindi compliant: payment plan offer",
+      "tts_language": "hi-IN",
+      "stt_language_codes": ["hi-IN"],
+      "voices": {"agent": "Hemraj", "customer": "Chitra"},
+      "turns": [
+        {"speaker": "agent", "text": "नमस्ते, मैं नवदीप क्रेडिट से सोनिया बोल रही हूँ। क्या मेरी बात राज जी से हो सकती है?"},
+        {"speaker": "customer", "text": "जी, मैं राज हूँ।"},
+        {"speaker": "agent", "text": "आपके खाते पर सोलह हज़ार रुपये बकाया हैं।",
+         "critical_spans": [{"type": "amount", "text": "सोलह हज़ार रुपये"}]},
+        {"speaker": "customer", "text": "मैं अभी एकमुश्त नहीं दे सकता, क्या किस्तों में हो सकता है?",
+         "critical_spans": [{"type": "negation", "text": "अभी एकमुश्त नहीं दे सकता", "negation_tokens": ["नहीं", "नही"], "negation_markers": ["नहीं", "नही"]}]},
+        {"speaker": "agent", "text": "बिल्कुल, हम आपके लिए तीन किस्तों में बाँट सकते हैं। मैं अभी एक योजना भेज देती हूँ।"},
+        {"speaker": "customer", "text": "बहुत अच्छा, शुक्रिया।"},
+        {"speaker": "agent", "text": "हमें ख़ुशी होगी आपकी मदद करके। नमस्ते।"}
+      ]
+    },
+
+    {
+      "id": "dev_hi_compliant_03",
+      "title": "Hindi compliant: overdue notice, cooperative close",
+      "tts_language": "hi-IN",
+      "stt_language_codes": ["hi-IN"],
+      "voices": {"agent": "Hemraj", "customer": "Chitra"},
+      "turns": [
+        {"speaker": "agent", "text": "नमस्ते, मैं प्रिया फ़ाइनेंस से दीपक बोल रहा हूँ।"},
+        {"speaker": "customer", "text": "जी बोलिए।"},
+        {"speaker": "agent", "text": "आपकी ईएमआई के बारह हज़ार रुपये दस दिन से बकाया हैं।",
+         "critical_spans": [{"type": "amount", "text": "बारह हज़ार रुपये"}]},
+        {"speaker": "customer", "text": "मेरी तनख़्वाह में देरी हो गई है, अगले हफ़्ते दे दूँगा।"},
+        {"speaker": "agent", "text": "कोई बात नहीं, हम अगले सोमवार तक प्रतीक्षा कर सकते हैं। मैं आपको एक रिमाइंडर भेज दूँगा।"},
+        {"speaker": "customer", "text": "ठीक है।"},
+        {"speaker": "agent", "text": "धन्यवाद, अपना ख़याल रखिए।"}
+      ]
+    },
+
+    {
+      "id": "dev_hi_compliant_04",
+      "title": "Hindi compliant: CIBIL mention, hard negative",
+      "tts_language": "hi-IN",
+      "stt_language_codes": ["hi-IN"],
+      "voices": {"agent": "Hemraj", "customer": "Chitra"},
+      "turns": [
+        {"speaker": "agent", "text": "नमस्ते, मैं सूर्योदय फ़ाइनेंस से अनीता बोल रही हूँ।"},
+        {"speaker": "customer", "text": "हाँ बोलिए।"},
+        {"speaker": "agent", "text": "आपके खाते पर अड़तीस हज़ार रुपये बकाया हैं। देरी होने पर आपकी सिबिल रेटिंग प्रभावित हो सकती है।",
+         "critical_spans": [{"type": "amount", "text": "अड़तीस हज़ार रुपये"}]},
+        {"speaker": "customer", "text": "समझ गया, मैं कल भुगतान कर दूँगा।"},
+        {"speaker": "agent", "text": "बहुत अच्छा। अगर कोई परेशानी हो तो हमसे बात करें।"},
+        {"speaker": "customer", "text": "ठीक है।"}
+      ]
+    },
+
+    {
+      "id": "dev_hi_compliant_05",
+      "title": "Hindi compliant: escalation mention, hard negative",
+      "tts_language": "hi-IN",
+      "stt_language_codes": ["hi-IN"],
+      "voices": {"agent": "Hemraj", "customer": "Chitra"},
+      "turns": [
+        {"speaker": "agent", "text": "नमस्ते, मैं भारत क्रेडिट से रमेश बोल रहा हूँ।"},
+        {"speaker": "customer", "text": "जी।"},
+        {"speaker": "agent", "text": "आपके खाते पर बीस हज़ार रुपये एक महीने से बकाया हैं।",
+         "critical_spans": [{"type": "amount", "text": "बीस हज़ार रुपये"}]},
+        {"speaker": "customer", "text": "मुझे अभी दिक़्क़त है।"},
+        {"speaker": "agent", "text": "समझ में आता है। अगर अगले पाँच दिनों में भुगतान नहीं हुआ तो हमें मामला आगे बढ़ाना होगा। हम चाहते हैं कि आप पहले हमसे बात करें।"},
+        {"speaker": "customer", "text": "ठीक है, मैं कोशिश करता हूँ।"},
+        {"speaker": "agent", "text": "धन्यवाद।"}
+      ]
+    },
+
+    {
+      "id": "dev_hi_compliant_06",
+      "title": "Hindi compliant: polite final reminder, hard negative",
+      "tts_language": "hi-IN",
+      "stt_language_codes": ["hi-IN"],
+      "voices": {"agent": "Hemraj", "customer": "Chitra"},
+      "turns": [
+        {"speaker": "agent", "text": "नमस्ते, मैं स्टार लोन्स से कविता बोल रही हूँ।"},
+        {"speaker": "customer", "text": "हाँ।"},
+        {"speaker": "agent", "text": "आपके तीन हज़ार पाँच सौ रुपये की क़िस्त आज देय थी।",
+         "critical_spans": [{"type": "amount", "text": "तीन हज़ार पाँच सौ रुपये"}]},
+        {"speaker": "customer", "text": "आज नहीं होगा, कल दे दूँगी।",
+         "critical_spans": [{"type": "negation", "text": "आज नहीं होगा", "negation_tokens": ["नहीं", "नही"], "negation_markers": ["नहीं", "नही"]}]},
+        {"speaker": "agent", "text": "ठीक है, कल तक इंतज़ार करेंगे। अगर फिर भी नहीं हुआ तो हमें आपके खाते को रिव्यू में भेजना होगा।"},
+        {"speaker": "customer", "text": "समझ गई।"}
+      ]
+    },
+
+    {
+      "id": "dev_hi_compliant_07",
+      "title": "Hindi compliant: call-back arrangement",
+      "tts_language": "hi-IN",
+      "stt_language_codes": ["hi-IN"],
+      "voices": {"agent": "Hemraj", "customer": "Chitra"},
+      "turns": [
+        {"speaker": "agent", "text": "नमस्ते, मैं उज्ज्वल फ़ाइनेंस से प्रियंका बोल रही हूँ।"},
+        {"speaker": "customer", "text": "अभी बात करना मुमकिन नहीं है।",
+         "critical_spans": [{"type": "negation", "text": "बात करना मुमकिन नहीं है", "negation_tokens": ["नहीं", "नही"], "negation_markers": ["नहीं", "नही"]}]},
+        {"speaker": "agent", "text": "कोई बात नहीं। मैं शाम पाँच बजे वापस फ़ोन करती हूँ।"},
+        {"speaker": "customer", "text": "ठीक है।"},
+        {"speaker": "agent", "text": "धन्यवाद। शाम को बात करते हैं।"}
+      ]
+    },
+
+    {
+      "id": "dev_en_compliant_01",
+      "title": "Hinglish compliant: EMI reminder",
+      "tts_language": "hi-en",
+      "stt_language_codes": ["hi-IN", "en-IN"],
+      "primary_stt_language_code": "en-IN",
+      "voices": {"agent": "Poorvi", "customer": "Pranav"},
+      "turns": [
+        {"speaker": "agent", "text": "Hello, main Stellar Finance se Neha baat kar rahi hoon. Kya meri baat Vikram ji se ho rahi hai?"},
+        {"speaker": "customer", "text": "Haan, main Vikram bol raha hoon."},
+        {"speaker": "agent", "text": "Aapki EMI ke saat hazaar rupaye is hafte due hain.",
+         "critical_spans": [{"type": "amount", "text": "saat hazaar rupaye"}]},
+        {"speaker": "customer", "text": "Haan, yaad hai. Main Friday ko kar deta hoon."},
+        {"speaker": "agent", "text": "Bilkul. Agar koi problem ho toh please pehle humse baat karein."},
+        {"speaker": "customer", "text": "Sure, thanks."},
+        {"speaker": "agent", "text": "Thank you, have a good day."}
+      ]
+    },
+
+    {
+      "id": "dev_en_compliant_02",
+      "title": "Hinglish compliant: payment plan",
+      "tts_language": "hi-en",
+      "stt_language_codes": ["hi-IN", "en-IN"],
+      "primary_stt_language_code": "en-IN",
+      "voices": {"agent": "Poorvi", "customer": "Pranav"},
+      "turns": [
+        {"speaker": "agent", "text": "Namaste, main Apex Credit se Riya baat kar rahi hoon."},
+        {"speaker": "customer", "text": "Haan boliye."},
+        {"speaker": "agent", "text": "Aapke account par chaubees hazaar rupaye outstanding hain.",
+         "critical_spans": [{"type": "amount", "text": "chaubees hazaar rupaye"}]},
+        {"speaker": "customer", "text": "Main ek baar mein nahi de sakta.",
+         "critical_spans": [{"type": "negation", "text": "ek baar mein nahi de sakta", "negation_tokens": ["nahi", "nahin", "nhi"], "negation_markers": ["nahi", "nahin", "not"]}]},
+        {"speaker": "agent", "text": "Koi baat nahi. Hum aapke liye teen installments mein split kar sakte hain. Main plan email kar deti hoon."},
+        {"speaker": "customer", "text": "Theek hai, thanks."},
+        {"speaker": "agent", "text": "Dhanyavaad, aapka din shubh ho."}
+      ]
+    },
+
+    {
+      "id": "dev_en_compliant_03",
+      "title": "Hinglish compliant: CIBIL mention, hard negative",
+      "tts_language": "hi-en",
+      "stt_language_codes": ["hi-IN", "en-IN"],
+      "primary_stt_language_code": "en-IN",
+      "voices": {"agent": "Poorvi", "customer": "Pranav"},
+      "turns": [
+        {"speaker": "agent", "text": "Hello, main Horizon Loans se Amit baat kar raha hoon."},
+        {"speaker": "customer", "text": "Haan, boliye."},
+        {"speaker": "agent", "text": "Aapke account par pachchees hazaar rupaye due hain. Delay hone par CIBIL score affect ho sakta hai.",
+         "critical_spans": [{"type": "amount", "text": "pachchees hazaar rupaye"}]},
+        {"speaker": "customer", "text": "Samajh gaya. Kal kar deta hoon."},
+        {"speaker": "agent", "text": "Bahut achha. Koi bhi help chahiye toh hume batayein."},
+        {"speaker": "customer", "text": "OK thanks."}
+      ]
+    },
+
+    {
+      "id": "dev_en_compliant_04",
+      "title": "Hinglish compliant: firm escalation mention, hard negative",
+      "tts_language": "hi-en",
+      "stt_language_codes": ["hi-IN", "en-IN"],
+      "primary_stt_language_code": "en-IN",
+      "voices": {"agent": "Poorvi", "customer": "Pranav"},
+      "turns": [
+        {"speaker": "agent", "text": "Hi, main Pinnacle Finance se Sheetal baat kar rahi hoon."},
+        {"speaker": "customer", "text": "Haan."},
+        {"speaker": "agent", "text": "Aapke account par terah hazaar rupaye do hafte se pending hain.",
+         "critical_spans": [{"type": "amount", "text": "terah hazaar rupaye"}]},
+        {"speaker": "customer", "text": "Abhi nahi ho sakta.",
+         "critical_spans": [{"type": "negation", "text": "Abhi nahi ho sakta", "negation_tokens": ["nahi", "nahin", "nhi"], "negation_markers": ["nahi", "nahin", "not"]}]},
+        {"speaker": "agent", "text": "Agar agle hafte tak payment nahi aaya toh humein aapka case escalate karna hoga. Please hum se pehle baat karein."},
+        {"speaker": "customer", "text": "Theek hai."}
+      ]
+    },
+
+    {
+      "id": "dev_en_compliant_05",
+      "title": "Hinglish compliant: no-answer message",
+      "tts_language": "hi-en",
+      "stt_language_codes": ["hi-IN", "en-IN"],
+      "primary_stt_language_code": "en-IN",
+      "voices": {"agent": "Poorvi", "customer": "Pranav"},
+      "turns": [
+        {"speaker": "agent", "text": "Hello, main Radiance Credit se Pooja baat kar rahi hoon. Kya aap Deepak ji hain?"},
+        {"speaker": "customer", "text": "Haan."},
+        {"speaker": "agent", "text": "Aapki EMI ke nau hazaar rupaye due hain. Please aaj hi payment karein ya humse baat karein.",
+         "critical_spans": [{"type": "amount", "text": "nau hazaar rupaye"}]},
+        {"speaker": "customer", "text": "Main shaam ko call back karta hoon."},
+        {"speaker": "agent", "text": "Bilkul. Main aapka wait karungi. Thank you."}
+      ]
+    },
+
+    {
+      "id": "dev_en_compliant_06",
+      "title": "Hinglish compliant: closing after partial payment",
+      "tts_language": "hi-en",
+      "stt_language_codes": ["hi-IN", "en-IN"],
+      "primary_stt_language_code": "en-IN",
+      "voices": {"agent": "Poorvi", "customer": "Pranav"},
+      "turns": [
+        {"speaker": "agent", "text": "Hi, main Crestline Finance se Tara baat kar rahi hoon."},
+        {"speaker": "customer", "text": "Haan boliye."},
+        {"speaker": "agent", "text": "Aapne aath hazaar rupaye ka payment kiya, shukria. Baki chaar hazaar rupaye next month due hain.",
+         "critical_spans": [{"type": "amount", "text": "chaar hazaar rupaye"}]},
+        {"speaker": "customer", "text": "Haan, woh main zaroor dunga."},
+        {"speaker": "agent", "text": "Bahut achha. Koi bhi problem ho toh hume call karein."},
+        {"speaker": "customer", "text": "OK."}
+      ]
+    },
+
+    {
+      "id": "dev_kn_compliant_01",
+      "title": "Kannada compliant: polite EMI reminder",
+      "tts_language": "kn-IN",
+      "stt_language_codes": ["kn-IN"],
+      "voices": {"agent": "Kavin", "customer": "Saanvi"},
+      "needs_native_review": true,
+      "turns": [
+        {"speaker": "agent", "text": "ನಮಸ್ಕಾರ, ನಾನು ಶ್ರೇಯಾ ಫೈನಾನ್ಸ್‌ನಿಂದ ಮಾಧವ ಮಾತನಾಡುತ್ತಿದ್ದೇನೆ. ನೀವು ಪ್ರೀತಿ ಅವರಾ?"},
+        {"speaker": "customer", "text": "ಹೌದು, ನಾನು ಪ್ರೀತಿ."},
+        {"speaker": "agent", "text": "ನಿಮ್ಮ ಇಎಂಐ ಹದಿನಾರು ಸಾವಿರ ರೂಪಾಯಿ ಈ ತಿಂಗಳ ಹದಿನೈದರಂದು ಬರಬೇಕು.",
+         "critical_spans": [{"type": "amount", "text": "ಹದಿನಾರು ಸಾವಿರ ರೂಪಾಯಿ"}]},
+        {"speaker": "customer", "text": "ಸರಿ, ನಾನು ಸಮಯಕ್ಕೆ ಕಟ್ಟುತ್ತೇನೆ."},
+        {"speaker": "agent", "text": "ತುಂಬಾ ಚೆನ್ನಾಗಿ. ಏನಾದರೂ ಸಮಸ್ಯೆ ಇದ್ದರೆ ತಿಳಿಸಿ."},
+        {"speaker": "customer", "text": "ಆಯ್ತು, ಧನ್ಯವಾದ."},
+        {"speaker": "agent", "text": "ನಿಮ್ಮ ದಿನ ಶುಭವಾಗಿರಲಿ."}
+      ]
+    },
+
+    {
+      "id": "dev_kn_compliant_02",
+      "title": "Kannada compliant: payment plan offer",
+      "tts_language": "kn-IN",
+      "stt_language_codes": ["kn-IN"],
+      "voices": {"agent": "Kavin", "customer": "Saanvi"},
+      "needs_native_review": true,
+      "turns": [
+        {"speaker": "agent", "text": "ನಮಸ್ಕಾರ, ನಾನು ಉಷಾ ಫೈನಾನ್ಸ್‌ನಿಂದ ರಾಘವ ಮಾತನಾಡುತ್ತಿದ್ದೇನೆ."},
+        {"speaker": "customer", "text": "ಹೌದು ಹೇಳಿ."},
+        {"speaker": "agent", "text": "ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿ ಇಪ್ಪತ್ತೆರಡು ಸಾವಿರ ರೂಪಾಯಿ ಬಾಕಿಯಿದೆ.",
+         "critical_spans": [{"type": "amount", "text": "ಇಪ್ಪತ್ತೆರಡು ಸಾವಿರ ರೂಪಾಯಿ"}]},
+        {"speaker": "customer", "text": "ಒಂದೇ ಬಾರಿ ಕಟ್ಟಲು ಸಾಧ್ಯವಿಲ್ಲ. ಕಂತುಗಳಲ್ಲಿ ಕಟ್ಟಬಹುದೇ?",
+         "critical_spans": [{"type": "negation", "text": "ಒಂದೇ ಬಾರಿ ಕಟ್ಟಲು ಸಾಧ್ಯವಿಲ್ಲ", "negation_tokens": ["ಸಾಧ್ಯವಿಲ್ಲ", "ಇಲ್ಲ"], "negation_markers": ["ಲ್ಲ"]}]},
+        {"speaker": "agent", "text": "ಖಂಡಿತ. ನಾವು ನಿಮಗೆ ಮೂರು ಕಂತುಗಳ ಯೋಜನೆ ಕಳುಹಿಸುತ್ತೇವೆ."},
+        {"speaker": "customer", "text": "ಸರಿ ಧನ್ಯವಾದ."},
+        {"speaker": "agent", "text": "ನಮ್ಮ ಸಹಾಯ ನಿಮಗೆ ಉಪಯೋಗವಾಗಲಿ."}
+      ]
+    },
+
+    {
+      "id": "dev_kn_compliant_03",
+      "title": "Kannada compliant: CIBIL mention, hard negative",
+      "tts_language": "kn-IN",
+      "stt_language_codes": ["kn-IN"],
+      "voices": {"agent": "Kavin", "customer": "Saanvi"},
+      "needs_native_review": true,
+      "turns": [
+        {"speaker": "agent", "text": "ನಮಸ್ಕಾರ, ನಾನು ಪ್ರಭಾ ಕ್ರೆಡಿಟ್‌ನಿಂದ ಸುರೇಶ ಮಾತನಾಡುತ್ತಿದ್ದೇನೆ."},
+        {"speaker": "customer", "text": "ಹೇಳಿ."},
+        {"speaker": "agent", "text": "ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿ ಮೂವತ್ತು ಸಾವಿರ ರೂಪಾಯಿ ಬಾಕಿಯಿದೆ. ತಡವಾದರೆ ನಿಮ್ಮ ಕ್ರೆಡಿಟ್ ಸ್ಕೋರ್ ಪ್ರಭಾವಿತವಾಗಬಹುದು.",
+         "critical_spans": [{"type": "amount", "text": "ಮೂವತ್ತು ಸಾವಿರ ರೂಪಾಯಿ"}]},
+        {"speaker": "customer", "text": "ಅರ್ಥವಾಯ್ತು. ನಾಳೆ ಕಟ್ಟುತ್ತೇನೆ."},
+        {"speaker": "agent", "text": "ತುಂಬಾ ಚೆನ್ನಾಗಿ. ಏನಾದರೂ ಸಮಸ್ಯೆ ಇದ್ದರೆ ಕರೆ ಮಾಡಿ."},
+        {"speaker": "customer", "text": "ಆಯ್ತು."}
+      ]
+    },
+
+    {
+      "id": "dev_kn_compliant_04",
+      "title": "Kannada compliant: firm escalation mention, hard negative",
+      "tts_language": "kn-IN",
+      "stt_language_codes": ["kn-IN"],
+      "voices": {"agent": "Kavin", "customer": "Saanvi"},
+      "needs_native_review": true,
+      "turns": [
+        {"speaker": "agent", "text": "ನಮಸ್ಕಾರ, ನಾನು ವಿಜಯ ಫೈನಾನ್ಸ್‌ನಿಂದ ಲಕ್ಷ್ಮಿ ಮಾತನಾಡುತ್ತಿದ್ದೇನೆ."},
+        {"speaker": "customer", "text": "ಹೌದು."},
+        {"speaker": "agent", "text": "ನಿಮ್ಮ ಐದು ಸಾವಿರ ರೂಪಾಯಿ ಎರಡು ವಾರ ಬಾಕಿಯಿದೆ.",
+         "critical_spans": [{"type": "amount", "text": "ಐದು ಸಾವಿರ ರೂಪಾಯಿ"}]},
+        {"speaker": "customer", "text": "ಸ್ವಲ್ಪ ಸಮಯ ಬೇಕು."},
+        {"speaker": "agent", "text": "ಮುಂದಿನ ವಾರದೊಳಗೆ ಕಟ್ಟದಿದ್ದರೆ ನಾವು ನಿಮ್ಮ ಕೇಸನ್ನು ಮೇಲ್ ಹಂತಕ್ಕೆ ಕಳುಹಿಸಬೇಕಾಗುತ್ತದೆ. ಮೊದಲು ನಮ್ಮೊಂದಿಗೆ ಮಾತನಾಡಿ."},
+        {"speaker": "customer", "text": "ಸರಿ."}
+      ]
+    },
+
+    {
+      "id": "dev_kn_compliant_05",
+      "title": "Kannada compliant: cooperative settlement",
+      "tts_language": "kn-IN",
+      "stt_language_codes": ["kn-IN"],
+      "voices": {"agent": "Kavin", "customer": "Saanvi"},
+      "needs_native_review": true,
+      "turns": [
+        {"speaker": "agent", "text": "ನಮಸ್ಕಾರ, ನಾನು ಕಲ್ಯಾಣ್ ಕ್ರೆಡಿಟ್‌ನಿಂದ ಮೇಘನಾ ಮಾತನಾಡುತ್ತಿದ್ದೇನೆ."},
+        {"speaker": "customer", "text": "ಹೇಳಿ."},
+        {"speaker": "agent", "text": "ನಿಮ್ಮ ಒಂಬತ್ತು ಸಾವಿರ ರೂಪಾಯಿ ಶೀಘ್ರದಲ್ಲಿ ತೀರಿಸಬೇಕು.",
+         "critical_spans": [{"type": "amount", "text": "ಒಂಬತ್ತು ಸಾವಿರ ರೂಪಾಯಿ"}]},
+        {"speaker": "customer", "text": "ನಾಳೆ ಕಟ್ಟುತ್ತೇನೆ."},
+        {"speaker": "agent", "text": "ತುಂಬಾ ಒಳ್ಳೆಯದು. ನಿಮ್ಮ ಸಹಕಾರಕ್ಕೆ ಧನ್ಯವಾದ."},
+        {"speaker": "customer", "text": "ಆಯ್ತು."}
+      ]
+    },
+
+    {
+      "id": "dev_hi_concern_intimidation_01",
+      "title": "Hindi concerning: physical visit threat",
+      "tts_language": "hi-IN",
+      "stt_language_codes": ["hi-IN"],
+      "voices": {"agent": "Hemraj", "customer": "Chitra"},
+      "turns": [
+        {"speaker": "agent", "text": "नमस्ते, मैं क्रेस्ट फ़ाइनेंस से बोल रहा हूँ।"},
+        {"speaker": "customer", "text": "हाँ।"},
+        {"speaker": "agent", "text": "आपके खाते पर पैंतीस हज़ार रुपये बकाया हैं।",
+         "critical_spans": [{"type": "amount", "text": "पैंतीस हज़ार रुपये"}]},
+        {"speaker": "customer", "text": "मेरे पास अभी पैसे नहीं हैं।",
+         "critical_spans": [{"type": "negation", "text": "अभी पैसे नहीं हैं", "negation_tokens": ["नहीं", "नही"], "negation_markers": ["नहीं", "नही"]}]},
+        {"speaker": "agent", "text": "आज शाम तक पैसे नहीं आए तो हमारे आदमी आपके घर आएँगे और सब देखेंगे।",
+         "critical_spans": [{"type": "threat", "text": "हमारे आदमी आपके घर आएँगे"}]},
+        {"speaker": "customer", "text": "प्लीज़ ऐसा मत करिए।"},
+        {"speaker": "agent", "text": "तो आज ही पैसे भेजिए।"}
+      ]
+    },
+
+    {
+      "id": "dev_hi_concern_intimidation_02",
+      "title": "Hindi concerning: agents at door threat",
+      "tts_language": "hi-IN",
+      "stt_language_codes": ["hi-IN"],
+      "voices": {"agent": "Hemraj", "customer": "Chitra"},
+      "turns": [
+        {"speaker": "agent", "text": "हैलो, मैं वज्र रिकवरी से बोल रहा हूँ।"},
+        {"speaker": "customer", "text": "हाँ बोलिए।"},
+        {"speaker": "agent", "text": "आपके इक्कीस हज़ार रुपये बकाया हैं।",
+         "critical_spans": [{"type": "amount", "text": "इक्कीस हज़ार रुपये"}]},
+        {"speaker": "customer", "text": "मेरा काम बंद हो गया है, मैं अभी नहीं दे सकता।",
+         "critical_spans": [{"type": "negation", "text": "अभी नहीं दे सकता", "negation_tokens": ["नहीं", "नही"], "negation_markers": ["नहीं", "नही"]}]},
+        {"speaker": "agent", "text": "तो हम अपने लड़के भेजेंगे, वे आपके दरवाज़े पर बैठेंगे।",
+         "critical_spans": [{"type": "threat", "text": "अपने लड़के भेजेंगे"}]},
+        {"speaker": "customer", "text": "कृपया ऐसा न करें।"}
+      ]
+    },
+
+    {
+      "id": "dev_hi_concern_third_party_01",
+      "title": "Hindi concerning: threat to contact workplace",
+      "tts_language": "hi-IN",
+      "stt_language_codes": ["hi-IN"],
+      "voices": {"agent": "Hemraj", "customer": "Chitra"},
+      "turns": [
+        {"speaker": "agent", "text": "नमस्ते, मैं संकल्प फ़ाइनेंस से बोल रहा हूँ।"},
+        {"speaker": "customer", "text": "हाँ।"},
+        {"speaker": "agent", "text": "आपके पचास हज़ार रुपये बकाया हैं।",
+         "critical_spans": [{"type": "amount", "text": "पचास हज़ार रुपये"}]},
+        {"speaker": "customer", "text": "मैं अगले महीने दे दूँगा।"},
+        {"speaker": "agent", "text": "अगले महीने नहीं चलेगा। हम आपके दफ़्तर फ़ोन करेंगे और आपके मैनेजर को बताएँगे।",
+         "critical_spans": [{"type": "family", "text": "आपके दफ़्तर फ़ोन करेंगे और आपके मैनेजर को बताएँगे"}]},
+        {"speaker": "customer", "text": "नहीं, ऐसा मत कीजिए।",
+         "critical_spans": [{"type": "negation", "text": "मत कीजिए", "negation_tokens": ["मत"], "negation_markers": ["मत"]}]}
+      ]
+    },
+
+    {
+      "id": "dev_hi_concern_third_party_02",
+      "title": "Hindi concerning: threat to contact family members",
+      "tts_language": "hi-IN",
+      "stt_language_codes": ["hi-IN"],
+      "voices": {"agent": "Hemraj", "customer": "Chitra"},
+      "turns": [
+        {"speaker": "agent", "text": "हैलो, मैं राज रिकवरी से बोल रहा हूँ।"},
+        {"speaker": "customer", "text": "बोलिए।"},
+        {"speaker": "agent", "text": "आपके तेरह हज़ार रुपये बकाया हैं।",
+         "critical_spans": [{"type": "amount", "text": "तेरह हज़ार रुपये"}]},
+        {"speaker": "customer", "text": "मैं कल करूँगा।"},
+        {"speaker": "agent", "text": "अगर कल नहीं हुआ तो हम आपके भाई और आपकी माँ को फ़ोन करेंगे और बताएँगे कि आप क़र्ज़ नहीं चुका रहे।",
+         "critical_spans": [{"type": "family", "text": "आपके भाई और आपकी माँ को फ़ोन करेंगे"}]},
+        {"speaker": "customer", "text": "मेरे परिवार को इसमें मत घसीटिए।",
+         "critical_spans": [{"type": "negation", "text": "परिवार को इसमें मत घसीटिए", "negation_tokens": ["मत"], "negation_markers": ["मत"]}]}
+      ]
+    },
+
+    {
+      "id": "dev_hi_concern_authority_01",
+      "title": "Hindi concerning: false police threat",
+      "tts_language": "hi-IN",
+      "stt_language_codes": ["hi-IN"],
+      "voices": {"agent": "Hemraj", "customer": "Chitra"},
+      "turns": [
+        {"speaker": "agent", "text": "नमस्ते, मैं उत्कर्ष रिकवरी से बोल रहा हूँ।"},
+        {"speaker": "customer", "text": "हाँ।"},
+        {"speaker": "agent", "text": "आपके अट्ठाइस हज़ार रुपये बकाया हैं।",
+         "critical_spans": [{"type": "amount", "text": "अट्ठाइस हज़ार रुपये"}]},
+        {"speaker": "customer", "text": "मेरे पास अभी पैसे नहीं हैं।",
+         "critical_spans": [{"type": "negation", "text": "अभी पैसे नहीं हैं", "negation_tokens": ["नहीं", "नही"], "negation_markers": ["नहीं", "नही"]}]},
+        {"speaker": "agent", "text": "आज नहीं दिए तो हम पुलिस को सूचना देंगे और आपके ख़िलाफ़ एफ़आईआर दर्ज होगी।",
+         "critical_spans": [{"type": "threat", "text": "पुलिस को सूचना देंगे और आपके ख़िलाफ़ एफ़आईआर दर्ज होगी"}]},
+        {"speaker": "customer", "text": "यह ग़लत है।"}
+      ]
+    },
+
+    {
+      "id": "dev_hi_concern_authority_02",
+      "title": "Hindi concerning: false court summons claim",
+      "tts_language": "hi-IN",
+      "stt_language_codes": ["hi-IN"],
+      "voices": {"agent": "Hemraj", "customer": "Chitra"},
+      "turns": [
+        {"speaker": "agent", "text": "नमस्ते, मैं मेघा फ़ाइनेंस से बोल रहा हूँ।"},
+        {"speaker": "customer", "text": "बोलिए।"},
+        {"speaker": "agent", "text": "आपके सत्रह हज़ार रुपये बकाया हैं।",
+         "critical_spans": [{"type": "amount", "text": "सत्रह हज़ार रुपये"}]},
+        {"speaker": "customer", "text": "मैं इस महीने नहीं दे सकती।",
+         "critical_spans": [{"type": "negation", "text": "इस महीने नहीं दे सकती", "negation_tokens": ["नहीं", "नही"], "negation_markers": ["नहीं", "नही"]}]},
+        {"speaker": "agent", "text": "हमने आपके ख़िलाफ़ कोर्ट में केस दायर कर दिया है और समन आएगा।",
+         "critical_spans": [{"type": "threat", "text": "कोर्ट में केस दायर कर दिया है और समन आएगा"}]},
+        {"speaker": "customer", "text": "यह सच नहीं हो सकता।",
+         "critical_spans": [{"type": "negation", "text": "यह सच नहीं हो सकता", "negation_tokens": ["नहीं", "नही"], "negation_markers": ["नहीं", "नही"]}]}
+      ]
+    },
+
+    {
+      "id": "dev_hi_concern_abusive_01",
+      "title": "Hindi concerning: abusive language",
+      "tts_language": "hi-IN",
+      "stt_language_codes": ["hi-IN"],
+      "voices": {"agent": "Hemraj", "customer": "Chitra"},
+      "turns": [
+        {"speaker": "agent", "text": "हैलो, मैं नॉर्थ रिकवरी से बोल रहा हूँ।"},
+        {"speaker": "customer", "text": "हाँ।"},
+        {"speaker": "agent", "text": "आपके ग्यारह हज़ार रुपये बकाया हैं।",
+         "critical_spans": [{"type": "amount", "text": "ग्यारह हज़ार रुपये"}]},
+        {"speaker": "customer", "text": "मुझे वक़्त चाहिए।"},
+        {"speaker": "agent", "text": "आप बेशर्म हैं, पैसा लिया और भाग रहे हो।",
+         "critical_spans": [{"type": "threat", "text": "बेशर्म हैं"}]},
+        {"speaker": "customer", "text": "इस तरह मत बोलिए।",
+         "critical_spans": [{"type": "negation", "text": "इस तरह मत बोलिए", "negation_tokens": ["मत"], "negation_markers": ["मत"]}]}
+      ]
+    },
+
+    {
+      "id": "dev_hi_concern_mixed_01",
+      "title": "Hindi concerning: intimidation + third party in one call",
+      "tts_language": "hi-IN",
+      "stt_language_codes": ["hi-IN"],
+      "voices": {"agent": "Hemraj", "customer": "Chitra"},
+      "turns": [
+        {"speaker": "agent", "text": "नमस्ते, मैं ज्वाला रिकवरी से बोल रहा हूँ।"},
+        {"speaker": "customer", "text": "हाँ।"},
+        {"speaker": "agent", "text": "आपके पैंतालीस हज़ार रुपये बकाया हैं।",
+         "critical_spans": [{"type": "amount", "text": "पैंतालीस हज़ार रुपये"}]},
+        {"speaker": "customer", "text": "मैं दे नहीं सकती अभी।",
+         "critical_spans": [{"type": "negation", "text": "दे नहीं सकती अभी", "negation_tokens": ["नहीं", "नही"], "negation_markers": ["नहीं", "नही"]}]},
+        {"speaker": "agent", "text": "हम आपके पड़ोसियों को और आपके पति के ऑफ़िस को बताएँगे।",
+         "critical_spans": [{"type": "family", "text": "आपके पड़ोसियों को और आपके पति के ऑफ़िस को बताएँगे"}]},
+        {"speaker": "agent", "text": "और हमारे लोग आज रात आपके घर के बाहर खड़े रहेंगे।",
+         "critical_spans": [{"type": "threat", "text": "हमारे लोग आज रात आपके घर के बाहर खड़े रहेंगे"}]},
+        {"speaker": "customer", "text": "यह बिल्कुल ग़लत है।"}
+      ]
+    },
+
+    {
+      "id": "dev_en_concern_intimidation_01",
+      "title": "Hinglish concerning: physical visit threat",
+      "tts_language": "hi-en",
+      "stt_language_codes": ["hi-IN", "en-IN"],
+      "primary_stt_language_code": "en-IN",
+      "voices": {"agent": "Poorvi", "customer": "Pranav"},
+      "turns": [
+        {"speaker": "agent", "text": "Hello, main Falcon Recovery se bol raha hoon."},
+        {"speaker": "customer", "text": "Haan."},
+        {"speaker": "agent", "text": "Aapke account par saintees hazaar rupaye outstanding hain.",
+         "critical_spans": [{"type": "amount", "text": "saintees hazaar rupaye"}]},
+        {"speaker": "customer", "text": "Main abhi nahi de sakta.",
+         "critical_spans": [{"type": "negation", "text": "abhi nahi de sakta", "negation_tokens": ["nahi", "nahin", "nhi"], "negation_markers": ["nahi", "nahin", "not"]}]},
+        {"speaker": "agent", "text": "Toh aaj shaam tak hamare log aapke ghar aayenge.",
+         "critical_spans": [{"type": "threat", "text": "hamare log aapke ghar aayenge"}]},
+        {"speaker": "customer", "text": "Please aisa mat karo."},
+        {"speaker": "agent", "text": "Toh payment karo."}
+      ]
+    },
+
+    {
+      "id": "dev_en_concern_third_party_01",
+      "title": "Hinglish concerning: threat to call employer",
+      "tts_language": "hi-en",
+      "stt_language_codes": ["hi-IN", "en-IN"],
+      "primary_stt_language_code": "en-IN",
+      "voices": {"agent": "Poorvi", "customer": "Pranav"},
+      "turns": [
+        {"speaker": "agent", "text": "Hi, main Vortex Finance se bol raha hoon."},
+        {"speaker": "customer", "text": "Haan."},
+        {"speaker": "agent", "text": "Aapke account par ununtees hazaar rupaye pending hain.",
+         "critical_spans": [{"type": "amount", "text": "ununtees hazaar rupaye"}]},
+        {"speaker": "customer", "text": "Main is mahine nahi de sakta.",
+         "critical_spans": [{"type": "negation", "text": "is mahine nahi de sakta", "negation_tokens": ["nahi", "nahin", "nhi"], "negation_markers": ["nahi", "nahin", "not"]}]},
+        {"speaker": "agent", "text": "Toh hum aapke company ko call karenge aur aapke boss ko batayenge ki aap loan nahi chuka rahe.",
+         "critical_spans": [{"type": "family", "text": "aapke company ko call karenge aur aapke boss ko batayenge"}]},
+        {"speaker": "customer", "text": "Please aisa mat karein."}
+      ]
+    },
+
+    {
+      "id": "dev_en_concern_authority_01",
+      "title": "Hinglish concerning: false arrest threat",
+      "tts_language": "hi-en",
+      "stt_language_codes": ["hi-IN", "en-IN"],
+      "primary_stt_language_code": "en-IN",
+      "voices": {"agent": "Poorvi", "customer": "Pranav"},
+      "turns": [
+        {"speaker": "agent", "text": "Hello, main Zenith Recovery se bol raha hoon."},
+        {"speaker": "customer", "text": "Haan."},
+        {"speaker": "agent", "text": "Aapke account par chaalis hazaar rupaye outstanding hain.",
+         "critical_spans": [{"type": "amount", "text": "chaalis hazaar rupaye"}]},
+        {"speaker": "customer", "text": "Mujhe thoda time chahiye.",
+         "critical_spans": [{"type": "negation", "text": "thoda time chahiye", "negation_tokens": [], "negation_markers": []}]},
+        {"speaker": "agent", "text": "Agar aaj nahi diya toh police complaint karenge aur aapko arrest karwayenge.",
+         "critical_spans": [{"type": "threat", "text": "police complaint karenge aur aapko arrest karwayenge"}]},
+        {"speaker": "customer", "text": "Yeh sach nahi hai.",
+         "critical_spans": [{"type": "negation", "text": "Yeh sach nahi hai", "negation_tokens": ["nahi", "nahin", "nhi"], "negation_markers": ["nahi", "nahin", "not"]}]}
+      ]
+    },
+
+    {
+      "id": "dev_en_concern_abusive_01",
+      "title": "Hinglish concerning: abusive language",
+      "tts_language": "hi-en",
+      "stt_language_codes": ["hi-IN", "en-IN"],
+      "primary_stt_language_code": "en-IN",
+      "voices": {"agent": "Poorvi", "customer": "Pranav"},
+      "turns": [
+        {"speaker": "agent", "text": "Hi, main Redline Collections se bol raha hoon."},
+        {"speaker": "customer", "text": "Haan."},
+        {"speaker": "agent", "text": "Aapke account par aatharah hazaar rupaye pending hain.",
+         "critical_spans": [{"type": "amount", "text": "aatharah hazaar rupaye"}]},
+        {"speaker": "customer", "text": "Kal tak deta hoon."},
+        {"speaker": "agent", "text": "Aap bilkul bewakoof hain jo yeh nahi samajhte.",
+         "critical_spans": [{"type": "threat", "text": "bewakoof hain"}]},
+        {"speaker": "customer", "text": "Aap mujhse is tarah mat baat karein."}
+      ]
+    },
+
+    {
+      "id": "dev_en_concern_mixed_01",
+      "title": "Hinglish concerning: authority claim + third party",
+      "tts_language": "hi-en",
+      "stt_language_codes": ["hi-IN", "en-IN"],
+      "primary_stt_language_code": "en-IN",
+      "voices": {"agent": "Poorvi", "customer": "Pranav"},
+      "turns": [
+        {"speaker": "agent", "text": "Hello, main Apex Debt Recovery se bol raha hoon."},
+        {"speaker": "customer", "text": "Haan."},
+        {"speaker": "agent", "text": "Aapke account par pachhas hazaar rupaye outstanding hain.",
+         "critical_spans": [{"type": "amount", "text": "pachhas hazaar rupaye"}]},
+        {"speaker": "customer", "text": "Main itna ek baar mein nahi de sakta.",
+         "critical_spans": [{"type": "negation", "text": "itna ek baar mein nahi de sakta", "negation_tokens": ["nahi", "nahin", "nhi"], "negation_markers": ["nahi", "nahin", "not"]}]},
+        {"speaker": "agent", "text": "Humne court mein case file kar diya hai, warrant aayega.",
+         "critical_spans": [{"type": "threat", "text": "court mein case file kar diya hai"}]},
+        {"speaker": "agent", "text": "Aur hum aapki wife aur neighbours ko bhi batayenge.",
+         "critical_spans": [{"type": "family", "text": "aapki wife aur neighbours ko bhi batayenge"}]},
+        {"speaker": "customer", "text": "Please aisa mat karo."}
+      ]
+    },
+
+    {
+      "id": "dev_kn_concern_intimidation_01",
+      "title": "Kannada concerning: physical visit threat",
+      "tts_language": "kn-IN",
+      "stt_language_codes": ["kn-IN"],
+      "voices": {"agent": "Kavin", "customer": "Saanvi"},
+      "needs_native_review": true,
+      "turns": [
+        {"speaker": "agent", "text": "ನಮಸ್ಕಾರ, ನಾನು ಶಕ್ತಿ ರಿಕವರಿಯಿಂದ ಮಾತನಾಡುತ್ತಿದ್ದೇನೆ."},
+        {"speaker": "customer", "text": "ಹೌದು."},
+        {"speaker": "agent", "text": "ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿ ಇಪ್ಪತ್ತೈದು ಸಾವಿರ ರೂಪಾಯಿ ಬಾಕಿಯಿದೆ.",
+         "critical_spans": [{"type": "amount", "text": "ಇಪ್ಪತ್ತೈದು ಸಾವಿರ ರೂಪಾಯಿ"}]},
+        {"speaker": "customer", "text": "ನನ್ನ ಬಳಿ ಈಗ ಹಣ ಇಲ್ಲ.",
+         "critical_spans": [{"type": "negation", "text": "ಈಗ ಹಣ ಇಲ್ಲ", "negation_tokens": ["ಇಲ್ಲ"], "negation_markers": ["ಲ್ಲ"]}]},
+        {"speaker": "agent", "text": "ಇಂದು ಸಂಜೆಯೊಳಗೆ ಹಣ ಬರದಿದ್ದರೆ ನಮ್ಮ ಜನ ನಿಮ್ಮ ಮನೆಗೆ ಬರುತ್ತಾರೆ.",
+         "critical_spans": [{"type": "threat", "text": "ನಮ್ಮ ಜನ ನಿಮ್ಮ ಮನೆಗೆ ಬರುತ್ತಾರೆ"}]},
+        {"speaker": "customer", "text": "ದಯವಿಟ್ಟು ಹಾಗೆ ಮಾಡಬೇಡಿ.",
+         "critical_spans": [{"type": "negation", "text": "ಹಾಗೆ ಮಾಡಬೇಡಿ", "negation_tokens": ["ಮಾಡಬೇಡಿ", "ಬೇಡಿ", "ಬೇಡ"], "negation_markers": ["ಬೇಡ"]}]}
+      ]
+    },
+
+    {
+      "id": "dev_kn_concern_third_party_01",
+      "title": "Kannada concerning: threat to contact family",
+      "tts_language": "kn-IN",
+      "stt_language_codes": ["kn-IN"],
+      "voices": {"agent": "Kavin", "customer": "Saanvi"},
+      "needs_native_review": true,
+      "turns": [
+        {"speaker": "agent", "text": "ನಮಸ್ಕಾರ, ನಾನು ಅಭಯ ರಿಕವರಿಯಿಂದ ಮಾತನಾಡುತ್ತಿದ್ದೇನೆ."},
+        {"speaker": "customer", "text": "ಹೇಳಿ."},
+        {"speaker": "agent", "text": "ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿ ಮೂವತ್ತೈದು ಸಾವಿರ ರೂಪಾಯಿ ಬಾಕಿಯಿದೆ.",
+         "critical_spans": [{"type": "amount", "text": "ಮೂವತ್ತೈದು ಸಾವಿರ ರೂಪಾಯಿ"}]},
+        {"speaker": "customer", "text": "ಮುಂದಿನ ತಿಂಗಳು ಕಟ್ಟುತ್ತೇನೆ."},
+        {"speaker": "agent", "text": "ಮುಂದಿನ ತಿಂಗಳು ಆಗುವುದಿಲ್ಲ. ನಾವು ನಿಮ್ಮ ಹೆಂಡತಿ ಮತ್ತು ನಿಮ್ಮ ತಂದೆಗೆ ಫೋನ್ ಮಾಡುತ್ತೇವೆ.",
+         "critical_spans": [{"type": "family", "text": "ನಿಮ್ಮ ಹೆಂಡತಿ ಮತ್ತು ನಿಮ್ಮ ತಂದೆಗೆ ಫೋನ್ ಮಾಡುತ್ತೇವೆ"}]},
+        {"speaker": "customer", "text": "ನನ್ನ ಮನೆಯವರನ್ನು ಇದರಲ್ಲಿ ಸೇರಿಸಬೇಡಿ.",
+         "critical_spans": [{"type": "negation", "text": "ಸೇರಿಸಬೇಡಿ", "negation_tokens": ["ಬೇಡಿ", "ಬೇಡ"], "negation_markers": ["ಬೇಡ"]}]}
+      ]
+    },
+
+    {
+      "id": "dev_kn_concern_authority_01",
+      "title": "Kannada concerning: false police threat",
+      "tts_language": "kn-IN",
+      "stt_language_codes": ["kn-IN"],
+      "voices": {"agent": "Kavin", "customer": "Saanvi"},
+      "needs_native_review": true,
+      "turns": [
+        {"speaker": "agent", "text": "ನಮಸ್ಕಾರ, ನಾನು ದ್ರುತ ರಿಕವರಿಯಿಂದ ಮಾತನಾಡುತ್ತಿದ್ದೇನೆ."},
+        {"speaker": "customer", "text": "ಹೌದು."},
+        {"speaker": "agent", "text": "ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿ ನಲವತ್ತೆರಡು ಸಾವಿರ ರೂಪಾಯಿ ಬಾಕಿಯಿದೆ.",
+         "critical_spans": [{"type": "amount", "text": "ನಲವತ್ತೆರಡು ಸಾವಿರ ರೂಪಾಯಿ"}]},
+        {"speaker": "customer", "text": "ನನ್ನ ಬಳಿ ಹಣ ಇಲ್ಲ.",
+         "critical_spans": [{"type": "negation", "text": "ಹಣ ಇಲ್ಲ", "negation_tokens": ["ಇಲ್ಲ"], "negation_markers": ["ಲ್ಲ"]}]},
+        {"speaker": "agent", "text": "ಹಾಗಾದರೆ ನಾವು ಪೊಲೀಸ್ ಕಂಪ್ಲೇಂಟ್ ಮಾಡುತ್ತೇವೆ ಮತ್ತು ನಿಮ್ಮನ್ನು ಬಂಧಿಸಲಾಗುತ್ತದೆ.",
+         "critical_spans": [{"type": "threat", "text": "ಪೊಲೀಸ್ ಕಂಪ್ಲೇಂಟ್ ಮಾಡುತ್ತೇವೆ ಮತ್ತು ನಿಮ್ಮನ್ನು ಬಂಧಿಸಲಾಗುತ್ತದೆ"}]},
+        {"speaker": "customer", "text": "ಇದು ನಿಜವಲ್ಲ.",
+         "critical_spans": [{"type": "negation", "text": "ಇದು ನಿಜವಲ್ಲ", "negation_tokens": ["ಅಲ್ಲ", "ಇಲ್ಲ"], "negation_markers": ["ಲ್ಲ"]}]}
+      ]
+    },
+
+    {
+      "id": "dev_kn_concern_abusive_01",
+      "title": "Kannada concerning: shaming and abusive language",
+      "tts_language": "kn-IN",
+      "stt_language_codes": ["kn-IN"],
+      "voices": {"agent": "Kavin", "customer": "Saanvi"},
+      "needs_native_review": true,
+      "turns": [
+        {"speaker": "agent", "text": "ನಮಸ್ಕಾರ, ನಾನು ಗರುಡ ರಿಕವರಿಯಿಂದ ಮಾತನಾಡುತ್ತಿದ್ದೇನೆ."},
+        {"speaker": "customer", "text": "ಹೇಳಿ."},
+        {"speaker": "agent", "text": "ನಿಮ್ಮ ಹದಿನೈದು ಸಾವಿರ ರೂಪಾಯಿ ಬಾಕಿಯಿದೆ.",
+         "critical_spans": [{"type": "amount", "text": "ಹದಿನೈದು ಸಾವಿರ ರೂಪಾಯಿ"}]},
+        {"speaker": "customer", "text": "ಒಂದು ವಾರ ಸಮಯ ಕೊಡಿ."},
+        {"speaker": "agent", "text": "ನೀವು ನಾಚಿಕೆಗೇಡು ಮಾಡಿಕೊಳ್ಳುತ್ತಿದ್ದೀರಿ, ಹಣ ತೆಗೆದುಕೊಂಡು ಮರೆತಿದ್ದೀರಿ.",
+         "critical_spans": [{"type": "threat", "text": "ನಾಚಿಕೆಗೇಡು ಮಾಡಿಕೊಳ್ಳುತ್ತಿದ್ದೀರಿ"}]},
+        {"speaker": "customer", "text": "ಹೀಗೆ ಮಾತನಾಡಬೇಡಿ.",
+         "critical_spans": [{"type": "negation", "text": "ಹೀಗೆ ಮಾತನಾಡಬೇಡಿ", "negation_tokens": ["ಮಾತನಾಡಬೇಡಿ", "ಬೇಡಿ", "ಬೇಡ"], "negation_markers": ["ಬೇಡ"]}]}
+      ]
+    },
+
+    {
+      "id": "dev_kn_concern_mixed_01",
+      "title": "Kannada concerning: intimidation + public shaming threat",
+      "tts_language": "kn-IN",
+      "stt_language_codes": ["kn-IN"],
+      "voices": {"agent": "Kavin", "customer": "Saanvi"},
+      "needs_native_review": true,
+      "turns": [
+        {"speaker": "agent", "text": "ನಮಸ್ಕಾರ, ನಾನು ಮಿತ್ರ ಲೋನ್ಸ್‌ನಿಂದ ಮಾತನಾಡುತ್ತಿದ್ದೇನೆ."},
+        {"speaker": "customer", "text": "ಹೌದು."},
+        {"speaker": "agent", "text": "ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿ ಇಪ್ಪತ್ತು ಸಾವಿರ ರೂಪಾಯಿ ಬಾಕಿಯಿದೆ.",
+         "critical_spans": [{"type": "amount", "text": "ಇಪ್ಪತ್ತು ಸಾವಿರ ರೂಪಾಯಿ"}]},
+        {"speaker": "customer", "text": "ಈಗ ಕಟ್ಟಲು ಸಾಧ್ಯವಿಲ್ಲ.",
+         "critical_spans": [{"type": "negation", "text": "ಈಗ ಕಟ್ಟಲು ಸಾಧ್ಯವಿಲ್ಲ", "negation_tokens": ["ಸಾಧ್ಯವಿಲ್ಲ", "ಇಲ್ಲ"], "negation_markers": ["ಲ್ಲ"]}]},
+        {"speaker": "agent", "text": "ನಮ್ಮ ಹುಡುಗರು ಇಂದು ರಾತ್ರಿ ನಿಮ್ಮ ಮನೆಗೆ ಬರುತ್ತಾರೆ.",
+         "critical_spans": [{"type": "threat", "text": "ನಮ್ಮ ಹುಡುಗರು ಇಂದು ರಾತ್ರಿ ನಿಮ್ಮ ಮನೆಗೆ ಬರುತ್ತಾರೆ"}]},
+        {"speaker": "agent", "text": "ನಿಮ್ಮ ಆಫೀಸಿನಲ್ಲಿ ಎಲ್ಲರಿಗೂ ನೀವು ಸಾಲ ಮಾಡಿದ್ದೀರಿ ಅಂತ ಹೇಳುತ್ತೇವೆ.",
+         "critical_spans": [{"type": "family", "text": "ನಿಮ್ಮ ಆಫೀಸಿನಲ್ಲಿ ಎಲ್ಲರಿಗೂ"}]},
+        {"speaker": "customer", "text": "ದಯವಿಟ್ಟು ಹಾಗೆ ಮಾಡಬೇಡಿ.",
+         "critical_spans": [{"type": "negation", "text": "ಹಾಗೆ ಮಾಡಬೇಡಿ", "negation_tokens": ["ಮಾಡಬೇಡಿ", "ಬೇಡಿ", "ಬೇಡ"], "negation_markers": ["ಬೇಡ"]}]}
+      ]
+    }
+
+  ]
+}
