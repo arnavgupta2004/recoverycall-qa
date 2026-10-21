@@ -1,0 +1,367 @@
+
+[
+  {
+    "id": "RC001",
+    "language": "hi-IN",
+    "label": "compliant",
+    "hard_negative": true,
+    "concern_types": ["authority_or_legal_action_claim"],
+    "turns": [
+      {"speaker": "agent", "text": "नमस्ते, मैं नीलम बोल रही हूँ, कल्पित संस्था आर्या फाइनेंस से। आपके ऋण की बयालीस सौ रुपये की किस्त अभी बाकी दिख रही है।"},
+      {"speaker": "borrower", "text": "हाँ, इस महीने तनख्वाह देर से आई है।"},
+      {"speaker": "agent", "text": "समझ सकती हूँ। भुगतान देर से होने पर आपकी क्रेडिट रिपोर्ट पर असर पड़ सकता है और नियमों के अनुसार अतिरिक्त शुल्क भी लग सकता है।"},
+      {"speaker": "borrower", "text": "अगर मैं शुक्रवार को भर दूँ तो?"},
+      {"speaker": "agent", "text": "शुक्रवार तक भुगतान करने पर लागू शुल्क की पुष्टि खाते में करनी होगी। मैं आपको बकाया विवरण भेज सकती हूँ।"},
+      {"speaker": "borrower", "text": "कोई कानूनी कार्रवाई भी होगी क्या?"},
+      {"speaker": "agent", "text": "फिलहाल मैं केवल बकाया भुगतान के लिए संपर्क कर रही हूँ। यदि आगे कानूनी नोटिस जारी होता है, तो उसकी जानकारी लिखित रूप में दी जाएगी।"},
+      {"speaker": "borrower", "text": "ठीक है, विवरण भेज दीजिए।"}
+    ],
+    "concern_spans": []
+  },
+  {
+    "id": "RC002",
+    "language": "hi-IN",
+    "label": "compliant",
+    "hard_negative": true,
+    "concern_types": ["authority_or_legal_action_claim"],
+    "turns": [
+      {"speaker": "agent", "text": "नमस्ते रवि जी, मैं आर्या फाइनेंस से बोल रही हूँ। आपकी किस्त पाँच हजार रुपये बकाया है।"},
+      {"speaker": "borrower", "text": "अभी पूरे पैसे नहीं हैं, अगले हफ्ते मिलेंगे।"},
+      {"speaker": "agent", "text": "आप चाहें तो उपलब्ध भुगतान विकल्प देख सकते हैं। बकाया बना रहने पर संस्था की प्रक्रिया के अनुसार कानूनी नोटिस भेजा जा सकता है।"},
+      {"speaker": "borrower", "text": "क्या इसका मतलब पुलिस घर आ जाएगी?"},
+      {"speaker": "agent", "text": "नहीं, मैं ऐसी कोई बात नहीं कह रही हूँ। नोटिस और पुलिस कार्रवाई अलग बातें हैं। आपकी स्थिति के अनुसार सही जानकारी लिखित दस्तावेज़ में ही मिलेगी।"},
+      {"speaker": "borrower", "text": "अच्छा, किस्त छोटी करके भर सकता हूँ?"},
+      {"speaker": "agent", "text": "मैं आपके खाते में उपलब्ध किस्त या पुनर्भुगतान विकल्प जाँचने के लिए अनुरोध दर्ज कर देती हूँ।"}
+    ],
+    "concern_spans": []
+  },
+  {
+    "id": "RC003",
+    "language": "hi-IN",
+    "label": "compliant",
+    "hard_negative": true,
+    "concern_types": ["authority_or_legal_action_claim"],
+    "turns": [
+      {"speaker": "agent", "text": "नमस्ते, मैं मोहित बोल रहा हूँ। आपके ऋण की छह हजार रुपये की किस्त लंबित है।"},
+      {"speaker": "borrower", "text": "मैंने पिछले महीने भी बताया था कि काम बंद है।"},
+      {"speaker": "agent", "text": "जी, आपकी परेशानी दर्ज है। फिर भी बकाया रहने से शुल्क और क्रेडिट रिपोर्ट पर असर पड़ सकता है।"},
+      {"speaker": "borrower", "text": "क्या अदालत तक मामला जा सकता है?"},
+      {"speaker": "agent", "text": "यदि बकाया लंबे समय तक अनसुलझा रहे, तो संस्था लागू नियमों और समझौते के अनुसार कानूनी उपाय अपना सकती है।"},
+      {"speaker": "borrower", "text": "मुझे पहले लिखित हिसाब चाहिए।"},
+      {"speaker": "agent", "text": "बिल्कुल। मैं मूल राशि, शुल्क और अब तक मिले भुगतान का विवरण भेजने का अनुरोध दर्ज करता हूँ।"},
+      {"speaker": "borrower", "text": "धन्यवाद, वही भेज दीजिए।"}
+    ],
+    "concern_spans": []
+  },
+  {
+    "id": "RC004",
+    "language": "hi-IN",
+    "label": "compliant",
+    "hard_negative": true,
+    "concern_types": [],
+    "turns": [
+      {"speaker": "agent", "text": "नमस्ते सीमा जी, मैं आर्या फाइनेंस से बोल रही हूँ। आपके ऋण में तीन हजार आठ सौ रुपये बाकी हैं।"},
+      {"speaker": "borrower", "text": "मैं अगले सोमवार तक दे सकती हूँ।"},
+      {"speaker": "agent", "text": "ठीक है, मैं आपकी बताई तारीख नोट कर रही हूँ। कृपया ध्यान दें कि भुगतान दर्ज होने तक लागू विलंब शुल्क बढ़ सकता है।"},
+      {"speaker": "borrower", "text": "क्या अभी कोई और शुल्क लगा है?"},
+      {"speaker": "agent", "text": "मैं अद्यतन विवरण भेज सकती हूँ, जिसमें मूल बकाया और शुल्क अलग-अलग दिखेंगे।"},
+      {"speaker": "borrower", "text": "हाँ, भेज दीजिए।"},
+      {"speaker": "agent", "text": "ज़रूर। भुगतान के बाद रसीद सुरक्षित रखिएगा।"}
+    ],
+    "concern_spans": []
+  },
+  {
+    "id": "RC005",
+    "language": "hi-IN",
+    "label": "compliant",
+    "hard_negative": true,
+    "concern_types": [],
+    "turns": [
+      {"speaker": "agent", "text": "नमस्ते अमित जी, आपके ऋण समझौते में सह-उधारकर्ता के रूप में पूजा जी का नाम दर्ज है।"},
+      {"speaker": "borrower", "text": "जी, वह मेरी पत्नी हैं।"},
+      {"speaker": "agent", "text": "मैं आपको सूचित करना चाहती हूँ कि खाते में चार हजार रुपये की किस्त लंबित है। समझौते के अनुसार सह-उधारकर्ता से भी भुगतान संबंधी समन्वय किया जा सकता है।"},
+      {"speaker": "borrower", "text": "पहले मुझे विवरण भेज दीजिए।"},
+      {"speaker": "agent", "text": "बिल्कुल। मैं आपको विवरण भेजूँगी। क्या आप चाहते हैं कि पूजा जी को भी खाते की बकाया सूचना दी जाए?"},
+      {"speaker": "borrower", "text": "अभी नहीं, मैं पहले उनसे बात कर लूँगा।"},
+      {"speaker": "agent", "text": "ठीक है, मैं आपकी पसंद दर्ज कर रही हूँ।"}
+    ],
+    "concern_spans": []
+  },
+  {
+    "id": "RC006",
+    "language": "hi-IN",
+    "label": "compliant",
+    "hard_negative": true,
+    "concern_types": [],
+    "turns": [
+      {"speaker": "agent", "text": "नमस्ते, आपके खाते में पाँच हजार पाँच सौ रुपये बाकी हैं। क्या हम भुगतान या फील्ड विज़िट के विकल्प पर बात कर सकते हैं?"},
+      {"speaker": "borrower", "text": "आप घर आकर बात कर सकते हैं, लेकिन शाम को।"},
+      {"speaker": "agent", "text": "धन्यवाद। क्या शनिवार शाम पाँच बजे आपके लिए सुविधाजनक रहेगा?"},
+      {"speaker": "borrower", "text": "हाँ, शनिवार को पाँच बजे ठीक है।"},
+      {"speaker": "agent", "text": "मैं आपकी सहमति से शनिवार शाम पाँच बजे की मुलाकात दर्ज कर रही हूँ। प्रतिनिधि अपना पहचान पत्र दिखाएगा।"},
+      {"speaker": "borrower", "text": "उसे पहले फोन करने को कहिएगा।"},
+      {"speaker": "agent", "text": "ज़रूर, आने से पहले संपर्क करने का निर्देश दर्ज कर दिया जाएगा।"}
+    ],
+    "concern_spans": []
+  },
+  {
+    "id": "RC007",
+    "language": "hi-IN",
+    "label": "compliant",
+    "hard_negative": true,
+    "concern_types": [],
+    "turns": [
+      {"speaker": "agent", "text": "नमस्ते नेहा जी, आपके खाते में सात हजार रुपये का बकाया है। आपके लिए एकमुश्त समझौता विकल्प उपलब्ध हो सकता है।"},
+      {"speaker": "borrower", "text": "कितना देना पड़ेगा?"},
+      {"speaker": "agent", "text": "प्रस्तावित राशि चार हजार पाँच सौ रुपये है। इसकी अंतिम स्वीकृति और शर्तें लिखित प्रस्ताव में रहेंगी।"},
+      {"speaker": "borrower", "text": "क्या मैं अगले महीने तक सोच सकती हूँ?"},
+      {"speaker": "agent", "text": "यह प्रस्ताव शुक्रवार तक उपलब्ध है। उसके बाद इसकी उपलब्धता की दोबारा पुष्टि करनी होगी।"},
+      {"speaker": "borrower", "text": "ठीक है, प्रस्ताव भेज दीजिए।"},
+      {"speaker": "agent", "text": "जी, भुगतान करने से पहले कृपया शर्तें पढ़ लें और आधिकारिक रसीद ही लें।"}
+    ],
+    "concern_spans": []
+  },
+  {
+    "id": "RC008",
+    "language": "kn-IN",
+    "label": "compliant",
+    "hard_negative": true,
+    "concern_types": ["authority_or_legal_action_claim"],
+    "turns": [
+      {"speaker": "agent", "text": "ನಮಸ್ಕಾರ ರವಿ ಅವರೆ, ನಾನು ಆರ್ಯ ಫೈನಾನ್ಸ್‌ನಿಂದ ಮಾತಾಡ್ತಿದ್ದೀನಿ. ನಿಮ್ಮ ಸಾಲದ ನಾಲ್ಕು ಸಾವಿರ ರೂಪಾಯಿ ಕಂತು ಬಾಕಿ ಇದೆ."},
+      {"speaker": "borrower", "text": "ಈ ತಿಂಗಳು ಸಂಬಳ ಸ್ವಲ್ಪ ಲೇಟ್ ಆಯ್ತು."},
+      {"speaker": "agent", "text": "ಸರಿ, ಅರ್ಥ ಆಗುತ್ತೆ. ಪಾವತಿ ತಡವಾದರೆ ಕ್ರೆಡಿಟ್ ವರದಿಗೆ ಪರಿಣಾಮ ಆಗಬಹುದು, ನಿಯಮದ ಪ್ರಕಾರ ತಡ ಶುಲ್ಕವೂ ಬರಬಹುದು."},
+      {"speaker": "borrower", "text": "ಮುಂದಿನ ಸೋಮವಾರ ಕಟ್ಟಿದ್ರೆ ಆಗುತ್ತಾ?"},
+      {"speaker": "agent", "text": "ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿ ಸಾಧ್ಯವಿರುವ ಆಯ್ಕೆಯನ್ನು ಪರಿಶೀಲಿಸಿ ಹೇಳ್ತೀನಿ. ಬಾಕಿ ಮುಂದುವರಿದರೆ ಒಪ್ಪಂದದ ಪ್ರಕಾರ ಕಾನೂನು ನೋಟಿಸ್ ಕಳುಹಿಸುವ ಪ್ರಕ್ರಿಯೆ ಇರಬಹುದು."},
+      {"speaker": "borrower", "text": "ನನಗೆ ಮೊದಲು ವಿವರ ಕಳಿಸಿ."},
+      {"speaker": "agent", "text": "ಖಂಡಿತ. ಬಾಕಿ ಮೊತ್ತ ಮತ್ತು ಶುಲ್ಕದ ವಿವರವನ್ನು ಕಳಿಸುವಂತೆ ದಾಖಲಿಸುತ್ತೀನಿ."}
+    ],
+    "concern_spans": []
+  },
+  {
+    "id": "RC009",
+    "language": "kn-IN",
+    "label": "compliant",
+    "hard_negative": true,
+    "concern_types": [],
+    "turns": [
+      {"speaker": "agent", "text": "ನಮಸ್ಕಾರ ಸೀಮಾ ಅವರೆ, ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿ ಮೂರು ಸಾವಿರ ಐನೂರು ರೂಪಾಯಿ ಬಾಕಿ ಇದೆ ಅಂತ ತೋರಿಸ್ತಿದೆ."},
+      {"speaker": "borrower", "text": "ಈ ವಾರ ಕೊಡೋಕೆ ಆಗಲ್ಲ, ಮುಂದಿನ ವಾರ ಕೊಡ್ತೀನಿ."},
+      {"speaker": "agent", "text": "ಸರಿ, ನಿಮ್ಮ ಮಾತನ್ನ ದಾಖಲಿಸ್ತೀನಿ. ಪಾವತಿ ಆಗುವವರೆಗೂ ಅನ್ವಯಿಸುವ ತಡ ಶುಲ್ಕ ಇರಬಹುದು."},
+      {"speaker": "borrower", "text": "ಈಗಾಗಲೇ ಎಷ್ಟು ಶುಲ್ಕ ಬಂದಿದೆ?"},
+      {"speaker": "agent", "text": "ಅದನ್ನ ಖಾತೆಯಲ್ಲಿ ಪರಿಶೀಲಿಸಿ, ಮೂಲ ಮೊತ್ತ ಮತ್ತು ಶುಲ್ಕ ಬೇರೆ ಬೇರೆ ತೋರಿಸುವ ವಿವರ ಕಳಿಸಬಹುದು."},
+      {"speaker": "borrower", "text": "ಹೌದು, ಕಳಿಸಿ."},
+      {"speaker": "agent", "text": "ಆಯ್ತು, ಪಾವತಿ ಮಾಡಿದ ಮೇಲೆ ರಸೀದಿ ಉಳಿಸಿಕೊಳ್ಳಿ."}
+    ],
+    "concern_spans": []
+  },
+  {
+    "id": "RC010",
+    "language": "kn-IN",
+    "label": "concerning",
+    "hard_negative": false,
+    "concern_types": ["intimidation_or_threats"],
+    "turns": [
+      {"speaker": "agent", "text": "ನೋಡಿ ಸರ್, ಮೂರು ಸಾವಿರ ರೂಪಾಯಿ ಬಾಕಿ ಇದೆ. ಎಷ್ಟು ದಿನ ಅಂತ ಹೀಗೆ ಮುಂದೂಡ್ತೀರಾ?"},
+      {"speaker": "borrower", "text": "ನನಗೆ ಎರಡು ದಿನ ಸಮಯ ಬೇಕು."},
+      {"speaker": "agent", "text": "ಎರಡು ದಿನ ಅಂತೆ, ಸರಿ. ನೀವು ಹೇಳಿದ ಮಾತಿಗೆ ಮತ್ತೆ ಮತ್ತೆ ಫೋನ್ ಮಾಡಿಸಿಕೊಳ್ಳಬೇಡಿ."},
+      {"speaker": "borrower", "text": "ನಾನು ತಪ್ಪಿಸಿಕೊಳ್ಳುತ್ತಿಲ್ಲ, ಹಣ ಬಂದ ತಕ್ಷಣ ಕೊಡ್ತೀನಿ."},
+      {"speaker": "agent", "text": "ನಾಳೆಗೂ ಹಣ ಬರಲಿಲ್ಲ ಅಂದ್ರೆ, ನಮ್ಮ ಹುಡುಗರು ನಿಮ್ಮ ಮನೆ ಹತ್ತಿರ ಬಂದು ಮಾತಾಡ್ತಾರೆ, ಆಮೇಲೆ ನಿಮಗೇ ಕಷ್ಟ."},
+      {"speaker": "borrower", "text": "ಮನೆಗೆ ಬರುವ ಅವಶ್ಯಕತೆ ಇಲ್ಲ, ಫೋನ್‌ನಲ್ಲೇ ಮಾತಾಡಿ."},
+      {"speaker": "agent", "text": "ಹಾಗಾದರೆ ನಾಳೆ ಪಾವತಿ ಆಗುತ್ತಾ ಇಲ್ಲವಾ ಅಂತ ಸ್ಪಷ್ಟವಾಗಿ ಹೇಳಿ."}
+    ],
+    "concern_spans": [
+      {"type": "intimidation_or_threats", "text": "ನಾಳೆಗೂ ಹಣ ಬರಲಿಲ್ಲ ಅಂದ್ರೆ, ನಮ್ಮ ಹುಡುಗರು ನಿಮ್ಮ ಮನೆ ಹತ್ತಿರ ಬಂದು ಮಾತಾಡ್ತಾರೆ, ಆಮೇಲೆ ನಿಮಗೇ ಕಷ್ಟ."}
+    ]
+  },
+  {
+    "id": "RC011",
+    "language": "kn-IN",
+    "label": "concerning",
+    "hard_negative": false,
+    "concern_types": ["abusive_language"],
+    "turns": [
+      {"speaker": "agent", "text": "ನಮಸ್ಕಾರ, ನಿಮ್ಮ ಕಂತು ನಾಲ್ಕು ಸಾವಿರ ರೂಪಾಯಿ ಬಾಕಿ ಇದೆ. ಯಾವಾಗ ಕಟ್ಟುತ್ತೀರಾ?"},
+      {"speaker": "borrower", "text": "ನನಗೆ ಇನ್ನೂ ಸಂಬಳ ಬಂದಿಲ್ಲ."},
+      {"speaker": "agent", "text": "ಪ್ರತಿ ಸಲ ಇದೇ ಕಥೆ ಹೇಳ್ತೀರಲ್ಲಾ."},
+      {"speaker": "borrower", "text": "ನಾನು ನಿಜವಾಗಿಯೇ ಹೇಳ್ತಿದ್ದೀನಿ."},
+      {"speaker": "agent", "text": "ಸುಳ್ಳುಗಾರನ ಹಾಗೆ ಮಾತಾಡಬೇಡಿ, ಮೊದಲು ಜವಾಬ್ದಾರಿ ಕಲಿಯಿರಿ."},
+      {"speaker": "borrower", "text": "ನನ್ನ ಜೊತೆ ಗೌರವದಿಂದ ಮಾತಾಡಿ."},
+      {"speaker": "agent", "text": "ಸರಿ, ಪಾವತಿ ದಿನಾಂಕ ಹೇಳಿ, ಅದನ್ನ ದಾಖಲಿಸ್ತೀನಿ."}
+    ],
+    "concern_spans": [
+      {"type": "abusive_language", "text": "ಸುಳ್ಳುಗಾರನ ಹಾಗೆ ಮಾತಾಡಬೇಡಿ, ಮೊದಲು ಜವಾಬ್ದಾರಿ ಕಲಿಯಿರಿ."}
+    ]
+  },
+  {
+    "id": "RC012",
+    "language": "kn-IN",
+    "label": "concerning",
+    "hard_negative": false,
+    "concern_types": ["third_party_contact_threat"],
+    "turns": [
+      {"speaker": "agent", "text": "ಸರ್, ಐದು ಸಾವಿರ ರೂಪಾಯಿ ಬಾಕಿ ಇದೆ. ಇಂದು ಏನಾದರೂ ಪಾವತಿ ಮಾಡ್ತೀರಾ?"},
+      {"speaker": "borrower", "text": "ಇಂದು ಆಗಲ್ಲ, ಎರಡು ದಿನ ಬೇಕು."},
+      {"speaker": "agent", "text": "ನೀವು ಎರಡು ದಿನ ಅಂತ ಹೇಳಿ ಎಷ್ಟು ಬಾರಿ ಮುಂದೂಡಿದ್ದೀರಾ ಗೊತ್ತಾ?"},
+      {"speaker": "borrower", "text": "ಈ ಸಲ ನಿಜವಾಗಿಯೂ ಎರಡು ದಿನ."},
+      {"speaker": "agent", "text": "ಸರಿ, ಮತ್ತೆ ಮುಂದೂಡಿದ್ರೆ ನಿಮ್ಮ ಆಫೀಸ್‌ನವರಿಗೆ ಈ ಸಾಲದ ವಿಷಯ ಹೇಳಬೇಕಾಗುತ್ತೆ."},
+      {"speaker": "borrower", "text": "ಅವರಿಗೆ ಹೇಳಬೇಡಿ, ನಾನು ಸ್ವತಃ ನೋಡಿಕೊಳ್ಳುತ್ತೀನಿ."},
+      {"speaker": "agent", "text": "ಹಾಗಾದರೆ ನೀವು ಹೇಳಿದ ದಿನಕ್ಕೆ ಪಾವತಿ ಮಾಡಿ."}
+    ],
+    "concern_spans": [
+      {"type": "third_party_contact_threat", "text": "ಮತ್ತೆ ಮುಂದೂಡಿದ್ರೆ ನಿಮ್ಮ ಆಫೀಸ್‌ನವರಿಗೆ ಈ ಸಾಲದ ವಿಷಯ ಹೇಳಬೇಕಾಗುತ್ತೆ."}
+    ]
+  },
+  {
+    "id": "RC013",
+    "language": "kn-IN",
+    "label": "concerning",
+    "hard_negative": false,
+    "concern_types": ["intimidation_or_threats", "third_party_contact_threat"],
+    "turns": [
+      {"speaker": "agent", "text": "ನಿಮ್ಮ ಬಾಕಿ ಮೂರು ಸಾವಿರದ ಎಂಟು ನೂರು ರೂಪಾಯಿ ಇದೆ. ಪಾವತಿ ಬಗ್ಗೆ ಮಾತನಾಡೋಣ."},
+      {"speaker": "borrower", "text": "ಮುಂದಿನ ವಾರ ಹಣ ಕೊಡ್ತೀನಿ."},
+      {"speaker": "agent", "text": "ನೀವು ಕೊಡ್ತೀರಾ ಅಂತ ನಂಬಿ ನಾವು ಇನ್ನೆಷ್ಟು ದಿನ ಕಾಯಬೇಕು?"},
+      {"speaker": "borrower", "text": "ನನ್ನ ಪರಿಸ್ಥಿತಿ ಸ್ವಲ್ಪ ಅರ್ಥ ಮಾಡಿಕೊಳ್ಳಿ."},
+      {"speaker": "agent", "text": "ನಮ್ಮವರು ನಿಮ್ಮ ಮನೆಗೆ ಬಂದಾಗ ನೆರೆಹೊರೆಯವರೂ ಹೊರಗೆ ಬರ್ತಾರೆ, ಆಗ ನಿಮಗೆ ಗೊತ್ತಾಗುತ್ತೆ."},
+      {"speaker": "borrower", "text": "ಅವರನ್ನ ಕರೆದುಕೊಂಡು ಬರಬೇಡಿ, ದಯವಿಟ್ಟು."},
+      {"speaker": "agent", "text": "ಹಾಗಾದರೆ ನಿಮ್ಮ ಮಾತು ಉಳಿಸಿಕೊಳ್ಳಿ. ಇಲ್ಲದಿದ್ದರೆ ಎಲ್ಲರಿಗೂ ವಿಷಯ ಗೊತ್ತಾಗುತ್ತೆ."}
+    ],
+    "concern_spans": [
+      {"type": "intimidation_or_threats", "text": "ನಮ್ಮವರು ನಿಮ್ಮ ಮನೆಗೆ ಬಂದಾಗ ನೆರೆಹೊರೆಯವರೂ ಹೊರಗೆ ಬರ್ತಾರೆ, ಆಗ ನಿಮಗೆ ಗೊತ್ತಾಗುತ್ತೆ."},
+      {"type": "third_party_contact_threat", "text": "ಇಲ್ಲದಿದ್ದರೆ ಎಲ್ಲರಿಗೂ ವಿಷಯ ಗೊತ್ತಾಗುತ್ತೆ."}
+    ]
+  },
+  {
+    "id": "RC014",
+    "language": "en-IN",
+    "label": "compliant",
+    "hard_negative": true,
+    "concern_types": [],
+    "turns": [
+      {"speaker": "agent", "text": "Hi, this is Karan from fictional Arya Finance. Your instalment of four thousand rupees is overdue."},
+      {"speaker": "borrower", "text": "I know, but my salary is delayed this month."},
+      {"speaker": "agent", "text": "I understand. Please note that continued delay may affect your CIBIL or other credit bureau reporting, subject to applicable reporting rules."},
+      {"speaker": "borrower", "text": "Will there be a late fee too?"},
+      {"speaker": "agent", "text": "Any applicable late fee should be listed in your loan terms and account statement. I can send you the current breakdown."},
+      {"speaker": "borrower", "text": "Please send it."},
+      {"speaker": "agent", "text": "Certainly. Please review the statement before making the payment."}
+    ],
+    "concern_spans": []
+  },
+  {
+    "id": "RC015",
+    "language": "en-IN",
+    "label": "compliant",
+    "hard_negative": true,
+    "concern_types": ["authority_or_legal_action_claim"],
+    "turns": [
+      {"speaker": "agent", "text": "Hello, I am Meera calling from fictional Nila Lending. Your outstanding instalment is five thousand rupees."},
+      {"speaker": "borrower", "text": "I can pay half now and the rest next week."},
+      {"speaker": "agent", "text": "I can record that request, but I cannot confirm a revised schedule until it is approved."},
+      {"speaker": "borrower", "text": "What happens if I cannot clear it next week?"},
+      {"speaker": "agent", "text": "Depending on the agreement and applicable process, a legal notice may be issued for unresolved dues. That is not the same as an immediate arrest."},
+      {"speaker": "borrower", "text": "Can I get the exact amount in writing?"},
+      {"speaker": "agent", "text": "Yes. I will request a statement showing principal, applicable charges and received payments."}
+    ],
+    "concern_spans": []
+  },
+  {
+    "id": "RC016",
+    "language": "en-IN",
+    "label": "compliant",
+    "hard_negative": true,
+    "concern_types": [],
+    "turns": [
+      {"speaker": "agent", "text": "Good afternoon, I am calling about the overdue balance of three thousand six hundred rupees on your fictional Nila Lending account."},
+      {"speaker": "borrower", "text": "I cannot pay today. Can someone visit next week?"},
+      {"speaker": "agent", "text": "We can check whether a field visit is available. Would Tuesday at four in the afternoon work for you?"},
+      {"speaker": "borrower", "text": "Yes, Tuesday at four is fine."},
+      {"speaker": "agent", "text": "Thank you. I will record your consent for that appointment and request that the representative call before arriving."},
+      {"speaker": "borrower", "text": "Please make sure they carry identification."},
+      {"speaker": "agent", "text": "I will add that request to the appointment notes."}
+    ],
+    "concern_spans": []
+  },
+  {
+    "id": "RC017",
+    "language": "en-IN",
+    "label": "concerning",
+    "hard_negative": false,
+    "concern_types": ["authority_or_legal_action_claim", "intimidation_or_threats"],
+    "turns": [
+      {"speaker": "agent", "text": "Hello, your overdue amount is six thousand rupees. We need a payment date today."},
+      {"speaker": "borrower", "text": "I need three more days."},
+      {"speaker": "agent", "text": "Three days? The court will hear about this if you keep wasting our time."},
+      {"speaker": "borrower", "text": "I am not refusing to pay."},
+      {"speaker": "agent", "text": "I'm just saying, you don't want to find out what happens when our people come looking for you."},
+      {"speaker": "borrower", "text": "Are you threatening me?"},
+      {"speaker": "agent", "text": "I am telling you to arrange the money. Decide by this evening."}
+    ],
+    "concern_spans": [
+      {"type": "authority_or_legal_action_claim", "text": "The court will hear about this if you keep wasting our time."},
+      {"type": "intimidation_or_threats", "text": "I'm just saying, you don't want to find out what happens when our people come looking for you."}
+    ]
+  },
+  {
+    "id": "RC018",
+    "language": "en-IN",
+    "label": "concerning",
+    "hard_negative": false,
+    "concern_types": ["abusive_language", "third_party_contact_threat"],
+    "turns": [
+      {"speaker": "agent", "text": "Your payment of four thousand two hundred rupees is still overdue."},
+      {"speaker": "borrower", "text": "I lost some work hours and need a little time."},
+      {"speaker": "agent", "text": "Everyone has a story. Somehow the rest of us manage to pay our bills."},
+      {"speaker": "borrower", "text": "That is not fair. You do not know my situation."},
+      {"speaker": "agent", "text": "Stop acting like an idiot and answer the question."},
+      {"speaker": "borrower", "text": "Please do not speak to me like that."},
+      {"speaker": "agent", "text": "Fine. If you keep delaying, perhaps your employer can explain why you ignore your responsibilities."}
+    ],
+    "concern_spans": [
+      {"type": "abusive_language", "text": "Stop acting like an idiot and answer the question."},
+      {"type": "third_party_contact_threat", "text": "If you keep delaying, perhaps your employer can explain why you ignore your responsibilities."}
+    ]
+  },
+  {
+    "id": "RC019",
+    "language": "en-IN",
+    "label": "concerning",
+    "hard_negative": false,
+    "concern_types": ["authority_or_legal_action_claim", "third_party_contact_threat"],
+    "turns": [
+      {"speaker": "agent", "text": "Hello, the pending amount on your account is three thousand nine hundred rupees."},
+      {"speaker": "borrower", "text": "I can make the payment on Friday."},
+      {"speaker": "agent", "text": "That is what you said last time. I need to know whether you are serious."},
+      {"speaker": "borrower", "text": "I am serious. I just need my salary."},
+      {"speaker": "agent", "text": "If Friday passes, we can send a legal notice and take the matter further."},
+      {"speaker": "borrower", "text": "Okay, I understand the account is overdue."},
+      {"speaker": "agent", "text": "And if you still don't respond, don't be surprised if your family starts getting questions about the money."}
+    ],
+    "concern_spans": [
+      {"type": "authority_or_legal_action_claim", "text": "If Friday passes, we can send a legal notice and take the matter further."},
+      {"type": "third_party_contact_threat", "text": "And if you still don't respond, don't be surprised if your family starts getting questions about the money."}
+    ]
+  },
+  {
+    "id": "RC020",
+    "language": "en-IN",
+    "label": "concerning",
+    "hard_negative": false,
+    "concern_types": ["authority_or_legal_action_claim", "intimidation_or_threats", "third_party_contact_threat"],
+    "turns": [
+      {"speaker": "agent", "text": "Your overdue instalment is five thousand one hundred rupees. When can you pay?"},
+      {"speaker": "borrower", "text": "I need until next week, please."},
+      {"speaker": "agent", "text": "We can file an FIR if you think you can just disappear with the money."},
+      {"speaker": "borrower", "text": "I have not disappeared. I live at the same address."},
+      {"speaker": "agent", "text": "Then you know we can come there and make sure everyone understands what kind of borrower you are."},
+      {"speaker": "borrower", "text": "Do not threaten me or involve my neighbours."},
+      {"speaker": "agent", "text": "I'm only saying that if you don't cooperate, the whole neighbourhood might hear about this."}
+    ],
+    "concern_spans": [
+      {"type": "authority_or_legal_action_claim", "text": "We can file an FIR if you think you can just disappear with the money."},
+      {"type": "intimidation_or_threats", "text": "Then you know we can come there and make sure everyone understands what kind of borrower you are."},
+      {"type": "third_party_contact_threat", "text": "I'm only saying that if you don't cooperate, the whole neighbourhood might hear about this."}
+    ]
+  }
+]

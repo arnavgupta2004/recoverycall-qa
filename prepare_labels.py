@@ -9,7 +9,12 @@ Outputs: data/scripts_dev.json (original dev scenarios + the 20 converted v1 sce
          data/dataset_manifest.json (dev entries gain authority fields; dev_v2 entries rebuilt)
 
 Held-out v1 was evaluated once against rules v1 (docs/baseline_rules_v1.md) and is now
-development data. A future held-out v2 will be written externally to data/scripts_held_out.json.
+development data.
+
+Held-out v2 (data/held_out_source/held_out_v2.json, written externally) is converted to
+data/scripts_held_out.json with split=held_out. Only structural problems are fixed; label
+changes made by reading the scripts against the rules below are listed per call in
+HELD_OUT_V2_* and logged in label_changes.
 
 Label rules (applied by reading the scripts, never by running the classifier):
   1. hard_negative is true only for COMPLIANT calls containing firm-but-lawful language
@@ -40,6 +45,8 @@ SOURCE = ROOT / "data" / "held_out_source" / "held_out_v1_external.json"
 DEV_SCRIPTS = ROOT / "data" / "scripts_dev.json"
 SPLIT = "dev_v2"
 MANIFEST = ROOT / "data" / "dataset_manifest.json"
+SOURCE_V2 = ROOT / "data" / "held_out_source" / "held_out_v2.json"
+HELD_OUT_SCRIPTS = ROOT / "data" / "scripts_held_out.json"
 
 AUTHORITY = "authority_or_legal_action_claim"
 CONDUCT = ["intimidation_or_threats", "abusive_language", "third_party_contact_threat"]
@@ -114,8 +121,8 @@ DEV_AUTHORITY_SPANS = {
 MANIFEST_NOTE = (
     "Ground-truth labels for the RecoveryCall QA dataset. 'split' is 'dev' (original dev set; rules v1 were built "
     "on it), 'dev_v2' (held-out v1, spent after one evaluation on 2026-10-21 and merged into development; see "
-    "docs/baseline_rules_v1.md) or 'held_out' (a future externally written set; none exists now). Labels follow the "
-    "definition in prepare_labels.py: telling/showing family, employer, neighbours or contacts = "
+    "docs/baseline_rules_v1.md) or 'held_out' (held-out v2: written externally, labels checked by reading before any classifier ran; headline evaluation only). Labels follow the "
+    "definition in prepare_labels.py (held_out is held-out v2, added 2026-10-21): telling/showing family, employer, neighbours or contacts = "
     "third_party_contact_threat; visiting/harming/shaming in person = intimidation_or_threats; multi-label allowed. 'compliant' is false when "
     "the call contains a conduct concern or a threatening authority claim. 'concern_types' lists the categories present. "
     "'authority_mention' is true when the agent mentions police, arrest, FIR, court or a legal notice (including lawful "
@@ -215,6 +222,97 @@ def update_dev(manifest: dict) -> None:
             raise SystemExit(f"{c['id']}: hard negative must be compliant")
 
 
+# ── Held-out v2 (labels checked by reading the scripts; no classifier was run on them) ─────────
+# Agent mentions of police / arrest / FIR / court / legal notice that have no span in the source.
+HELD_OUT_V2_AUTHORITY_SPANS = {
+    "RC001": [(6, "यदि आगे कानूनी नोटिस जारी होता है, तो उसकी जानकारी लिखित रूप में दी जाएगी।")],
+    "RC002": [(2, "बकाया बना रहने पर संस्था की प्रक्रिया के अनुसार कानूनी नोटिस भेजा जा सकता है।"),
+              (4, "नोटिस और पुलिस कार्रवाई अलग बातें हैं।")],
+    "RC008": [(4, "ಬಾಕಿ ಮುಂದುವರಿದರೆ ಒಪ್ಪಂದದ ಪ್ರಕಾರ ಕಾನೂನು ನೋಟಿಸ್ ಕಳುಹಿಸುವ ಪ್ರಕ್ರಿಯೆ ಇರಬಹುದು.")],
+    "RC015": [(4, "a legal notice may be issued for unresolved dues."),
+              (4, "That is not the same as an immediate arrest.")],
+}
+# Delivered authority labels that the rule does not support (no agent mention of the listed terms).
+HELD_OUT_V2_NO_AUTHORITY = {
+    "RC003": "the agent says only 'कानूनी उपाय' (legal remedies); 'अदालत' (court) is the borrower's question",
+}
+# Multi-label spans under the label definition (telling/showing others = third-party).
+HELD_OUT_V2_EXTRA_SPANS = {
+    "RC013": [("third_party_contact_threat", 4, "ನೆರೆಹೊರೆಯವರೂ ಹೊರಗೆ ಬರ್ತಾರೆ")],
+    "RC020": [("third_party_contact_threat", 4, "make sure everyone understands what kind of borrower you are.")],
+}
+HELD_OUT_V2_REASONS = {
+    "RC013": "the house visit also brings the neighbours out (showing neighbours = third-party), as in dev 003/017",
+    "RC020": "making 'everyone' understand what kind of borrower he is = showing others (third-party), as in dev 003/017",
+}
+
+
+def convert_held_out_v2() -> tuple[list[dict], list[dict], list[str]]:
+    """Return (scenarios, manifest entries, structural fixes) for held-out v2."""
+    source = json.loads(SOURCE_V2.read_text(encoding="utf-8"))
+    structural = ["speaker 'borrower' renamed 'customer' (our schema)",
+                  "concern spans had no turn index; each was located as a unique exact substring of one turn",
+                  "added tts_language, stt_language_codes, primary_stt_language_code (Hinglish) and voices using "
+                  "the dev per-language defaults",
+                  "compliant calls listed authority_or_legal_action_claim in concern_types without any span; our "
+                  "schema keeps compliant concern_types empty and records lawful mentions as authority_mention + spans"]
+    scenarios, entries = [], []
+    for s in source:
+        sid, lang = s["id"], s["language"]
+        conv = LANG[lang]
+        turns = [{"speaker": "customer" if t["speaker"] == "borrower" else t["speaker"], "text": t["text"]}
+                 for t in s["turns"]]
+        sc = {"id": sid, "title": f"Held-out v2 {conv['name']} {s['label']}", "tts_language": conv["tts_language"],
+              "stt_language_codes": conv["stt_language_codes"]}
+        if "primary_stt_language_code" in conv:
+            sc["primary_stt_language_code"] = conv["primary_stt_language_code"]
+        sc.update({"voices": conv["voices"], "needs_native_review": lang == "kn-IN", "turns": turns})
+        scenarios.append(sc)
+
+        changes = []
+        spans = [{"type": sp["type"], "turn": turn_index_of(turns, sp["text"]), "text": sp["text"]}
+                 for sp in s["concern_spans"]]
+        for turn, text in HELD_OUT_V2_AUTHORITY_SPANS.get(sid, []):
+            if text not in turns[turn]["text"] or turns[turn]["speaker"] != "agent":
+                raise SystemExit(f"{sid}: authority span not in agent turn {turn}: {text!r}")
+            spans.append({"type": AUTHORITY, "turn": turn, "text": text})
+            changes.append(f"added {AUTHORITY} span (turn {turn}) “{text}”")
+        for typ, turn, text in HELD_OUT_V2_EXTRA_SPANS.get(sid, []):
+            if text not in turns[turn]["text"] or turns[turn]["speaker"] != "agent":
+                raise SystemExit(f"{sid}: span not in agent turn {turn}: {text!r}")
+            spans.append({"type": typ, "turn": turn, "text": text})
+            changes.append(f"added {typ} span (turn {turn}) “{text}” — {HELD_OUT_V2_REASONS[sid]}")
+        for sp in spans:
+            if turns[sp["turn"]]["speaker"] != "agent":
+                raise SystemExit(f"{sid}: delivered span is in a customer turn: {sp}")
+
+        compliant = s["label"] == "compliant"
+        authority = any(sp["type"] == AUTHORITY for sp in spans)
+        span_types = {sp["type"] for sp in spans} - ({AUTHORITY} if compliant else set())
+        delivered = set(s["concern_types"])
+        if sid in HELD_OUT_V2_NO_AUTHORITY:
+            if authority:
+                raise SystemExit(f"{sid}: listed as no-authority but has an authority span")
+            changes.append(f"authority label removed: {HELD_OUT_V2_NO_AUTHORITY[sid]}")
+        elif compliant and AUTHORITY in delivered:
+            changes.append("authority_or_legal_action_claim kept as a verify flag (authority_mention), not a "
+                           "concern type, because the call is compliant")
+        for t in sorted((delivered - span_types) - {AUTHORITY}):
+            changes.append(f"removed {t} from concern_types (no span of that type)")
+        for t in sorted(span_types - delivered):
+            changes.append(f"added {t} to concern_types (a span of that type exists)")
+        if s["hard_negative"] and not compliant:
+            raise SystemExit(f"{sid}: hard negative on a concerning call")
+        types = [t for t in s["concern_types"] if t in span_types] + sorted(span_types - delivered)
+        entry = {"id": sid, "split": "held_out", "origin": "held_out_v2", "language": lang, "compliant": compliant,
+                 "hard_negative": bool(s["hard_negative"]), "concern_types": types, "authority_mention": authority,
+                 "concern_spans": spans, "needs_native_review": lang == "kn-IN"}
+        if changes:
+            entry["label_changes"] = changes
+        entries.append(entry)
+    return scenarios, entries, structural
+
+
 def main() -> None:
     scenarios, v2_entries = convert_held_out()
     v2_ids = {e["id"] for e in v2_entries}
@@ -231,8 +329,26 @@ def main() -> None:
     manifest["calls"] = [c for c in manifest["calls"] if c["id"] not in v2_ids and c["split"] != "held_out"]
     update_dev(manifest)
     manifest["calls"] += v2_entries
+
+    ho_scenarios, ho_entries, structural = convert_held_out_v2()
+    manifest["calls"] = [c for c in manifest["calls"] if c["split"] != "held_out"] + ho_entries
+    HELD_OUT_SCRIPTS.write_text(json.dumps({
+        "version": 1,
+        "note": ("HELD-OUT v2: written externally, converted from data/held_out_source/held_out_v2.json by "
+                 "prepare_labels.py. Labels were checked by reading the scripts before any classifier ran on them. "
+                 "Headline evaluation only; never tune prompts, rules or labels on it. All content is fictional. STT "
+                 "critical_spans are not authored; voices are per-language defaults. Structural fixes: "
+                 + "; ".join(structural) + "."),
+        "tts_model": "timbre-v2.5", "tts_speed": 1.0, "scenarios": ho_scenarios,
+    }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     MANIFEST.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     for e in v2_entries:
+        for ch in e.get("label_changes", []):
+            print(f"  {e['id']}: {ch}")
+    print("held-out v2 structural fixes:")
+    for f in structural:
+        print(f"  - {f}")
+    for e in ho_entries:
         for ch in e.get("label_changes", []):
             print(f"  {e['id']}: {ch}")
     print(f"merged {len(scenarios)} scenarios into {DEV_SCRIPTS.relative_to(ROOT)} (split={SPLIT}) and updated "

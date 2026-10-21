@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "Ground-truth labels for the RecoveryCall QA dataset. 'split' is 'dev' (original dev set; rules v1 were built on it), 'dev_v2' (held-out v1, spent after one evaluation on 2026-10-21 and merged into development; see docs/baseline_rules_v1.md) or 'held_out' (a future externally written set; none exists now). Labels follow the definition in prepare_labels.py: telling/showing family, employer, neighbours or contacts = third_party_contact_threat; visiting/harming/shaming in person = intimidation_or_threats; multi-label allowed. 'compliant' is false when the call contains a conduct concern or a threatening authority claim. 'concern_types' lists the categories present. 'authority_mention' is true when the agent mentions police, arrest, FIR, court or a legal notice (including lawful mentions in compliant calls); it is scored as a verify flag, separately from the three conduct categories. 'concern_spans' quote the labelled text (turn index + exact substring); dev entries carry authority spans only. 'hard_negative' is true only for compliant calls containing firm-but-lawful language that must not be flagged. 'needs_native_review' is true for Kannada scripts pending native speaker review. 'label_changes' logs every change from the delivered labels.",
+  "note": "Ground-truth labels for the RecoveryCall QA dataset. 'split' is 'dev' (original dev set; rules v1 were built on it), 'dev_v2' (held-out v1, spent after one evaluation on 2026-10-21 and merged into development; see docs/baseline_rules_v1.md) or 'held_out' (held-out v2: written externally, labels checked by reading before any classifier ran; headline evaluation only). Labels follow the definition in prepare_labels.py (held_out is held-out v2, added 2026-10-21): telling/showing family, employer, neighbours or contacts = third_party_contact_threat; visiting/harming/shaming in person = intimidation_or_threats; multi-label allowed. 'compliant' is false when the call contains a conduct concern or a threatening authority claim. 'concern_types' lists the categories present. 'authority_mention' is true when the agent mentions police, arrest, FIR, court or a legal notice (including lawful mentions in compliant calls); it is scored as a verify flag, separately from the three conduct categories. 'concern_spans' quote the labelled text (turn index + exact substring); dev entries carry authority spans only. 'hard_negative' is true only for compliant calls containing firm-but-lawful language that must not be flagged. 'needs_native_review' is true for Kannada scripts pending native speaker review. 'label_changes' logs every change from the delivered labels.",
   "concern_type_labels": {
     "intimidation_or_threats": "Physical threats, agents visiting, sending men to debtor's location",
     "abusive_language": "Slurs, derogatory or shaming language directed at the debtor",
@@ -1016,6 +1016,417 @@
         "dev_v2 definition reason: building society people seeing = showing neighbours (third-party); the house visit stays intimidation",
         "added intimidation_or_threats to concern_types (a span of that type exists)",
         "hard_negative True -> False (hard negatives are compliant calls only)"
+      ]
+    },
+    {
+      "id": "RC001",
+      "split": "held_out",
+      "origin": "held_out_v2",
+      "language": "hi-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": true,
+      "concern_spans": [
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 6,
+          "text": "यदि आगे कानूनी नोटिस जारी होता है, तो उसकी जानकारी लिखित रूप में दी जाएगी।"
+        }
+      ],
+      "needs_native_review": false,
+      "label_changes": [
+        "added authority_or_legal_action_claim span (turn 6) “यदि आगे कानूनी नोटिस जारी होता है, तो उसकी जानकारी लिखित रूप में दी जाएगी।”",
+        "authority_or_legal_action_claim kept as a verify flag (authority_mention), not a concern type, because the call is compliant"
+      ]
+    },
+    {
+      "id": "RC002",
+      "split": "held_out",
+      "origin": "held_out_v2",
+      "language": "hi-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": true,
+      "concern_spans": [
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 2,
+          "text": "बकाया बना रहने पर संस्था की प्रक्रिया के अनुसार कानूनी नोटिस भेजा जा सकता है।"
+        },
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 4,
+          "text": "नोटिस और पुलिस कार्रवाई अलग बातें हैं।"
+        }
+      ],
+      "needs_native_review": false,
+      "label_changes": [
+        "added authority_or_legal_action_claim span (turn 2) “बकाया बना रहने पर संस्था की प्रक्रिया के अनुसार कानूनी नोटिस भेजा जा सकता है।”",
+        "added authority_or_legal_action_claim span (turn 4) “नोटिस और पुलिस कार्रवाई अलग बातें हैं।”",
+        "authority_or_legal_action_claim kept as a verify flag (authority_mention), not a concern type, because the call is compliant"
+      ]
+    },
+    {
+      "id": "RC003",
+      "split": "held_out",
+      "origin": "held_out_v2",
+      "language": "hi-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": false,
+      "concern_spans": [],
+      "needs_native_review": false,
+      "label_changes": [
+        "authority label removed: the agent says only 'कानूनी उपाय' (legal remedies); 'अदालत' (court) is the borrower's question"
+      ]
+    },
+    {
+      "id": "RC004",
+      "split": "held_out",
+      "origin": "held_out_v2",
+      "language": "hi-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": false,
+      "concern_spans": [],
+      "needs_native_review": false
+    },
+    {
+      "id": "RC005",
+      "split": "held_out",
+      "origin": "held_out_v2",
+      "language": "hi-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": false,
+      "concern_spans": [],
+      "needs_native_review": false
+    },
+    {
+      "id": "RC006",
+      "split": "held_out",
+      "origin": "held_out_v2",
+      "language": "hi-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": false,
+      "concern_spans": [],
+      "needs_native_review": false
+    },
+    {
+      "id": "RC007",
+      "split": "held_out",
+      "origin": "held_out_v2",
+      "language": "hi-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": false,
+      "concern_spans": [],
+      "needs_native_review": false
+    },
+    {
+      "id": "RC008",
+      "split": "held_out",
+      "origin": "held_out_v2",
+      "language": "kn-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": true,
+      "concern_spans": [
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 4,
+          "text": "ಬಾಕಿ ಮುಂದುವರಿದರೆ ಒಪ್ಪಂದದ ಪ್ರಕಾರ ಕಾನೂನು ನೋಟಿಸ್ ಕಳುಹಿಸುವ ಪ್ರಕ್ರಿಯೆ ಇರಬಹುದು."
+        }
+      ],
+      "needs_native_review": true,
+      "label_changes": [
+        "added authority_or_legal_action_claim span (turn 4) “ಬಾಕಿ ಮುಂದುವರಿದರೆ ಒಪ್ಪಂದದ ಪ್ರಕಾರ ಕಾನೂನು ನೋಟಿಸ್ ಕಳುಹಿಸುವ ಪ್ರಕ್ರಿಯೆ ಇರಬಹುದು.”",
+        "authority_or_legal_action_claim kept as a verify flag (authority_mention), not a concern type, because the call is compliant"
+      ]
+    },
+    {
+      "id": "RC009",
+      "split": "held_out",
+      "origin": "held_out_v2",
+      "language": "kn-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": false,
+      "concern_spans": [],
+      "needs_native_review": true
+    },
+    {
+      "id": "RC010",
+      "split": "held_out",
+      "origin": "held_out_v2",
+      "language": "kn-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "intimidation_or_threats"
+      ],
+      "authority_mention": false,
+      "concern_spans": [
+        {
+          "type": "intimidation_or_threats",
+          "turn": 4,
+          "text": "ನಾಳೆಗೂ ಹಣ ಬರಲಿಲ್ಲ ಅಂದ್ರೆ, ನಮ್ಮ ಹುಡುಗರು ನಿಮ್ಮ ಮನೆ ಹತ್ತಿರ ಬಂದು ಮಾತಾಡ್ತಾರೆ, ಆಮೇಲೆ ನಿಮಗೇ ಕಷ್ಟ."
+        }
+      ],
+      "needs_native_review": true
+    },
+    {
+      "id": "RC011",
+      "split": "held_out",
+      "origin": "held_out_v2",
+      "language": "kn-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "abusive_language"
+      ],
+      "authority_mention": false,
+      "concern_spans": [
+        {
+          "type": "abusive_language",
+          "turn": 4,
+          "text": "ಸುಳ್ಳುಗಾರನ ಹಾಗೆ ಮಾತಾಡಬೇಡಿ, ಮೊದಲು ಜವಾಬ್ದಾರಿ ಕಲಿಯಿರಿ."
+        }
+      ],
+      "needs_native_review": true
+    },
+    {
+      "id": "RC012",
+      "split": "held_out",
+      "origin": "held_out_v2",
+      "language": "kn-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "third_party_contact_threat"
+      ],
+      "authority_mention": false,
+      "concern_spans": [
+        {
+          "type": "third_party_contact_threat",
+          "turn": 4,
+          "text": "ಮತ್ತೆ ಮುಂದೂಡಿದ್ರೆ ನಿಮ್ಮ ಆಫೀಸ್‌ನವರಿಗೆ ಈ ಸಾಲದ ವಿಷಯ ಹೇಳಬೇಕಾಗುತ್ತೆ."
+        }
+      ],
+      "needs_native_review": true
+    },
+    {
+      "id": "RC013",
+      "split": "held_out",
+      "origin": "held_out_v2",
+      "language": "kn-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "intimidation_or_threats",
+        "third_party_contact_threat"
+      ],
+      "authority_mention": false,
+      "concern_spans": [
+        {
+          "type": "intimidation_or_threats",
+          "turn": 4,
+          "text": "ನಮ್ಮವರು ನಿಮ್ಮ ಮನೆಗೆ ಬಂದಾಗ ನೆರೆಹೊರೆಯವರೂ ಹೊರಗೆ ಬರ್ತಾರೆ, ಆಗ ನಿಮಗೆ ಗೊತ್ತಾಗುತ್ತೆ."
+        },
+        {
+          "type": "third_party_contact_threat",
+          "turn": 6,
+          "text": "ಇಲ್ಲದಿದ್ದರೆ ಎಲ್ಲರಿಗೂ ವಿಷಯ ಗೊತ್ತಾಗುತ್ತೆ."
+        },
+        {
+          "type": "third_party_contact_threat",
+          "turn": 4,
+          "text": "ನೆರೆಹೊರೆಯವರೂ ಹೊರಗೆ ಬರ್ತಾರೆ"
+        }
+      ],
+      "needs_native_review": true,
+      "label_changes": [
+        "added third_party_contact_threat span (turn 4) “ನೆರೆಹೊರೆಯವರೂ ಹೊರಗೆ ಬರ್ತಾರೆ” — the house visit also brings the neighbours out (showing neighbours = third-party), as in dev 003/017"
+      ]
+    },
+    {
+      "id": "RC014",
+      "split": "held_out",
+      "origin": "held_out_v2",
+      "language": "en-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": false,
+      "concern_spans": [],
+      "needs_native_review": false
+    },
+    {
+      "id": "RC015",
+      "split": "held_out",
+      "origin": "held_out_v2",
+      "language": "en-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": true,
+      "concern_spans": [
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 4,
+          "text": "a legal notice may be issued for unresolved dues."
+        },
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 4,
+          "text": "That is not the same as an immediate arrest."
+        }
+      ],
+      "needs_native_review": false,
+      "label_changes": [
+        "added authority_or_legal_action_claim span (turn 4) “a legal notice may be issued for unresolved dues.”",
+        "added authority_or_legal_action_claim span (turn 4) “That is not the same as an immediate arrest.”",
+        "authority_or_legal_action_claim kept as a verify flag (authority_mention), not a concern type, because the call is compliant"
+      ]
+    },
+    {
+      "id": "RC016",
+      "split": "held_out",
+      "origin": "held_out_v2",
+      "language": "en-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": false,
+      "concern_spans": [],
+      "needs_native_review": false
+    },
+    {
+      "id": "RC017",
+      "split": "held_out",
+      "origin": "held_out_v2",
+      "language": "en-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "authority_or_legal_action_claim",
+        "intimidation_or_threats"
+      ],
+      "authority_mention": true,
+      "concern_spans": [
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 2,
+          "text": "The court will hear about this if you keep wasting our time."
+        },
+        {
+          "type": "intimidation_or_threats",
+          "turn": 4,
+          "text": "I'm just saying, you don't want to find out what happens when our people come looking for you."
+        }
+      ],
+      "needs_native_review": false
+    },
+    {
+      "id": "RC018",
+      "split": "held_out",
+      "origin": "held_out_v2",
+      "language": "en-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "abusive_language",
+        "third_party_contact_threat"
+      ],
+      "authority_mention": false,
+      "concern_spans": [
+        {
+          "type": "abusive_language",
+          "turn": 4,
+          "text": "Stop acting like an idiot and answer the question."
+        },
+        {
+          "type": "third_party_contact_threat",
+          "turn": 6,
+          "text": "If you keep delaying, perhaps your employer can explain why you ignore your responsibilities."
+        }
+      ],
+      "needs_native_review": false
+    },
+    {
+      "id": "RC019",
+      "split": "held_out",
+      "origin": "held_out_v2",
+      "language": "en-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "authority_or_legal_action_claim",
+        "third_party_contact_threat"
+      ],
+      "authority_mention": true,
+      "concern_spans": [
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 4,
+          "text": "If Friday passes, we can send a legal notice and take the matter further."
+        },
+        {
+          "type": "third_party_contact_threat",
+          "turn": 6,
+          "text": "And if you still don't respond, don't be surprised if your family starts getting questions about the money."
+        }
+      ],
+      "needs_native_review": false
+    },
+    {
+      "id": "RC020",
+      "split": "held_out",
+      "origin": "held_out_v2",
+      "language": "en-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "authority_or_legal_action_claim",
+        "intimidation_or_threats",
+        "third_party_contact_threat"
+      ],
+      "authority_mention": true,
+      "concern_spans": [
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 2,
+          "text": "We can file an FIR if you think you can just disappear with the money."
+        },
+        {
+          "type": "intimidation_or_threats",
+          "turn": 4,
+          "text": "Then you know we can come there and make sure everyone understands what kind of borrower you are."
+        },
+        {
+          "type": "third_party_contact_threat",
+          "turn": 6,
+          "text": "I'm only saying that if you don't cooperate, the whole neighbourhood might hear about this."
+        },
+        {
+          "type": "third_party_contact_threat",
+          "turn": 4,
+          "text": "make sure everyone understands what kind of borrower you are."
+        }
+      ],
+      "needs_native_review": false,
+      "label_changes": [
+        "added third_party_contact_threat span (turn 4) “make sure everyone understands what kind of borrower you are.” — making 'everyone' understand what kind of borrower he is = showing others (third-party), as in dev 003/017"
       ]
     }
   ]
