@@ -27,6 +27,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -197,6 +198,10 @@ def main() -> None:
     g = ap.add_mutually_exclusive_group()
     g.add_argument("--llm-mock", action="store_true", help="use the offline mock LLM")
     g.add_argument("--no-llm", action="store_true", help="rules only")
+    ap.add_argument("--llm-cache", type=Path, default=None,
+                    help="LLM response cache dir (default outputs/llm_cache, git-ignored). Entries hold only the "
+                         "model's JSON text, backend name, prompt version and language: no request ids, "
+                         "signatures, headers or keys")
     args = ap.parse_args()
     backend = None
     if not args.no_llm:
@@ -204,8 +209,16 @@ def main() -> None:
             backend = make_backend(args.llm_mock, ROOT / ".env")
         except ConfigError as exc:
             sys.exit(f"error: {exc} For this script: --llm-mock (offline) or --no-llm (rules only).")
-    cache_dir = ROOT / "outputs" / ("llm_cache_mock" if args.llm_mock else "llm_cache")
+    cache_dir = args.llm_cache or ROOT / "outputs" / ("llm_cache_mock" if args.llm_mock else "llm_cache")
+    t0 = time.monotonic()
     calls, modes = run(args.split, backend, cache_dir)
+    elapsed = time.monotonic() - t0
+    if backend is not None:
+        api_calls = getattr(backend, "calls", 0)
+        events = getattr(backend, "events", [])
+        print(f"LLM: {api_calls} API request(s) incl. retries, {sum(c['llm_from_cache'] for c in calls)} call(s) "
+              f"from cache, {len(events)} non-200 attempt(s){': ' + '; '.join(events) if events else ''}; "
+              f"total run time {elapsed:.0f} s")
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     out = OUT_DIR / f"classifier_compare_{args.split}{'_mock' if args.llm_mock else ''}.md"
     out.write_text(report(args.split, calls, modes, backend.name if backend else None, args.llm_mock), encoding="utf-8")

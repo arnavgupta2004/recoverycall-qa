@@ -130,6 +130,8 @@ class GeminiBackend:
     session: Any = field(default_factory=requests.Session, repr=False)
     sleep = staticmethod(time.sleep)
     _last: float = 0.0
+    events: list = field(default_factory=list)   # non-200 outcomes per attempt, e.g. "429 rate_limit_exceeded"
+    calls: int = 0
 
     @property
     def name(self) -> str:
@@ -145,6 +147,7 @@ class GeminiBackend:
             if wait > 0:
                 self.sleep(wait)
             self._last = time.monotonic()
+            self.calls += 1
             try:
                 resp = self.session.post(API_URL, headers=headers, data=json.dumps(body, ensure_ascii=False).encode(),
                                          timeout=(CONNECT_TIMEOUT_S, READ_TIMEOUT_S))
@@ -163,6 +166,7 @@ class GeminiBackend:
                     err = f"HTTP {status} {e.get('code', '')} {str(e.get('message', ''))[:300]}"
                 except ValueError:
                     err = f"HTTP {status} {resp.text[:300]}"
+            self.events.append(err[:120])
             if (status is not None and status not in RETRY_STATUSES) or attempt == MAX_TRIES:
                 raise LLMError(err)
             self.sleep(min(60.0, 5.0 * 2 ** (attempt - 1)) * (1 + random.random() * 0.25))

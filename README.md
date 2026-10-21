@@ -217,9 +217,10 @@ python eval_classifier_text.py --split dev --no-llm        # rules only
 - **`src/llm_tagger.py`** calls the Gemini API free tier (default `gemini-3.5-flash-lite`, overridable with `GEMINI_MODEL`).
   - The model gets the four category definitions and returns JSON `{segment_id, type, quote}` at temperature 0.
   - Every quote must be a verbatim substring of its segment (`verify_quote`); anything else is dropped and reported.
-  - Responses are cached in `outputs/llm_cache/`, and `--llm-mock` runs offline.
+  - Responses are cached in `outputs/llm_cache/` (git-ignored; `--llm-cache DIR` overrides it), and `--llm-mock` runs offline. A cache entry holds only the model's JSON text, backend name, prompt version and language: no interaction ids, thought signatures, headers or keys.
+  - The evaluation prints LLM API requests (including retries), cache hits, every non-200 attempt and the run time.
   - The key is read from `GEMINI_API_KEY` (environment or `.env`) and sent only in the request header.
-  - The request format follows the 2026-10-21 Interactions API docs and has not been run against the live API yet.
+  - The request format follows the 2026-10-21 Interactions API docs and was confirmed with a live call on 2026-10-21. No temperature deprecation warning came back.
 - **Hybrid** (`src/hybrid.py`) is rules ∪ verified LLM flags. Same-type flags whose quotes overlap in the same segment are merged, keeping the rules quote. Labels and wording are unchanged.
 - **Scoring:**
   - Conduct categories are scored per call.
