@@ -1,3 +1,4 @@
+# RULES FROZEN 2026-10-21 — do not edit
 """Keyword/phrase rule lists for the four conduct-concern categories.
 
 Rules are keyed by script family: 'devanagari' (hi-IN), 'kannada' (kn-IN), 'latin'
@@ -15,7 +16,7 @@ normalized text.  Use it for short words that could appear as a substring of lon
 Normalization applied before matching: NFC, drop Cf chars, lowercase, punctuation→space,
 collapse whitespace (same as src/metrics.normalize).
 
-RULES NOT YET FROZEN — pending review of dev-set results.
+Rules frozen 2026-10-21 (see the first line): held-out evaluation runs against this exact file.
 """
 
 from __future__ import annotations
