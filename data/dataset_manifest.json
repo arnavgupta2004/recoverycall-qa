@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "Ground-truth labels for the RecoveryCall QA dataset. 'split' is 'dev' (rules were built on this) or 'held_out' (headline evaluation). 'concern_types' lists the four classifier categories present; empty list means compliant. 'hard_negative' is true for compliant calls that contain firm-but-lawful language that must not be flagged. 'needs_native_review' is true for Kannada scripts pending native speaker review.",
+  "note": "Ground-truth labels for the RecoveryCall QA dataset. 'split' is 'dev' (rules were built on this) or 'held_out' (headline evaluation; labels fixed before the classifier was run on it). 'compliant' is false when the call contains a conduct concern or a threatening authority claim. 'concern_types' lists the categories present. 'authority_mention' is true when the agent mentions police, arrest, FIR, court or a legal notice (including lawful mentions in compliant calls); it is scored as a verify flag, separately from the three conduct categories. 'concern_spans' quote the labelled text (turn index + exact substring); dev entries carry authority spans only. 'hard_negative' is true only for compliant calls containing firm-but-lawful language that must not be flagged. 'needs_native_review' is true for Kannada scripts pending native speaker review.",
   "concern_type_labels": {
     "intimidation_or_threats": "Physical threats, agents visiting, sending men to debtor's location",
     "abusive_language": "Slurs, derogatory or shaming language directed at the debtor",
@@ -15,7 +15,9 @@
       "compliant": true,
       "hard_negative": false,
       "concern_types": [],
-      "needs_native_review": false
+      "needs_native_review": false,
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_hi_compliant_02",
@@ -24,7 +26,9 @@
       "compliant": true,
       "hard_negative": false,
       "concern_types": [],
-      "needs_native_review": false
+      "needs_native_review": false,
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_hi_compliant_03",
@@ -33,7 +37,9 @@
       "compliant": true,
       "hard_negative": false,
       "concern_types": [],
-      "needs_native_review": false
+      "needs_native_review": false,
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_hi_compliant_04",
@@ -43,7 +49,9 @@
       "hard_negative": true,
       "concern_types": [],
       "needs_native_review": false,
-      "hard_negative_note": "CIBIL score mention — lawful consequence, not a threat"
+      "hard_negative_note": "CIBIL score mention — lawful consequence, not a threat",
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_hi_compliant_05",
@@ -53,7 +61,9 @@
       "hard_negative": true,
       "concern_types": [],
       "needs_native_review": false,
-      "hard_negative_note": "Escalation mention — internal process, no physical threat or third-party contact"
+      "hard_negative_note": "Escalation mention — internal process, no physical threat or third-party contact",
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_hi_compliant_06",
@@ -63,7 +73,9 @@
       "hard_negative": true,
       "concern_types": [],
       "needs_native_review": false,
-      "hard_negative_note": "Review queue mention — internal process only"
+      "hard_negative_note": "Review queue mention — internal process only",
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_hi_compliant_07",
@@ -72,7 +84,9 @@
       "compliant": true,
       "hard_negative": false,
       "concern_types": [],
-      "needs_native_review": false
+      "needs_native_review": false,
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_en_compliant_01",
@@ -81,7 +95,9 @@
       "compliant": true,
       "hard_negative": false,
       "concern_types": [],
-      "needs_native_review": false
+      "needs_native_review": false,
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_en_compliant_02",
@@ -90,7 +106,9 @@
       "compliant": true,
       "hard_negative": false,
       "concern_types": [],
-      "needs_native_review": false
+      "needs_native_review": false,
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_en_compliant_03",
@@ -100,7 +118,9 @@
       "hard_negative": true,
       "concern_types": [],
       "needs_native_review": false,
-      "hard_negative_note": "CIBIL score mention — lawful consequence"
+      "hard_negative_note": "CIBIL score mention — lawful consequence",
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_en_compliant_04",
@@ -110,7 +130,9 @@
       "hard_negative": true,
       "concern_types": [],
       "needs_native_review": false,
-      "hard_negative_note": "Escalation mention — internal process, no threats"
+      "hard_negative_note": "Escalation mention — internal process, no threats",
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_en_compliant_05",
@@ -119,7 +141,9 @@
       "compliant": true,
       "hard_negative": false,
       "concern_types": [],
-      "needs_native_review": false
+      "needs_native_review": false,
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_en_compliant_06",
@@ -128,7 +152,9 @@
       "compliant": true,
       "hard_negative": false,
       "concern_types": [],
-      "needs_native_review": false
+      "needs_native_review": false,
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_kn_compliant_01",
@@ -137,7 +163,9 @@
       "compliant": true,
       "hard_negative": false,
       "concern_types": [],
-      "needs_native_review": true
+      "needs_native_review": true,
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_kn_compliant_02",
@@ -146,7 +174,9 @@
       "compliant": true,
       "hard_negative": false,
       "concern_types": [],
-      "needs_native_review": true
+      "needs_native_review": true,
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_kn_compliant_03",
@@ -156,7 +186,9 @@
       "hard_negative": true,
       "concern_types": [],
       "needs_native_review": true,
-      "hard_negative_note": "Credit score mention — lawful consequence"
+      "hard_negative_note": "Credit score mention — lawful consequence",
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_kn_compliant_04",
@@ -166,7 +198,9 @@
       "hard_negative": true,
       "concern_types": [],
       "needs_native_review": true,
-      "hard_negative_note": "Escalation mention — internal process only"
+      "hard_negative_note": "Escalation mention — internal process only",
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_kn_compliant_05",
@@ -175,7 +209,9 @@
       "compliant": true,
       "hard_negative": false,
       "concern_types": [],
-      "needs_native_review": true
+      "needs_native_review": true,
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_hi_concern_intimidation_01",
@@ -183,8 +219,12 @@
       "language": "hi-IN",
       "compliant": false,
       "hard_negative": false,
-      "concern_types": ["intimidation_or_threats"],
-      "needs_native_review": false
+      "concern_types": [
+        "intimidation_or_threats"
+      ],
+      "needs_native_review": false,
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_hi_concern_intimidation_02",
@@ -192,8 +232,12 @@
       "language": "hi-IN",
       "compliant": false,
       "hard_negative": false,
-      "concern_types": ["intimidation_or_threats"],
-      "needs_native_review": false
+      "concern_types": [
+        "intimidation_or_threats"
+      ],
+      "needs_native_review": false,
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_hi_concern_third_party_01",
@@ -201,8 +245,12 @@
       "language": "hi-IN",
       "compliant": false,
       "hard_negative": false,
-      "concern_types": ["third_party_contact_threat"],
-      "needs_native_review": false
+      "concern_types": [
+        "third_party_contact_threat"
+      ],
+      "needs_native_review": false,
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_hi_concern_third_party_02",
@@ -210,8 +258,12 @@
       "language": "hi-IN",
       "compliant": false,
       "hard_negative": false,
-      "concern_types": ["third_party_contact_threat"],
-      "needs_native_review": false
+      "concern_types": [
+        "third_party_contact_threat"
+      ],
+      "needs_native_review": false,
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_hi_concern_authority_01",
@@ -219,8 +271,18 @@
       "language": "hi-IN",
       "compliant": false,
       "hard_negative": false,
-      "concern_types": ["authority_or_legal_action_claim"],
-      "needs_native_review": false
+      "concern_types": [
+        "authority_or_legal_action_claim"
+      ],
+      "needs_native_review": false,
+      "authority_mention": true,
+      "concern_spans": [
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 4,
+          "text": "आज नहीं दिए तो हम पुलिस को सूचना देंगे और आपके ख़िलाफ़ एफ़आईआर दर्ज होगी।"
+        }
+      ]
     },
     {
       "id": "dev_hi_concern_authority_02",
@@ -228,8 +290,18 @@
       "language": "hi-IN",
       "compliant": false,
       "hard_negative": false,
-      "concern_types": ["authority_or_legal_action_claim"],
-      "needs_native_review": false
+      "concern_types": [
+        "authority_or_legal_action_claim"
+      ],
+      "needs_native_review": false,
+      "authority_mention": true,
+      "concern_spans": [
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 4,
+          "text": "हमने आपके ख़िलाफ़ कोर्ट में केस दायर कर दिया है और समन आएगा।"
+        }
+      ]
     },
     {
       "id": "dev_hi_concern_abusive_01",
@@ -237,8 +309,12 @@
       "language": "hi-IN",
       "compliant": false,
       "hard_negative": false,
-      "concern_types": ["abusive_language"],
-      "needs_native_review": false
+      "concern_types": [
+        "abusive_language"
+      ],
+      "needs_native_review": false,
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_hi_concern_mixed_01",
@@ -246,8 +322,13 @@
       "language": "hi-IN",
       "compliant": false,
       "hard_negative": false,
-      "concern_types": ["intimidation_or_threats", "third_party_contact_threat"],
-      "needs_native_review": false
+      "concern_types": [
+        "intimidation_or_threats",
+        "third_party_contact_threat"
+      ],
+      "needs_native_review": false,
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_en_concern_intimidation_01",
@@ -255,8 +336,12 @@
       "language": "en-IN",
       "compliant": false,
       "hard_negative": false,
-      "concern_types": ["intimidation_or_threats"],
-      "needs_native_review": false
+      "concern_types": [
+        "intimidation_or_threats"
+      ],
+      "needs_native_review": false,
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_en_concern_third_party_01",
@@ -264,8 +349,12 @@
       "language": "en-IN",
       "compliant": false,
       "hard_negative": false,
-      "concern_types": ["third_party_contact_threat"],
-      "needs_native_review": false
+      "concern_types": [
+        "third_party_contact_threat"
+      ],
+      "needs_native_review": false,
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_en_concern_authority_01",
@@ -273,8 +362,18 @@
       "language": "en-IN",
       "compliant": false,
       "hard_negative": false,
-      "concern_types": ["authority_or_legal_action_claim"],
-      "needs_native_review": false
+      "concern_types": [
+        "authority_or_legal_action_claim"
+      ],
+      "needs_native_review": false,
+      "authority_mention": true,
+      "concern_spans": [
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 4,
+          "text": "Agar aaj nahi diya toh police complaint karenge aur aapko arrest karwayenge."
+        }
+      ]
     },
     {
       "id": "dev_en_concern_abusive_01",
@@ -282,8 +381,12 @@
       "language": "en-IN",
       "compliant": false,
       "hard_negative": false,
-      "concern_types": ["abusive_language"],
-      "needs_native_review": false
+      "concern_types": [
+        "abusive_language"
+      ],
+      "needs_native_review": false,
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_en_concern_mixed_01",
@@ -291,8 +394,19 @@
       "language": "en-IN",
       "compliant": false,
       "hard_negative": false,
-      "concern_types": ["authority_or_legal_action_claim", "third_party_contact_threat"],
-      "needs_native_review": false
+      "concern_types": [
+        "authority_or_legal_action_claim",
+        "third_party_contact_threat"
+      ],
+      "needs_native_review": false,
+      "authority_mention": true,
+      "concern_spans": [
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 4,
+          "text": "Humne court mein case file kar diya hai, warrant aayega."
+        }
+      ]
     },
     {
       "id": "dev_kn_concern_intimidation_01",
@@ -300,8 +414,12 @@
       "language": "kn-IN",
       "compliant": false,
       "hard_negative": false,
-      "concern_types": ["intimidation_or_threats"],
-      "needs_native_review": true
+      "concern_types": [
+        "intimidation_or_threats"
+      ],
+      "needs_native_review": true,
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_kn_concern_third_party_01",
@@ -309,8 +427,12 @@
       "language": "kn-IN",
       "compliant": false,
       "hard_negative": false,
-      "concern_types": ["third_party_contact_threat"],
-      "needs_native_review": true
+      "concern_types": [
+        "third_party_contact_threat"
+      ],
+      "needs_native_review": true,
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_kn_concern_authority_01",
@@ -318,8 +440,18 @@
       "language": "kn-IN",
       "compliant": false,
       "hard_negative": false,
-      "concern_types": ["authority_or_legal_action_claim"],
-      "needs_native_review": true
+      "concern_types": [
+        "authority_or_legal_action_claim"
+      ],
+      "needs_native_review": true,
+      "authority_mention": true,
+      "concern_spans": [
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 4,
+          "text": "ಹಾಗಾದರೆ ನಾವು ಪೊಲೀಸ್ ಕಂಪ್ಲೇಂಟ್ ಮಾಡುತ್ತೇವೆ ಮತ್ತು ನಿಮ್ಮನ್ನು ಬಂಧಿಸಲಾಗುತ್ತದೆ."
+        }
+      ]
     },
     {
       "id": "dev_kn_concern_abusive_01",
@@ -327,8 +459,12 @@
       "language": "kn-IN",
       "compliant": false,
       "hard_negative": false,
-      "concern_types": ["abusive_language"],
-      "needs_native_review": true
+      "concern_types": [
+        "abusive_language"
+      ],
+      "needs_native_review": true,
+      "authority_mention": false,
+      "concern_spans": []
     },
     {
       "id": "dev_kn_concern_mixed_01",
@@ -336,8 +472,484 @@
       "language": "kn-IN",
       "compliant": false,
       "hard_negative": false,
-      "concern_types": ["intimidation_or_threats", "third_party_contact_threat"],
+      "concern_types": [
+        "intimidation_or_threats",
+        "third_party_contact_threat"
+      ],
+      "needs_native_review": true,
+      "authority_mention": false,
+      "concern_spans": []
+    },
+    {
+      "id": "script_001",
+      "split": "held_out",
+      "language": "hi-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": false,
+      "concern_spans": [],
+      "needs_native_review": false,
+      "hard_negative_note": "Credit bureau report consequence of continued default — lawful consequence",
+      "label_changes": [
+        "hard_negative False -> True"
+      ]
+    },
+    {
+      "id": "script_002",
+      "split": "held_out",
+      "language": "hi-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": false,
+      "concern_spans": [],
+      "needs_native_review": false,
+      "hard_negative_note": "Late fee per loan agreement and credit score impact — lawful consequence",
+      "label_changes": [
+        "hard_negative False -> True"
+      ]
+    },
+    {
+      "id": "script_003",
+      "split": "held_out",
+      "language": "hi-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "intimidation_or_threats",
+        "third_party_contact_threat"
+      ],
+      "authority_mention": false,
+      "concern_spans": [
+        {
+          "type": "intimidation_or_threats",
+          "turn": 4,
+          "text": "हमारे लोग आपके घर आएँगे और आपके पड़ोसियों और मोहल्ले वालों को बता देंगे कि आप कर्ज़दार हैं और भुगतान से भाग रहे हैं।"
+        },
+        {
+          "type": "third_party_contact_threat",
+          "turn": 6,
+          "text": "हम आपके ऑफिस में भी सूचित करेंगे — आपके HR को पता चल जाएगा।"
+        }
+      ],
+      "needs_native_review": false
+    },
+    {
+      "id": "script_004",
+      "split": "held_out",
+      "language": "hi-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "authority_or_legal_action_claim",
+        "intimidation_or_threats"
+      ],
+      "authority_mention": true,
+      "concern_spans": [
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 2,
+          "text": "हमने स्थानीय पुलिस थाने में शिकायत करने का निर्णय लिया है।"
+        },
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 4,
+          "text": "धोखाधड़ी की धारा लगाई जा सकती है। आपने जानबूझकर लोन लिया और वापस नहीं किया — यह एक आपराधिक मामला बन सकता है। अभी भुगतान करें, नहीं तो FIR हो जाएगी।"
+        },
+        {
+          "type": "intimidation_or_threats",
+          "turn": 6,
+          "text": "आज रात तक ट्रांसफर करें।"
+        }
+      ],
+      "needs_native_review": false,
+      "label_changes": [
+        "hard_negative True -> False (hard negatives are compliant calls only)"
+      ]
+    },
+    {
+      "id": "script_005",
+      "split": "held_out",
+      "language": "hi-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": false,
+      "concern_spans": [],
+      "needs_native_review": false,
+      "hard_negative_note": "Notice to the named guarantor under the loan agreement — lawful third-party contact",
+      "label_changes": [
+        "hard_negative False -> True"
+      ]
+    },
+    {
+      "id": "script_006",
+      "split": "held_out",
+      "language": "hi-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "abusive_language",
+        "intimidation_or_threats"
+      ],
+      "authority_mention": false,
+      "concern_spans": [
+        {
+          "type": "abusive_language",
+          "turn": 4,
+          "text": "तुम जैसे लोग जानबूझकर पैसे नहीं देते — बेईमान लोग हो।"
+        },
+        {
+          "type": "intimidation_or_threats",
+          "turn": 4,
+          "text": "हम तुम्हारे घर के बाहर बैठ जाएँगे, तब देखेंगे।"
+        }
+      ],
+      "needs_native_review": false
+    },
+    {
+      "id": "script_007",
+      "split": "held_out",
+      "language": "hi-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": true,
+      "concern_spans": [
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 4,
+          "text": "हमने कानूनी नोटिस भेजने की तैयारी शुरू की है।"
+        }
+      ],
+      "needs_native_review": false,
+      "hard_negative_note": "Formal legal notice under the loan agreement, avoidable by payment — lawful process",
+      "label_changes": [
+        "added authority_or_legal_action_claim span (turn 4)",
+        "hard_negative False -> True"
+      ]
+    },
+    {
+      "id": "script_008",
+      "split": "held_out",
+      "language": "kn-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": false,
+      "concern_spans": [],
+      "needs_native_review": true,
+      "hard_negative_note": "Late fee and CIBIL report impact — lawful consequence",
+      "label_changes": [
+        "hard_negative False -> True"
+      ]
+    },
+    {
+      "id": "script_009",
+      "split": "held_out",
+      "language": "kn-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "authority_or_legal_action_claim",
+        "intimidation_or_threats"
+      ],
+      "authority_mention": true,
+      "concern_spans": [
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 4,
+          "text": "ನಾಳೆ ನಾವು ಪೊಲೀಸ್ ಸ್ಟೇಷನ್ ಗೆ ಹೋಗ್ತೀವಿ, ನಿಮ್ಮ ಮೇಲೆ ಕ್ರಿಮಿನಲ್ ಕೇಸ್ ಹಾಕ್ತೀವಿ. ಅರೆಸ್ಟ್ ಆಗ್ತೀರಿ ಅಂತ ತಯಾರಾಗಿ ಇರಿ."
+        },
+        {
+          "type": "intimidation_or_threats",
+          "turn": 6,
+          "text": "ನಾಳೆ ಬೆಳಗ್ಗೆ ನಿಮ್ಮ ಮನೆ ಬಾಗಿಲಿಗೆ ಬರ್ತೀವಿ."
+        }
+      ],
       "needs_native_review": true
+    },
+    {
+      "id": "script_010",
+      "split": "held_out",
+      "language": "kn-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "third_party_contact_threat",
+        "abusive_language"
+      ],
+      "authority_mention": false,
+      "concern_spans": [
+        {
+          "type": "third_party_contact_threat",
+          "turn": 2,
+          "text": "ನಿನ್ನ ಯಜಮಾನರಿಗೆ ಮತ್ತು ನೆರೆಮನೆಯವರಿಗೆ ಹೇಳ್ತೀನಿ ನೀನು ಸಾಲ ವಂಚಕಿ ಅಂತ."
+        },
+        {
+          "type": "abusive_language",
+          "turn": 4,
+          "text": "ನಿನ್ನ ಹಾಗಿರೋ ಮೋಸದ ಹೆಂಗಸರಿಗೆ ಇದೇ ಸರಿ."
+        },
+        {
+          "type": "third_party_contact_threat",
+          "turn": 6,
+          "text": "ನಿನ್ನ WhatsApp ಕಾಂಟ್ಯಾಕ್ಟ್ ಎಲ್ಲರಿಗೂ ಮೆಸೇಜ್ ಹೋಗ್ತದೆ ನಿನ್ನ ಸಾಲ ಬಗ್ಗೆ."
+        }
+      ],
+      "needs_native_review": true,
+      "label_changes": [
+        "hard_negative True -> False (hard negatives are compliant calls only)"
+      ]
+    },
+    {
+      "id": "script_011",
+      "split": "held_out",
+      "language": "kn-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": true,
+      "concern_spans": [
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 2,
+          "text": "ನಾವು ಕಾನೂನು ನೋಟಿಸ್ ಕಳಿಸೋ ಪ್ರಕ್ರಿಯೆ ಶುರು ಮಾಡಿದ್ದೀವಿ"
+        }
+      ],
+      "needs_native_review": true,
+      "hard_negative_note": "Legal notice process per policy, avoidable by payment; credit score impact — lawful process",
+      "label_changes": [
+        "added authority_or_legal_action_claim span (turn 2)",
+        "hard_negative False -> True"
+      ]
+    },
+    {
+      "id": "script_012",
+      "split": "held_out",
+      "language": "kn-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "intimidation_or_threats",
+        "abusive_language"
+      ],
+      "authority_mention": false,
+      "concern_spans": [
+        {
+          "type": "abusive_language",
+          "turn": 2,
+          "text": "ನಿಮ್ಮ ಹಾಗಿರೋ ಮೋಸಗಾರರ ಜೊತೆ ನಾವು ಹೀಗೆ ಮಾಡ್ತೀವಿ."
+        },
+        {
+          "type": "intimidation_or_threats",
+          "turn": 4,
+          "text": "ನಮ್ಮ ರಿಕವರಿ ತಂಡ ನಿಮ್ಮ ಮನೆ ಬಾಗಿಲ ಮುಂದೆ ಬಂದು ಕೂರ್ತಾರೆ — ಅಕ್ಕ-ಪಕ್ಕದ ಮನೆಯವರ ಮುಂದೆ ಎಲ್ಲ ಬಯಲು ಮಾಡ್ತಾರೆ."
+        }
+      ],
+      "needs_native_review": true
+    },
+    {
+      "id": "script_013",
+      "split": "held_out",
+      "language": "kn-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": false,
+      "concern_spans": [],
+      "needs_native_review": true,
+      "hard_negative_note": "Co-borrower joint liability under the agreement; credit score impact — lawful consequence",
+      "label_changes": [
+        "hard_negative False -> True"
+      ]
+    },
+    {
+      "id": "script_014",
+      "split": "held_out",
+      "language": "en-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": false,
+      "concern_spans": [],
+      "needs_native_review": false,
+      "hard_negative_note": "Late fee and CIBIL report impact — lawful consequence",
+      "label_changes": [
+        "hard_negative False -> True"
+      ]
+    },
+    {
+      "id": "script_015",
+      "split": "held_out",
+      "language": "en-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "authority_or_legal_action_claim",
+        "third_party_contact_threat"
+      ],
+      "authority_mention": true,
+      "concern_spans": [
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 2,
+          "text": "court mein civil suit file karne ka decision liya hai."
+        },
+        {
+          "type": "third_party_contact_threat",
+          "turn": 4,
+          "text": "hum aapke employer ko ek formal letter bhejenge — HR ko pata chalega ki aap defaulter hain."
+        },
+        {
+          "type": "third_party_contact_threat",
+          "turn": 6,
+          "text": "aapke family members ko bhi phone karenge — jo guarantor nahi hain unhe bhi bata denge situation kya hai."
+        }
+      ],
+      "needs_native_review": false
+    },
+    {
+      "id": "script_016",
+      "split": "held_out",
+      "language": "en-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": false,
+      "concern_spans": [],
+      "needs_native_review": false,
+      "hard_negative_note": "Optional property visit offered only with consent — lawful, not a threat",
+      "label_changes": [
+        "hard_negative False -> True"
+      ]
+    },
+    {
+      "id": "script_017",
+      "split": "held_out",
+      "language": "en-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "abusive_language",
+        "intimidation_or_threats"
+      ],
+      "authority_mention": false,
+      "concern_spans": [
+        {
+          "type": "abusive_language",
+          "turn": 2,
+          "text": "Aap toh cheater nikle, hum log galat the jo aapko loan diye."
+        },
+        {
+          "type": "abusive_language",
+          "turn": 4,
+          "text": "Aapke jaise log deliberately default karte hain aur phir rone ka natak karte hain."
+        },
+        {
+          "type": "intimidation_or_threats",
+          "turn": 6,
+          "text": "hamare log kal subah aapke ghar ke bahar khade honge — neighbours ko dikhayenge kin logo ne hamare saath fraud kiya."
+        }
+      ],
+      "needs_native_review": false,
+      "label_changes": [
+        "hard_negative True -> False (hard negatives are compliant calls only)"
+      ]
+    },
+    {
+      "id": "script_018",
+      "split": "held_out",
+      "language": "en-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": false,
+      "concern_spans": [],
+      "needs_native_review": false,
+      "hard_negative_note": "Credit bureau status and NOC process — lawful consequence",
+      "label_changes": [
+        "hard_negative False -> True"
+      ]
+    },
+    {
+      "id": "script_019",
+      "split": "held_out",
+      "language": "en-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "authority_or_legal_action_claim",
+        "intimidation_or_threats"
+      ],
+      "authority_mention": true,
+      "concern_spans": [
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 2,
+          "text": "Hamari legal team ne FIR darne ki taiyaari shuru kar di hai — aap par fraud ka case banta hai."
+        },
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 6,
+          "text": "aapko police station mein bulaya jaayega, aur woh call aapko hamaari nahi, police ki taraf se aayegi."
+        },
+        {
+          "type": "intimidation_or_threats",
+          "turn": 8,
+          "text": "Tab tak arrest ki preparation karo."
+        },
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 8,
+          "text": "Tab tak arrest ki preparation karo."
+        }
+      ],
+      "needs_native_review": false,
+      "label_changes": [
+        "added authority_or_legal_action_claim span (turn 8)"
+      ]
+    },
+    {
+      "id": "script_020",
+      "split": "held_out",
+      "language": "en-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "third_party_contact_threat",
+        "abusive_language",
+        "intimidation_or_threats"
+      ],
+      "authority_mention": false,
+      "concern_spans": [
+        {
+          "type": "intimidation_or_threats",
+          "turn": 2,
+          "text": "kal seedha aapke ghar aate hain — building society ke log sab dekhenge."
+        },
+        {
+          "type": "third_party_contact_threat",
+          "turn": 4,
+          "text": "aapki wife ka number bhi hamare paas hai, unhe bhi update kar denge situation ke baare mein."
+        },
+        {
+          "type": "abusive_language",
+          "turn": 6,
+          "text": "Aapke jaise napake log jab payment nahi karte toh puri family ko bataana padta hai."
+        },
+        {
+          "type": "third_party_contact_threat",
+          "turn": 6,
+          "text": "WhatsApp pe contacts bhi hain hamare paas — ek message mein sab pata chal jaata hai."
+        }
+      ],
+      "needs_native_review": false,
+      "label_changes": [
+        "added intimidation_or_threats to concern_types (a span of that type exists)",
+        "hard_negative True -> False (hard negatives are compliant calls only)"
+      ]
     }
   ]
 }

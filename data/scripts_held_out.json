@@ -1,0 +1,954 @@
+{
+  "version": 1,
+  "note": "HELD-OUT set: written externally after the concern rules were frozen (2026-10-21), converted from data/held_out_source/scripts_held_out_external.json by prepare_labels.py. Headline evaluation only; never tune rules on it. All calls, people, companies and amounts are fictional. STT critical_spans (amount/negation) are not authored yet; voices are per-language defaults (review speaker gender before synthesis).",
+  "tts_model": "timbre-v2.5",
+  "tts_speed": 1.0,
+  "scenarios": [
+    {
+      "id": "script_001",
+      "title": "Held-out Hindi compliant",
+      "tts_language": "hi-IN",
+      "stt_language_codes": [
+        "hi-IN"
+      ],
+      "voices": {
+        "agent": "Hemraj",
+        "customer": "Chitra"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "नमस्ते, क्या मैं श्री राजेश वर्मा जी से बात कर सकता हूँ?"
+        },
+        {
+          "speaker": "customer",
+          "text": "हाँ, मैं ही राजेश वर्मा बोल रहा हूँ।"
+        },
+        {
+          "speaker": "agent",
+          "text": "नमस्ते राजेश जी, मैं सुनील कुमार बोल रहा हूँ, प्रभात फिनसर्व प्राइवेट लिमिटेड की तरफ से। आपके पर्सनल लोन अकाउंट नंबर PL-सात-चार-तीन-दो-एक के संदर्भ में बात करनी थी। अभी बात करना ठीक रहेगा?"
+        },
+        {
+          "speaker": "customer",
+          "text": "हाँ बोलिए, क्या हुआ?"
+        },
+        {
+          "speaker": "agent",
+          "text": "राजेश जी, आपकी ईएमआई, जो पाँच हज़ार रुपये की थी, पिछले दो महीनों से बकाया है। कुल बकाया राशि अभी दस हज़ार सात सौ रुपये है, जिसमें विलंब शुल्क भी शामिल है। क्या आप इस बारे में कुछ बताना चाहेंगे?"
+        },
+        {
+          "speaker": "customer",
+          "text": "सर, इस महीने थोड़ी तकलीफ है, अगले हफ्ते सैलरी आने वाली है।"
+        },
+        {
+          "speaker": "agent",
+          "text": "ठीक है राजेश जी, मैं समझता हूँ। क्या आप अगले सोमवार तक कम से कम पाँच हज़ार रुपये जमा कर सकते हैं और बाकी दो हफ्ते के अंदर? मैं आपके लिए यह व्यवस्था नोट कर सकता हूँ।"
+        },
+        {
+          "speaker": "customer",
+          "text": "ठीक है, सोमवार को पाँच हज़ार दे दूँगा।"
+        },
+        {
+          "speaker": "agent",
+          "text": "बहुत अच्छा। मैं इसे दर्ज कर रहा हूँ। राजेश जी, कृपया ध्यान रखें कि लगातार चूक होने पर यह आपकी क्रेडिट ब्यूरो रिपोर्ट पर असर डाल सकता है, जो भविष्य में किसी भी लोन के लिए दिक्कत पैदा कर सकता है। धन्यवाद, और अगर कोई परेशानी हो तो हमें बताएँ।"
+        }
+      ]
+    },
+    {
+      "id": "script_002",
+      "title": "Held-out Hindi compliant",
+      "tts_language": "hi-IN",
+      "stt_language_codes": [
+        "hi-IN"
+      ],
+      "voices": {
+        "agent": "Hemraj",
+        "customer": "Chitra"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "नमस्ते, मैं रिया शर्मा बोल रही हूँ, मेघदूत क्रेडिट सर्विसेज़ से। क्या मैं सुश्री अनीता मेहता जी से बात कर सकती हूँ?"
+        },
+        {
+          "speaker": "customer",
+          "text": "जी, मैं अनीता बोल रही हूँ।"
+        },
+        {
+          "speaker": "agent",
+          "text": "अनीता जी, आपके होम लोन की किस्त — जो पंद्रह हज़ार रुपये की है — पिछले महीने नहीं आई। आपके खाते में अभी भी बकाया दर्ज है। क्या कोई समस्या है?"
+        },
+        {
+          "speaker": "customer",
+          "text": "मेरे पति की तबियत खराब थी, इसलिए देर हो गई। मैं इस हफ्ते भर दूँगी।"
+        },
+        {
+          "speaker": "agent",
+          "text": "कोई बात नहीं, अनीता जी। परिवार का ध्यान रखें। बस यह ध्यान रखें कि लोन एग्रीमेंट के अनुसार समय पर भुगतान न होने पर दो प्रतिशत प्रति माह का विलंब शुल्क लगता है और यह क्रेडिट स्कोर को प्रभावित कर सकता है। क्या इस हफ्ते शुक्रवार तक हो जाएगा?"
+        },
+        {
+          "speaker": "customer",
+          "text": "हाँ, शुक्रवार तक कर दूँगी।"
+        },
+        {
+          "speaker": "agent",
+          "text": "बहुत अच्छा। मैं यह नोट कर लेती हूँ। भुगतान के बाद हमारी तरफ से एक कन्फर्मेशन SMS आएगा। धन्यवाद अनीता जी।"
+        }
+      ]
+    },
+    {
+      "id": "script_003",
+      "title": "Held-out Hindi concerning",
+      "tts_language": "hi-IN",
+      "stt_language_codes": [
+        "hi-IN"
+      ],
+      "voices": {
+        "agent": "Hemraj",
+        "customer": "Chitra"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "हेलो, राकेश सिन्हा बोल रहे हो?"
+        },
+        {
+          "speaker": "customer",
+          "text": "हाँ मैं ही हूँ, कौन बोल रहा है?"
+        },
+        {
+          "speaker": "agent",
+          "text": "मैं कृष्ण मूर्ति बोल रहा हूँ, वेगा रिकवरी से। राकेश जी, अट्ठाईस हज़ार रुपये तीन महीने से बकाया हैं। अब हम इसे ज़्यादा टाल नहीं सकते।"
+        },
+        {
+          "speaker": "customer",
+          "text": "सर, मेरी नौकरी गई है, अभी पैसे नहीं हैं।"
+        },
+        {
+          "speaker": "agent",
+          "text": "नौकरी गई या क्या — यह हमारी समस्या नहीं है। अगर इस हफ्ते पूरा पैसा नहीं आया, तो हमारे लोग आपके घर आएँगे और आपके पड़ोसियों और मोहल्ले वालों को बता देंगे कि आप कर्ज़दार हैं और भुगतान से भाग रहे हैं।"
+        },
+        {
+          "speaker": "customer",
+          "text": "सर प्लीज़, ऐसा मत कीजिए, मैं कोशिश करूँगा।"
+        },
+        {
+          "speaker": "agent",
+          "text": "कोशिश नहीं, करना होगा। कल तक पैसे आ जाने चाहिए, वरना हम आपके ऑफिस में भी सूचित करेंगे — आपके HR को पता चल जाएगा। सोच लो।"
+        },
+        {
+          "speaker": "customer",
+          "text": "यह तो ज़्यादती है।"
+        },
+        {
+          "speaker": "agent",
+          "text": "ज़्यादती नहीं, यह काम का तरीका है। कल सुबह दस बजे तक फोन करना।"
+        }
+      ]
+    },
+    {
+      "id": "script_004",
+      "title": "Held-out Hindi concerning",
+      "tts_language": "hi-IN",
+      "stt_language_codes": [
+        "hi-IN"
+      ],
+      "voices": {
+        "agent": "Hemraj",
+        "customer": "Chitra"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "नमस्ते, क्या यह प्रमोद तिवारी का नंबर है?"
+        },
+        {
+          "speaker": "customer",
+          "text": "हाँ।"
+        },
+        {
+          "speaker": "agent",
+          "text": "प्रमोद जी, मैं संजय गर्ग बोल रहा हूँ। आपके छत्तीस हज़ार रुपये बकाया हैं। हमने आपको कई बार याद दिलाया। अब हमने स्थानीय पुलिस थाने में शिकायत करने का निर्णय लिया है।"
+        },
+        {
+          "speaker": "customer",
+          "text": "कर्ज़ के लिए पुलिस क्यों आएगी?"
+        },
+        {
+          "speaker": "agent",
+          "text": "देखिए, धोखाधड़ी की धारा लगाई जा सकती है। आपने जानबूझकर लोन लिया और वापस नहीं किया — यह एक आपराधिक मामला बन सकता है। अभी भुगतान करें, नहीं तो FIR हो जाएगी।"
+        },
+        {
+          "speaker": "customer",
+          "text": "सर यह सही नहीं है, यह सिविल मामला है।"
+        },
+        {
+          "speaker": "agent",
+          "text": "आप हमें कानून न सिखाएँ। हमारे पास आपका पूरा रिकॉर्ड है। आज रात तक ट्रांसफर करें।"
+        },
+        {
+          "speaker": "customer",
+          "text": "मैं अपने वकील से बात करूँगा।"
+        },
+        {
+          "speaker": "agent",
+          "text": "वकील से बात करने की ज़रूरत नहीं। सीधे पैसे दो, सब ठीक हो जाएगा।"
+        }
+      ]
+    },
+    {
+      "id": "script_005",
+      "title": "Held-out Hindi compliant",
+      "tts_language": "hi-IN",
+      "stt_language_codes": [
+        "hi-IN"
+      ],
+      "voices": {
+        "agent": "Hemraj",
+        "customer": "Chitra"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "नमस्ते, मैं आकाश पिल्लई बोल रहा हूँ, उदय फाइनेंस की तरफ से। क्या मैं श्री महेश दुबे जी से बात कर सकता हूँ?"
+        },
+        {
+          "speaker": "customer",
+          "text": "हाँ, मैं महेश बोल रहा हूँ।"
+        },
+        {
+          "speaker": "agent",
+          "text": "महेश जी, आपके वाहन लोन पर दो किस्तें — यानी कुल बाईस हज़ार रुपये — बकाया हैं। हमने आपको गारंटर श्री विनोद नायर जी को भी सूचित करने का अनुरोध किया था। क्या वे इस भुगतान में सहयोग कर सकते हैं?"
+        },
+        {
+          "speaker": "customer",
+          "text": "विनोद भाई से बात हुई थी, वे भी थोड़ा सहयोग कर सकते हैं।"
+        },
+        {
+          "speaker": "agent",
+          "text": "यह बहुत अच्छा है। हम गारंटर को नोटिस भेज सकते हैं, जो लोन समझौते के अनुसार उनकी जिम्मेदारी भी है। आप दोनों मिलकर भुगतान की व्यवस्था करें और हमें सूचित करें।"
+        },
+        {
+          "speaker": "customer",
+          "text": "ठीक है, हम इस हफ्ते के अंत में कुछ व्यवस्था करते हैं।"
+        },
+        {
+          "speaker": "agent",
+          "text": "बिल्कुल, महेश जी। अगर कोई सहूलियत चाहिए तो हमारे कस्टमर केयर नंबर पर बात करें। धन्यवाद।"
+        }
+      ]
+    },
+    {
+      "id": "script_006",
+      "title": "Held-out Hindi concerning",
+      "tts_language": "hi-IN",
+      "stt_language_codes": [
+        "hi-IN"
+      ],
+      "voices": {
+        "agent": "Hemraj",
+        "customer": "Chitra"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "अरे सुनो, दीपक चौधरी हो?"
+        },
+        {
+          "speaker": "customer",
+          "text": "हाँ, कौन?"
+        },
+        {
+          "speaker": "agent",
+          "text": "तुम जानते ही हो कौन हूँ। तुमने पाँच महीने से एक पैसा नहीं दिया। शर्म नहीं आती?"
+        },
+        {
+          "speaker": "customer",
+          "text": "सर मैं दे दूँगा, बस थोड़ा वक्त चाहिए।"
+        },
+        {
+          "speaker": "agent",
+          "text": "वक्त? पाँच महीने बाद भी वक्त? तुम जैसे लोग जानबूझकर पैसे नहीं देते — बेईमान लोग हो। अगर इस बार नहीं दिया तो हम तुम्हारे घर के बाहर बैठ जाएँगे, तब देखेंगे।"
+        },
+        {
+          "speaker": "customer",
+          "text": "यह तो सरासर धमकी है।"
+        },
+        {
+          "speaker": "agent",
+          "text": "जो समझना है समझो। कल शाम तक पूरे साठ हज़ार रुपये चाहिए।"
+        }
+      ]
+    },
+    {
+      "id": "script_007",
+      "title": "Held-out Hindi compliant",
+      "tts_language": "hi-IN",
+      "stt_language_codes": [
+        "hi-IN"
+      ],
+      "voices": {
+        "agent": "Hemraj",
+        "customer": "Chitra"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "नमस्ते, मैं मोनिका राव बोल रही हूँ, सूर्या फाइनेंशियल सर्विसेज़ से। क्या मैं श्री कैलाश पाटिल जी से बात कर सकती हूँ?"
+        },
+        {
+          "speaker": "customer",
+          "text": "जी, मैं ही हूँ।"
+        },
+        {
+          "speaker": "agent",
+          "text": "कैलाश जी, आपके बिज़नेस लोन अकाउंट पर तीन किस्तें बकाया हैं, जो कुल पचास हज़ार रुपये बनती हैं। आपको इससे पहले भी याद दिलाया गया था।"
+        },
+        {
+          "speaker": "customer",
+          "text": "हाँ मुझे पता है, मेरे व्यापार में नुकसान हुआ है।"
+        },
+        {
+          "speaker": "agent",
+          "text": "मैं समझती हूँ कैलाश जी। हमारी कंपनी की तरफ से एक बात बताऊँ — हमने कानूनी नोटिस भेजने की तैयारी शुरू की है। यह सिर्फ एक औपचारिक कदम है जो लोन समझौते के अंतर्गत हमें उठाना होता है। अगर आप भुगतान का कोई प्रबंध करें, तो हम इसे टाल सकते हैं।"
+        },
+        {
+          "speaker": "customer",
+          "text": "ठीक है, मैं अगले हफ्ते बीस हज़ार दे सकता हूँ।"
+        },
+        {
+          "speaker": "agent",
+          "text": "बहुत अच्छा। मैं आपके लिए यह रिकॉर्ड में डालती हूँ। बाकी राशि के लिए हम फिर बात करेंगे। धन्यवाद कैलाश जी।"
+        }
+      ]
+    },
+    {
+      "id": "script_008",
+      "title": "Held-out Kannada compliant",
+      "tts_language": "kn-IN",
+      "stt_language_codes": [
+        "kn-IN"
+      ],
+      "voices": {
+        "agent": "Kavin",
+        "customer": "Saanvi"
+      },
+      "needs_native_review": true,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "ನಮಸ್ಕಾರ, ನಾನು ರಮೇಶ್ ನಾಯ್ಕ್ ಮಾತಾಡ್ತಿದ್ದೀನಿ, ಕಾವೇರಿ ಫೈನಾನ್ಸ್ ಲಿಮಿಟೆಡ್ ಕಡೆಯಿಂದ. ಶ್ರೀ ಗಣೇಶ್ ರೆಡ್ಡಿ ಅವರು ಸಿಗ್ತಾರಾ?"
+        },
+        {
+          "speaker": "customer",
+          "text": "ಹೌದು, ನಾನೇ ಗಣೇಶ್ ಮಾತಾಡ್ತಿದ್ದೀನಿ."
+        },
+        {
+          "speaker": "agent",
+          "text": "ಗಣೇಶ್ ಅವರೇ, ನಿಮ್ಮ ಪರ್ಸನಲ್ ಲೋನ್ ಕಂತು ಎರಡು ತಿಂಗಳಿಂದ ಬಾಕಿ ಇದೆ. ಒಟ್ಟು ಹನ್ನೆರಡು ಸಾವಿರ ರೂಪಾಯಿ ಆಗ್ತಿದೆ. ಈಗ ಮಾತಾಡೋಕೆ ಸಮಯ ಆಗ್ತದಾ?"
+        },
+        {
+          "speaker": "customer",
+          "text": "ಆಗ್ತದೆ ಸಾರ್. ಈ ತಿಂಗಳು ಸ್ವಲ್ಪ ತೊಂದರೆ ಆಯ್ತು."
+        },
+        {
+          "speaker": "agent",
+          "text": "ಪರವಾಗಿಲ್ಲ. ಆದ್ರೆ ಒಂದು ವಿಷಯ ಹೇಳ್ತೀನಿ — ತಡ ಪಾವತಿ ಆದ್ರೆ ಒಂದುವರೆ ಪ್ರತಿಶತ ತಡ ಶುಲ್ಕ ಪ್ರತಿ ತಿಂಗಳು ಸೇರ್ಕೊಳ್ತದೆ. ಮತ್ತೆ ಸಿಬಿಲ್ ರಿಪೋರ್ಟ್ ಮೇಲೂ ಪರಿಣಾಮ ಆಗ್ತದೆ. ಯಾವಾಗ ಮಾಡ್ಬಹುದು?"
+        },
+        {
+          "speaker": "customer",
+          "text": "ಈ ಶುಕ್ರವಾರ ಸ್ಯಾಲರಿ ಬರ್ತದೆ, ಆಗ ಮಾಡ್ತೀನಿ."
+        },
+        {
+          "speaker": "agent",
+          "text": "ತುಂಬಾ ಒಳ್ಳೆಯದು. ನಾನು ಇದನ್ನ ನೋಟ್ ಮಾಡ್ಕೊಳ್ತೀನಿ. ಯಾವುದಾದರೂ ಸಮಸ್ಯೆ ಆದ್ರೆ ನಮಗೆ ಮೊದ್ಲೇ ಕಾಲ್ ಮಾಡಿ. ಧನ್ಯವಾದ ಗಣೇಶ್ ಅವರೇ."
+        }
+      ]
+    },
+    {
+      "id": "script_009",
+      "title": "Held-out Kannada concerning",
+      "tts_language": "kn-IN",
+      "stt_language_codes": [
+        "kn-IN"
+      ],
+      "voices": {
+        "agent": "Kavin",
+        "customer": "Saanvi"
+      },
+      "needs_native_review": true,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "ಹಲೋ, ನೀವು ಶಿವಕುಮಾರ್ ಅಲ್ವಾ?"
+        },
+        {
+          "speaker": "customer",
+          "text": "ಹೌದು, ಯಾರು ಮಾತಾಡ್ತಿದ್ದೀರಿ?"
+        },
+        {
+          "speaker": "agent",
+          "text": "ನಾನು ಪ್ರವೀಣ್ ಹೆಗಡೆ, ಸ್ಕೈ ರಿಕವರಿ ಸರ್ವೀಸ್. ನಿಮ್ಮ ಮೂವತ್ತೈದು ಸಾವಿರ ರೂಪಾಯಿ ನಾಲ್ಕು ತಿಂಗಳಿಂದ ಬಾಕಿ ಇದೆ. ನಮ್ಮ ಸಂಸ್ಥೆ ಇನ್ನ ಸಹಿಸೊಲ್ಲ."
+        },
+        {
+          "speaker": "customer",
+          "text": "ಸಾರ್, ಸ್ವಲ್ಪ ಟೈಮ್ ಕೊಡಿ, ನಾನು ಪಾವತಿ ಮಾಡ್ತೀನಿ."
+        },
+        {
+          "speaker": "agent",
+          "text": "ಟೈಮ್ ಮುಗಿದು ಹೋಯ್ತು. ನಾಳೆ ನಾವು ಪೊಲೀಸ್ ಸ್ಟೇಷನ್ ಗೆ ಹೋಗ್ತೀವಿ, ನಿಮ್ಮ ಮೇಲೆ ಕ್ರಿಮಿನಲ್ ಕೇಸ್ ಹಾಕ್ತೀವಿ. ಅರೆಸ್ಟ್ ಆಗ್ತೀರಿ ಅಂತ ತಯಾರಾಗಿ ಇರಿ."
+        },
+        {
+          "speaker": "customer",
+          "text": "ಲೋನ್ ಮರುಪಾವತಿ ಮಾಡದ ಮೇಲೆ ಅರೆಸ್ಟ್ ಆಗ್ತದಾ?"
+        },
+        {
+          "speaker": "agent",
+          "text": "ನಮ್ಮ ಲಾಯರ್ ಹಾಗೆ ಹೇಳಿದ್ದಾರೆ. ಈ ರಾತ್ರಿ ಒಳಗೆ ಪೈಸೆ ಕಳಿಸಿ, ಇಲ್ಲದಿದ್ದರೆ ನಾಳೆ ಬೆಳಗ್ಗೆ ನಿಮ್ಮ ಮನೆ ಬಾಗಿಲಿಗೆ ಬರ್ತೀವಿ."
+        },
+        {
+          "speaker": "customer",
+          "text": "ಇದು ಸರಿ ಇಲ್ಲ ಸಾರ್."
+        },
+        {
+          "speaker": "agent",
+          "text": "ಸರಿ-ತಪ್ಪು ಆಮೇಲೆ ಮಾತಾಡ್ಬಹುದು. ಮೊದ್ಲು ಹಣ ಕಳಿಸಿ."
+        }
+      ]
+    },
+    {
+      "id": "script_010",
+      "title": "Held-out Kannada concerning",
+      "tts_language": "kn-IN",
+      "stt_language_codes": [
+        "kn-IN"
+      ],
+      "voices": {
+        "agent": "Kavin",
+        "customer": "Saanvi"
+      },
+      "needs_native_review": true,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "ಹಲೋ, ನೀನು ಸೀತಾ ಅಲ್ವಾ?"
+        },
+        {
+          "speaker": "customer",
+          "text": "ಹೌದು, ಯಾರು?"
+        },
+        {
+          "speaker": "agent",
+          "text": "ನಾನು ರಾಘವೇಂದ್ರ, ದ್ರಾವಿಡ ಫಿನ್ಯಾನ್ಸ್ ನಿಂದ. ನೀನು ಇಪ್ಪತ್ತು ಸಾವಿರ ರೂಪಾಯಿ ಕಟ್ಟದ ಹೋದ ಕಾರಣ, ನಿನ್ನ ಯಜಮಾನರಿಗೆ ಮತ್ತು ನೆರೆಮನೆಯವರಿಗೆ ಹೇಳ್ತೀನಿ ನೀನು ಸಾಲ ವಂಚಕಿ ಅಂತ."
+        },
+        {
+          "speaker": "customer",
+          "text": "ಏನ್ ಮಾಡ್ತೀರಿ? ಅದು ಸರಿ ಇಲ್ಲ."
+        },
+        {
+          "speaker": "agent",
+          "text": "ಸರಿ ಇರಲಿ ತಪ್ಪಿರಲಿ — ನಿನ್ನ ಹಾಗಿರೋ ಮೋಸದ ಹೆಂಗಸರಿಗೆ ಇದೇ ಸರಿ. ನಿನ್ನ ಮಗನ ಶಾಲೆಗೂ ಹೋಗ್ತೀನಿ."
+        },
+        {
+          "speaker": "customer",
+          "text": "ನನ್ನ ಮಗನ ಶಾಲೆಗೆ ಯಾಕೆ ಬರ್ತೀರಿ? ದಯವಿಟ್ಟು ಹಾಗೆ ಮಾಡ್ಬೇಡಿ."
+        },
+        {
+          "speaker": "agent",
+          "text": "ಹಾಗಾದ್ರೆ ಇಂದೇ ಪೈಸೆ ಕಳಿಸು. ಇಲ್ಲ ಅಂದ್ರೆ ನಿನ್ನ WhatsApp ಕಾಂಟ್ಯಾಕ್ಟ್ ಎಲ್ಲರಿಗೂ ಮೆಸೇಜ್ ಹೋಗ್ತದೆ ನಿನ್ನ ಸಾಲ ಬಗ್ಗೆ."
+        },
+        {
+          "speaker": "customer",
+          "text": "ನಾನು ಗ್ರಾಹಕ ಸೇವಾ ಸಂಸ್ಥೆಗೆ ದೂರು ಕೊಡ್ತೀನಿ."
+        },
+        {
+          "speaker": "agent",
+          "text": "ಕೊಡು. ಮೊದ್ಲು ಹಣ ಕಟ್ಟು."
+        }
+      ]
+    },
+    {
+      "id": "script_011",
+      "title": "Held-out Kannada compliant",
+      "tts_language": "kn-IN",
+      "stt_language_codes": [
+        "kn-IN"
+      ],
+      "voices": {
+        "agent": "Kavin",
+        "customer": "Saanvi"
+      },
+      "needs_native_review": true,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "ನಮಸ್ಕಾರ, ನಾನು ಪ್ರೀತಿ ದೇಸಾಯಿ ಮಾತಾಡ್ತಿದ್ದೀನಿ, ನಂದಿ ಫೈನಾನ್ಸ್ ಕಡೆಯಿಂದ. ಶ್ರೀ ವೆಂಕಟೇಶ್ ಮೂರ್ತಿ ಅವರು ಮಾತಾಡ್ಬಹುದಾ?"
+        },
+        {
+          "speaker": "customer",
+          "text": "ಹೌದು ನಾನೇ ವೆಂಕಟೇಶ್."
+        },
+        {
+          "speaker": "agent",
+          "text": "ವೆಂಕಟೇಶ್ ಅವರೇ, ನಿಮ್ಮ ಗೋಲ್ಡ್ ಲೋನ್ ಖಾತೆ ಮೇಲೆ ಮೂರು ತಿಂಗಳ ಕಂತು ಬಾಕಿ ಇದೆ. ಒಟ್ಟು ಇಪ್ಪತ್ತೈದು ಸಾವಿರ ರೂಪಾಯಿ. ನಾವು ಕಾನೂನು ನೋಟಿಸ್ ಕಳಿಸೋ ಪ್ರಕ್ರಿಯೆ ಶುರು ಮಾಡಿದ್ದೀವಿ — ಇದು ನಮ್ಮ ನೀತಿಯ ಒಂದು ಭಾಗ, ಆದ್ರೆ ನೀವು ಇನ್ನ ಮಾಡಿದ್ರೆ ಅದನ್ನ ನಿಲ್ಲಿಸ್ಬಹುದು."
+        },
+        {
+          "speaker": "customer",
+          "text": "ಆಯ್ತು, ನಾನು ಈ ವಾರ ಕನಿಷ್ಠ ಹದಿನೈದು ಸಾವಿರ ಕಟ್ಟ್ತೀನಿ."
+        },
+        {
+          "speaker": "agent",
+          "text": "ಧನ್ಯವಾದ. ನಿಮ್ಮ ಕ್ರೆಡಿಟ್ ಸ್ಕೋರ್ ಮೇಲೆ ಬೀಳ್ತಾ ಇರೋ ಪರಿಣಾಮ ಕಡಿಮೆ ಆಗ್ಲಿ ಅಂತ ನಾವು ಬಯಸ್ತೀವಿ. ಒಳ್ಳೆ ದಿನ ಆಗ್ಲಿ ನಿಮಗೆ."
+        }
+      ]
+    },
+    {
+      "id": "script_012",
+      "title": "Held-out Kannada concerning",
+      "tts_language": "kn-IN",
+      "stt_language_codes": [
+        "kn-IN"
+      ],
+      "voices": {
+        "agent": "Kavin",
+        "customer": "Saanvi"
+      },
+      "needs_native_review": true,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "ಹಲೋ ಮಹೇಶ್, ನಾನು ಕಿರಣ್ ಕುಮಾರ್ ಮಾತಾಡ್ತಿದ್ದೀನಿ ರಾಜ ಕಲೆಕ್ಷನ್ಸ್ ಕಡೆಯಿಂದ."
+        },
+        {
+          "speaker": "customer",
+          "text": "ಹೌದು ಹೇಳಿ."
+        },
+        {
+          "speaker": "agent",
+          "text": "ನಿಮ್ಮ ಐವತ್ತು ಸಾವಿರ ರೂಪಾಯಿ ಆರು ತಿಂಗಳಿಂದ ಬಾಕಿ ಇದೆ. ನೀವು ಫೋನ್ ಎತ್ತೋಲ್ಲ, ಮೆಸೇಜ್ ಓದಿ ರಿಪ್ಲೈ ಮಾಡೋಲ್ಲ. ನಿಮ್ಮ ಹಾಗಿರೋ ಮೋಸಗಾರರ ಜೊತೆ ನಾವು ಹೀಗೆ ಮಾಡ್ತೀವಿ."
+        },
+        {
+          "speaker": "customer",
+          "text": "ಸಾರ್ ನಾನು ಮೋಸಗಾರ ಅಲ್ಲ, ನನ್ನ ಪರಿಸ್ಥಿತಿ ಕಷ್ಟ ಇದೆ."
+        },
+        {
+          "speaker": "agent",
+          "text": "ಕಷ್ಟ ಇದ್ರೆ ಮನೆ ಬಿಟ್ಟು ಓಡೋ ಹೋಗ್ಬೇಡ. ನಮ್ಮ ರಿಕವರಿ ತಂಡ ನಿಮ್ಮ ಮನೆ ಬಾಗಿಲ ಮುಂದೆ ಬಂದು ಕೂರ್ತಾರೆ — ಅಕ್ಕ-ಪಕ್ಕದ ಮನೆಯವರ ಮುಂದೆ ಎಲ್ಲ ಬಯಲು ಮಾಡ್ತಾರೆ."
+        },
+        {
+          "speaker": "customer",
+          "text": "ದಯವಿಟ್ಟು ಹಾಗೆ ಮಾಡ್ಬೇಡಿ."
+        },
+        {
+          "speaker": "agent",
+          "text": "ಹಾಗಾದ್ರೆ ಇವತ್ತೇ ಪೈಸೆ ಕಳಿಸು. ಇಲ್ಲ ಅಂದ್ರೆ ನಾಳೆ ಬೆಳಗ್ಗೆ ನಮ್ಮ ತಂಡ ಇರ್ತಾರೆ."
+        }
+      ]
+    },
+    {
+      "id": "script_013",
+      "title": "Held-out Kannada compliant",
+      "tts_language": "kn-IN",
+      "stt_language_codes": [
+        "kn-IN"
+      ],
+      "voices": {
+        "agent": "Kavin",
+        "customer": "Saanvi"
+      },
+      "needs_native_review": true,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "ನಮಸ್ಕಾರ, ನಾನು ಸ್ವಾತಿ ಕೃಷ್ಣ ಮಾತಾಡ್ತಿದ್ದೀನಿ, ಶ್ರೀ ಮಹಾಲಕ್ಷ್ಮಿ ಫೈನಾನ್ಸ್ ಕಡೆಯಿಂದ. ಶ್ರೀಮತಿ ಜ್ಯೋತಿ ಕುಮಾರ್ ಅವರು ಸಿಗ್ತಾರಾ?"
+        },
+        {
+          "speaker": "customer",
+          "text": "ಹೌದು, ನಾನೇ ಜ್ಯೋತಿ."
+        },
+        {
+          "speaker": "agent",
+          "text": "ಜ್ಯೋತಿ ಅವರೇ, ನಿಮ್ಮ ಕೊ-ಬಾರೋವರ್ ಶ್ರೀ ರವಿ ಶಂಕರ್ ಅವರ ಕಡೆಯಿಂದ ಈಗ ತನಕ ಬಾಕಿ ಪಾವತಿ ಬಂದಿಲ್ಲ. ಲೋನ್ ಅಗ್ರಿಮೆಂಟ್ ಪ್ರಕಾರ ಇಬ್ಬರೂ ಜಾಯಿಂಟ್ ಆಗಿ ಜವಾಬ್ದಾರಿ ಹೊಂದಿದ್ದೀರಿ. ನೀವೊಂದ್ ಸಾರಿ ಅವರ ಜೊತೆ ಮಾತಾಡ್ಬಹುದಾ?"
+        },
+        {
+          "speaker": "customer",
+          "text": "ಓಹ್ ಆಯ್ತು. ನಾನು ಅವರಿಗೆ ಹೇಳ್ತೀನಿ."
+        },
+        {
+          "speaker": "agent",
+          "text": "ಧನ್ಯವಾದ. ಜಾಯಿಂಟ್ ಖಾತೆ ಬಾಕಿ ಇದ್ರೆ ಎರಡೂ ಜನರ ಕ್ರೆಡಿಟ್ ಸ್ಕೋರ್ ಮೇಲೆ ಪರಿಣಾಮ ಆಗ್ತದೆ ಅನ್ನೋದನ್ನ ಮನಸ್ಸಿನಲ್ಲಿ ಇಟ್ಕೊಳ್ಳಿ. ಈ ವಾರ ಒಳಗೆ ಹದಿನೈದು ಸಾವಿರ ರೂಪಾಯಿ ಪಾವತಿ ಆದ್ರೆ ಒಳ್ಳೆಯದು."
+        },
+        {
+          "speaker": "customer",
+          "text": "ನಾನು ಮಾತಾಡ್ತೀನಿ ಅವರ ಜೊತೆ."
+        },
+        {
+          "speaker": "agent",
+          "text": "ಧನ್ಯವಾದ ಜ್ಯೋತಿ ಅವರೇ. ಒಳ್ಳೆಯ ದಿನ ಆಗ್ಲಿ."
+        }
+      ]
+    },
+    {
+      "id": "script_014",
+      "title": "Held-out Hinglish compliant",
+      "tts_language": "hi-en",
+      "stt_language_codes": [
+        "hi-IN",
+        "en-IN"
+      ],
+      "primary_stt_language_code": "en-IN",
+      "voices": {
+        "agent": "Poorvi",
+        "customer": "Pranav"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "Hello, am I speaking with Mr. Farhan Siddiqui?"
+        },
+        {
+          "speaker": "customer",
+          "text": "Yes, this is Farhan."
+        },
+        {
+          "speaker": "agent",
+          "text": "Hi Farhan bhai, I'm Deepak calling from Zenith Credit Solutions. Aapka personal loan account hai hamare paas, PL-nau-chhe-ek series mein — uske baare mein baat karni thi. Convenient hai abhi?"
+        },
+        {
+          "speaker": "customer",
+          "text": "Haan bolo."
+        },
+        {
+          "speaker": "agent",
+          "text": "Toh Farhan bhai, teen months se EMI nahi aayi — total outstanding aath hazar paanch sau rupaye ho gaye hain. Late payment fee bhi add ho rahi hai month by month. Koi problem chal rahi hai?"
+        },
+        {
+          "speaker": "customer",
+          "text": "Yaar business slow chal raha tha, but ab thoda improve hua hai."
+        },
+        {
+          "speaker": "agent",
+          "text": "Good to hear that. Kya aap is hafte paanch hazar transfer kar sakte ho? Baaki ko hum ek deferral plan mein adjust kar sakte hain. Aur ek cheez batata hoon — prolonged default CIBIL report pe reflect karta hai, future loans ke liye issue ho sakta hai."
+        },
+        {
+          "speaker": "customer",
+          "text": "Theek hai, shukravar tak paanch hazar bhej deta hoon."
+        },
+        {
+          "speaker": "agent",
+          "text": "Perfect. Main yeh note kar leta hoon. Payment ke baad SMS confirmation aayega. Thanks Farhan bhai."
+        }
+      ]
+    },
+    {
+      "id": "script_015",
+      "title": "Held-out Hinglish concerning",
+      "tts_language": "hi-en",
+      "stt_language_codes": [
+        "hi-IN",
+        "en-IN"
+      ],
+      "primary_stt_language_code": "en-IN",
+      "voices": {
+        "agent": "Poorvi",
+        "customer": "Pranav"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "Hello, Pooja Nair bol rahi hoon main. Aap Vikram Malhotra hain?"
+        },
+        {
+          "speaker": "customer",
+          "text": "Haan, kaun?"
+        },
+        {
+          "speaker": "agent",
+          "text": "Main Apex Recovery se hoon. Vikram ji, aapka bakaaya ek lakh teen hazar rupaye hai — chhe mahine se koi payment nahi aayi. Hamari team ne ab court mein civil suit file karne ka decision liya hai."
+        },
+        {
+          "speaker": "customer",
+          "text": "Court? Itni badi baat kyu kar rahe ho?"
+        },
+        {
+          "speaker": "agent",
+          "text": "Yeh hamare standard procedure mein hai. Uske saath saath, hum aapke employer ko ek formal letter bhejenge — HR ko pata chalega ki aap defaulter hain."
+        },
+        {
+          "speaker": "customer",
+          "text": "Meri naukri mein kyun ghuste ho?"
+        },
+        {
+          "speaker": "agent",
+          "text": "Yeh hamare paas option hai. Aur aapke family members ko bhi phone karenge — jo guarantor nahi hain unhe bhi bata denge situation kya hai."
+        },
+        {
+          "speaker": "customer",
+          "text": "Yeh galat hai, family ko kyun involve karoge?"
+        },
+        {
+          "speaker": "agent",
+          "text": "Aap payment karo toh yeh sab nahi hoga. Aaj raat tak transfer karo warna kal se proceedings start hoti hain."
+        }
+      ]
+    },
+    {
+      "id": "script_016",
+      "title": "Held-out Hinglish compliant",
+      "tts_language": "hi-en",
+      "stt_language_codes": [
+        "hi-IN",
+        "en-IN"
+      ],
+      "primary_stt_language_code": "en-IN",
+      "voices": {
+        "agent": "Poorvi",
+        "customer": "Pranav"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "Hello, Suresh Pillai speaking from Horizon Finserv. May I speak with Ms. Kavitha Sharma?"
+        },
+        {
+          "speaker": "customer",
+          "text": "Speaking."
+        },
+        {
+          "speaker": "agent",
+          "text": "Kavitha ji, aapke two-wheeler loan ki ek EMI baaki hai — saat hazar rupaye. Iske saath ek deri shulk bhi juda hai, total saat hazar do sau rupaye ho gaye hain. Kab tak clear ho sakta hai?"
+        },
+        {
+          "speaker": "customer",
+          "text": "Kal tak kar deti hoon, paisa aa gaya hai."
+        },
+        {
+          "speaker": "agent",
+          "text": "Bahut accha. Ek baat aur — hum aapke property visit ka ek slot bhi schedule kar sakte hain agar aapko documentation ke baare mein koi help chahiye. Completely optional hai aur aapki consent se hoga. Is mein interested hain?"
+        },
+        {
+          "speaker": "customer",
+          "text": "Nahi filhaal zaroorat nahi hai."
+        },
+        {
+          "speaker": "agent",
+          "text": "Bilkul theek hai. Kal payment ke baad confirmation SMS aayega. Thank you Kavitha ji."
+        }
+      ]
+    },
+    {
+      "id": "script_017",
+      "title": "Held-out Hinglish concerning",
+      "tts_language": "hi-en",
+      "stt_language_codes": [
+        "hi-IN",
+        "en-IN"
+      ],
+      "primary_stt_language_code": "en-IN",
+      "voices": {
+        "agent": "Poorvi",
+        "customer": "Pranav"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "Hello, Ranjit Rao bol raha hoon. Aap Tarun Mehta hain?"
+        },
+        {
+          "speaker": "customer",
+          "text": "Haan."
+        },
+        {
+          "speaker": "agent",
+          "text": "Tarun ji, saat mahine ho gaye hain — pachaas hazar rupaye. Aap toh cheater nikle, hum log galat the jo aapko loan diye."
+        },
+        {
+          "speaker": "customer",
+          "text": "Sir please, abusive mat bolo. Main dene ki koshish kar raha hoon."
+        },
+        {
+          "speaker": "agent",
+          "text": "Koshish? Koshish waale log saat mahine nahi lagate. Aapke jaise log deliberately default karte hain aur phir rone ka natak karte hain."
+        },
+        {
+          "speaker": "customer",
+          "text": "Yeh sahi nahi hai, mujhe genuine problem hai."
+        },
+        {
+          "speaker": "agent",
+          "text": "Genuine problem hai toh nikalo paise. Nahi diya toh hamare log kal subah aapke ghar ke bahar khade honge — neighbours ko dikhayenge kin logo ne hamare saath fraud kiya."
+        },
+        {
+          "speaker": "customer",
+          "text": "Aap mujhe threaten kar rahe ho."
+        },
+        {
+          "speaker": "agent",
+          "text": "Jo bhi samjho. Kal subah gyarah baje tak amount aana chahiye."
+        }
+      ]
+    },
+    {
+      "id": "script_018",
+      "title": "Held-out Hinglish compliant",
+      "tts_language": "hi-en",
+      "stt_language_codes": [
+        "hi-IN",
+        "en-IN"
+      ],
+      "primary_stt_language_code": "en-IN",
+      "voices": {
+        "agent": "Poorvi",
+        "customer": "Pranav"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "Hello, main Anjali Tiwari bol rahi hoon, Constellation Finance se. Aap Nilesh Gokhale hain?"
+        },
+        {
+          "speaker": "customer",
+          "text": "Haan, boliye."
+        },
+        {
+          "speaker": "agent",
+          "text": "Nilesh ji, aapke education loan par do mahine ki kistein — barah hazar rupaye — baki hain. Hum chahte hain ki aap apni credit history protect karein. Kya koi baat karni hai?"
+        },
+        {
+          "speaker": "customer",
+          "text": "Main nayi job mein hoon, salary join hone ke baad se kaafi set ho gayi hai. Is hafte transfer kar sakta hoon."
+        },
+        {
+          "speaker": "agent",
+          "text": "Yeh toh acha news hai. Aur ek cheez bata doon — late payment ke baad bhi credit bureau mein 'settled' ya 'cleared' status update hota hai, jo score ko recover karne mein help karta hai."
+        },
+        {
+          "speaker": "customer",
+          "text": "Accha, mujhe pata nahi tha. Theek hai, is hafte kar deta hoon."
+        },
+        {
+          "speaker": "agent",
+          "text": "Bahut accha. Payment ke baad NOC process bhi initiate ho sakti hai agar loan fully clear ho jata hai. Thank you Nilesh ji, take care."
+        }
+      ]
+    },
+    {
+      "id": "script_019",
+      "title": "Held-out Hinglish concerning",
+      "tts_language": "hi-en",
+      "stt_language_codes": [
+        "hi-IN",
+        "en-IN"
+      ],
+      "primary_stt_language_code": "en-IN",
+      "voices": {
+        "agent": "Poorvi",
+        "customer": "Pranav"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "Hello Shruti Kapoor, yeh Vivek Batra bol raha hoon, Delta Collections se."
+        },
+        {
+          "speaker": "customer",
+          "text": "Haan, kaun sa loan?"
+        },
+        {
+          "speaker": "agent",
+          "text": "Aapka consumer durable loan — chhabbis hazar rupaye paanch mahine se baki hain. Hamari legal team ne FIR darne ki taiyaari shuru kar di hai — aap par fraud ka case banta hai."
+        },
+        {
+          "speaker": "customer",
+          "text": "Loan default mein FIR kaise hogi? Yeh toh civil matter hai."
+        },
+        {
+          "speaker": "agent",
+          "text": "Hamare paas evidence hai ki aapne loan lete waqt galat documents diye the. Isliye criminal case bhi ban sakta hai. Agar aaj payment aa jaaye toh hum case nahi karenge."
+        },
+        {
+          "speaker": "customer",
+          "text": "Yeh toh blackmail hai."
+        },
+        {
+          "speaker": "agent",
+          "text": "Hum apna haq maang rahe hain. Agar kal tak paisa nahi aaya toh aapko police station mein bulaya jaayega, aur woh call aapko hamaari nahi, police ki taraf se aayegi."
+        },
+        {
+          "speaker": "customer",
+          "text": "Main apne lawyer se baat karoonga."
+        },
+        {
+          "speaker": "agent",
+          "text": "Karo. Tab tak arrest ki preparation karo."
+        }
+      ]
+    },
+    {
+      "id": "script_020",
+      "title": "Held-out Hinglish concerning",
+      "tts_language": "hi-en",
+      "stt_language_codes": [
+        "hi-IN",
+        "en-IN"
+      ],
+      "primary_stt_language_code": "en-IN",
+      "voices": {
+        "agent": "Poorvi",
+        "customer": "Pranav"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "Hello, Amit Saxena bol raha hoon, PeakRecov Solutions se. Aap Rahul Shrivastava hain?"
+        },
+        {
+          "speaker": "customer",
+          "text": "Haan, kya baat hai?"
+        },
+        {
+          "speaker": "agent",
+          "text": "Rahul ji, teees hazar rupaye saat mahine se baki hain. Aap baar baar ignore karte ho. Aaj baat nahi ki toh kal seedha aapke ghar aate hain — building society ke log sab dekhenge."
+        },
+        {
+          "speaker": "customer",
+          "text": "Ghar aane ki zaroorat nahi hai, main baat karta hoon."
+        },
+        {
+          "speaker": "agent",
+          "text": "Theek hai. Toh bataiye kab doge? Waise ek baat batata hoon — aapki wife ka number bhi hamare paas hai, unhe bhi update kar denge situation ke baare mein."
+        },
+        {
+          "speaker": "customer",
+          "text": "Meri wife ko involve mat karo, woh guarantor nahi hain."
+        },
+        {
+          "speaker": "agent",
+          "text": "Guarantor hona zarooori nahi. Aapke jaise napake log jab payment nahi karte toh puri family ko bataana padta hai. WhatsApp pe contacts bhi hain hamare paas — ek message mein sab pata chal jaata hai."
+        },
+        {
+          "speaker": "customer",
+          "text": "Yeh toh complete harassment hai."
+        },
+        {
+          "speaker": "agent",
+          "text": "Aap payment karo toh yeh sab band ho jaayega. Simple hai."
+        }
+      ]
+    }
+  ]
+}

@@ -197,3 +197,17 @@ Note: no `data/scripts.json` existed when this spike was built, so the file was 
 - **Romanized Hinglish has no canonical spelling** ("nahi" / "nahin", "hazaar" / "hazar"), so en-IN WER on scenario A is inflated by spelling variants. Read its span matches, not just its WER.
 - **The mu-law container test** covers one chunk per scenario, with the primary language code only.
 - **The REST STT response has no word timestamps**, so spans are located by text matching, not by time.
+
+## Classifier text evaluation (dev and held-out)
+
+```bash
+python prepare_labels.py                          # convert the external held-out file + apply label rules (no classifier)
+python eval_classifier_text.py --split dev        # iteration aid; rules were built on dev
+python eval_classifier_text.py --split held_out   # headline; run once, after rules were frozen
+```
+
+- `src/concern_rules.py` is frozen (2026-10-21, commit `12cb3b1`). Rules must not change after that commit.
+- Ground truth lives in `data/dataset_manifest.json`. The delivered held-out file is kept unchanged in `data/held_out_source/`. Every label change made on 2026-10-21 is written out per call in `prepare_labels.py` and recorded in `label_changes`.
+- **Conduct scoring:** three categories (intimidation, abusive language, third-party contact threat) are scored per call. The false-flag rate on compliant and hard-negative calls counts only these three.
+- **Authority scoring:** `authority_or_legal_action_claim` is a verify flag. Its ground truth is any agent mention of police, arrest, FIR, court or a legal notice, lawful or not. Precision and recall are reported separately.
+- The held-out result is versioned in `reports/classifier_text_held_out_2026-10-21.md`.
