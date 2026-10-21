@@ -1,15 +1,3 @@
----
-title: RecoveryCall QA
-emoji: 📞
-colorFrom: blue
-colorTo: gray
-sdk: gradio
-sdk_version: 6.30.0
-python_version: "3.13"
-app_file: app.py
-pinned: false
----
-
 # RecoveryCall QA: Gnani API spike
 
 A minimal Python spike for the Gnani AI Internship Challenge. It tests four things:
@@ -266,7 +254,7 @@ RCQA_MOCK=1 UPLOAD_PASSCODE=local-test .venv/bin/python app.py   # fully offline
 - **Data handling.**
   - Uploads are deleted right after analysis, and every intermediate file lives in a per-request temporary directory that is removed before the response.
   - The audit JSON offered for download is swept after 10 minutes, and Gradio's own cache is cleared every 5 minutes (`delete_cache`).
-  - Keys come only from the environment (`.env` locally, Space secrets when deployed). They are never logged; the app logs only counts and timings.
+  - Keys come only from the environment (`.env` locally, Secret Manager on Cloud Run). They are never logged; the app logs only counts and timings.
 - **Results page.**
   - The transcript is shown by segment with timestamps, with flagged quotes highlighted by category. Clicking a flag, a highlight or a timestamp seeks the player.
   - Each flag in the list shows its category, quote, time, label, "to verify against the RBI circular" and which detector found it (rules, LLM or both).
@@ -278,14 +266,16 @@ RCQA_MOCK=1 UPLOAD_PASSCODE=local-test .venv/bin/python app.py   # fully offline
   - Total 9.4 s: decode 0.07 s, VAD 0.01 s, STT 1.7 s for 2 segments, recovery 1.3 s for 3 pieces, rules under 0.01 s, Gemini 4.5 s, Timbre summary 1.8 s.
   - API calls: 5 STT (2 segments + 3 recovery pieces), 1 Gemini, 1 Timbre.
 
-### Deploy to Hugging Face Spaces (free tier)
+### Deploy to Google Cloud Run
 
-1. Create a Space with the Gradio SDK, then push this repository to it. The YAML header at the top of this README configures the Space, and `packages.txt` installs ffmpeg.
-2. Under Settings → Variables and secrets, add these **secrets**:
-   - `GNANI_API_KEY`
-   - `GEMINI_API_KEY`
-   - `UPLOAD_PASSCODE` (leave it out to disable live analysis entirely)
+Hugging Face no longer runs Gradio Spaces on the free CPU tier without PRO, so the app is deployed to **Cloud Run** in `asia-south1` (Mumbai, a Tier 1 pricing region) with its own GCP project (`recoverycall-qa-1021-308c`).
 
-   Optionally add the variables `LIVE_RUNS_PER_HOUR` and `GEMINI_MODEL`.
-3. Build the cached samples before pushing (`build_samples.py build`), so visitors see results without any API calls.
-4. The Space uses `GRADIO_SERVER_NAME` and `GRADIO_SERVER_PORT` automatically. Never commit `.env`.
+The deployment is set up like this:
+- **Image:** the `Dockerfile` (Python 3.13 slim + ffmpeg + `requirements.txt`) holds only `app.py`, `src/` and `samples/`. `.dockerignore` and `.gcloudignore` keep `.env`, caches and outputs out of the build upload.
+- **Service:** public (`--allow-unauthenticated`), scale to zero (`--min-instances 0`), `--max-instances 1` so the in-memory rate limiter is exact and cost is bounded. It has 1 vCPU, 1 GiB of memory and a 300 s request timeout.
+- **Secrets:** `GNANI_API_KEY`, `GEMINI_API_KEY` and `UPLOAD_PASSCODE` live in **Secret Manager** and are exposed to the container as environment variables. Only the `rcqa-run` service account can read them.
+  - To read the passcode: `gcloud secrets versions access latest --secret=UPLOAD_PASSCODE --project recoverycall-qa-1021-308c`
+  - To rotate a secret: `printf %s "$NEW" | gcloud secrets versions add NAME --data-file=- --project …`, then redeploy.
+- **Budget:** ₹100 a month on this project, with alerts at 50%, 90% and 100% of actual spend and 100% of forecast, emailed to billing admins.
+- **Deploy:** `PROJECT=recoverycall-qa-1021-308c ./deploy_cloudrun.sh` builds with Cloud Build and deploys.
+- **Logs:** `gcloud run services logs read recoverycall-qa --region asia-south1 --project recoverycall-qa-1021-308c`. They contain counts and timings only: `analysis done: … calls=… total_ms=…` and `cached example served: sample=X api_calls=0`.

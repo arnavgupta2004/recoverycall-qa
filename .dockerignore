@@ -1,0 +1,14 @@
+# Never send secrets, caches or local state to the build.
+.env
+.env.*
+!.env.example
+.git
+.venv
+.claude
+outputs
+cache
+samples/cache_mock
+__pycache__
+**/__pycache__
+.pytest_cache
+*.pyc

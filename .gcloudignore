@@ -1,0 +1,4 @@
+# Files gcloud must never upload to Cloud Build (secrets, caches, local state).
+#!include:.gitignore
+#!include:.dockerignore
+.gcloudignore
