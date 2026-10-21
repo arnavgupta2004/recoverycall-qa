@@ -5,6 +5,7 @@ colorFrom: blue
 colorTo: gray
 sdk: gradio
 sdk_version: 6.30.0
+python_version: "3.13"
 app_file: app.py
 pinned: false
 ---
@@ -24,7 +25,7 @@ There is no web app, no LLM classifier, no risk score and no legal verdict. All 
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-dev.txt   # runtime deps + pytest, matplotlib
 cp .env.example .env        # then put your key in .env as GNANI_API_KEY=...
 ```
 
@@ -253,7 +254,7 @@ python eval_classifier_text.py --split dev --no-llm        # rules only
 Gemini is capped at 20 s per call. If it fails or times out, the page shows "Advanced check unavailable — showing rule-based flags only" and keeps the rule flags.
 
 ```bash
-python -m venv .venv && .venv/bin/pip install -r requirements.txt
+python -m venv .venv && .venv/bin/pip install -r requirements-dev.txt   # runtime deps + pytest, matplotlib
 RCQA_MOCK=1 UPLOAD_PASSCODE=local-test .venv/bin/python app.py   # fully offline: mock STT, LLM and TTS
 .venv/bin/python app.py                                         # real APIs for live runs (keys from .env or env)
 .venv/bin/python build_samples.py build --mock                  # cached mock results for all samples (git-ignored)

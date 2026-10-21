@@ -158,18 +158,35 @@ def render_result(result: dict, audio_uri: str | None, summary_uri: str | None, 
     return "\n".join(H)
 
 
-def details_markdown(result: dict) -> str:
+def _md(text: str) -> str:
+    """Escape Markdown-significant characters in transcript text shown in the Details panel."""
+    return html.escape(text).replace("|", "\\|").replace("*", "\\*").replace("_", "\\_").replace("`", "\\`")
+
+
+def details_markdown(result: dict, cached: bool = False) -> str:
+    """Details panel: stage latency, API calls, detector status, verifier rejections (Markdown blocks)."""
     lat, calls, det = result["latency_ms"], result["api_calls"], result["detectors"]
-    lines = ["| stage | ms |", "|---|---|"] + [f"| {k} | {v:.0f} |" for k, v in lat.items()]
-    lines += ["", f"**API calls:** STT {calls.get('stt', 0)} (cache hits {calls.get('stt_cache_hits', 0)}), "
-                  f"Gemini {calls.get('llm', 0)}, Timbre {calls.get('tts', 0)}",
-              f"**Advanced check (LLM):** {det['llm_status']} · model {det['llm'] or 'none'} · prompt "
-              f"{det['llm_prompt_version']} · LLM quotes rejected by the verifier: {len(det['llm_quotes_rejected'])}",
-              f"**Rules:** {det['rules']}",
-              f"**Segments:** {len(result['segments'])} (≤ 12 s each); recovered: "
-              f"{sum(s['recovered'] for s in result['segments'])}",
-              f"**Out-of-hours check:** " + (result["out_of_hours"].get("call_time", "") + " IST" if
-                                             result["out_of_hours"]["checked"] else "skipped — " +
-                                             result["out_of_hours"]["reason"])]
-    return "\n".join(lines)
+    rejected = det.get("llm_quotes_rejected") or []
+    bad_quotes = [r for r in rejected if "quote" in str(r.get("reason", ""))]
+    other = [r for r in rejected if r not in bad_quotes]
+    blocks = []
+    if cached:
+        blocks.append("**This view: cached example — 0 API calls.** The timings and call counts below are from when "
+                      "the example was built.")
+    blocks.append("\n".join(["| stage | ms |", "|---|---|"] + [f"| {k} | {v:.0f} |" for k, v in lat.items()]))
+    blocks.append(f"**API calls:** STT {calls.get('stt', 0)} (cache hits {calls.get('stt_cache_hits', 0)}), "
+                  f"Gemini {calls.get('llm', 0)}, Timbre {calls.get('tts', 0)}")
+    blocks.append(f"**Advanced check (LLM):** {det['llm_status']} · model {det['llm'] or 'none'} · prompt "
+                  f"{det['llm_prompt_version']}")
+    rej = [f"**{len(bad_quotes)} AI flag{'' if len(bad_quotes) == 1 else 's'} rejected: quote not found in transcript**"]
+    rej += [f"- {_md(str(r.get('type')))}: “{_md(str(r.get('quote')))}”" for r in bad_quotes]
+    rej += [f"- other rejection ({_md(str(r.get('reason')))}): {_md(str(r.get('type')))}" for r in other]
+    blocks.append("\n".join(rej))
+    blocks.append(f"**Rules:** {det['rules']}")
+    blocks.append(f"**Segments:** {len(result['segments'])} (≤ 12 s each); recovered: "
+                  f"{sum(s['recovered'] for s in result['segments'])}")
+    hours = result["out_of_hours"]
+    blocks.append("**Out-of-hours check:** " + (f"{hours['call_time']} IST" if hours["checked"]
+                                                else f"skipped — {hours['reason']}"))
+    return "\n\n".join(blocks)
 

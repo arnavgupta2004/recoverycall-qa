@@ -70,3 +70,16 @@ def test_render_escapes_transcript_html(result):
     page = render_result(r, None, None, cached=False)
     assert "<script>alert(1)</script>" not in page and "&lt;script&gt;" in page
     assert "<b>x</b>" not in page
+
+
+def test_details_show_verifier_rejections_and_cached_note():
+    from src.render import details_markdown
+    r = json.loads((ROOT / "samples" / "cache" / "B.json").read_text(encoding="utf-8"))
+    r["detectors"]["llm_quotes_rejected"] = [
+        {"type": "abusive_language", "quote": "a | b *x*", "reason": "quote not verbatim in segment"},
+        {"type": "risk_score", "quote": "q", "reason": "unknown category"}]
+    md = details_markdown(r, cached=True)
+    assert "1 AI flag rejected: quote not found in transcript" in md
+    assert "0 API calls" in md and "a \\| b \\*x\\*" in md and "other rejection (unknown category)" in md
+    r["detectors"]["llm_quotes_rejected"] = []
+    assert "0 AI flags rejected: quote not found in transcript" in details_markdown(r)

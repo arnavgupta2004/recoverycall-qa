@@ -59,7 +59,8 @@ def _download_file(result: dict, stem: str) -> str:
 def _outputs(result: dict, audio_path: Path, cached: bool, stem: str, summary_wav: bytes | None):
     html_out = render_result(result, audio_data_uri(audio_path), wav_data_uri(summary_wav) if summary_wav else None,
                              cached)
-    return html_out, gr.update(value=_download_file(result, stem), visible=True), details_markdown(result), ""
+    return (html_out, gr.update(value=_download_file(result, stem), visible=True), details_markdown(result, cached),
+            "")
 
 
 def _error(msg: str):
@@ -73,6 +74,7 @@ def show_cached(sample_id: str):
         return _error(f"The cached result for sample {sample_id} has not been built yet "
                       f"(python build_samples.py build --only {sample_id}).")
     result = json.loads(f.read_text(encoding="utf-8"))
+    log.info("cached example served: sample=%s api_calls=0", sample_id)
     wav = CACHE_DIR / f"{sample_id}_summary.wav"
     return _outputs(result, ROOT / s["audio"], True, f"sample{sample_id}", wav.read_bytes() if wav.exists() else None)
 
