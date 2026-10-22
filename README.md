@@ -1,13 +1,54 @@
-# RecoveryCall QA: Gnani API spike
+# RecoveryCall QA
 
-A minimal Python spike for the Gnani AI Internship Challenge. It tests four things:
+Evidence-first review of debt-recovery calls in **Hindi, Kannada and Hinglish**, built on **Gnani Prisma** (speech-to-text) and **Gnani Timbre** (text-to-speech).
+
+- **Live demo:** https://recoverycall-qa-711436060077.asia-south1.run.app. Four cached examples, no passcode; live analysis needs a passcode.
+- **Video (59 s):** [`docs/demo.mp4`](docs/demo.mp4)
+- **Full write-up:** [`docs/final_report.md`](docs/final_report.md)
+
+![RecoveryCall QA result page for a fictional Hindi call](docs/screenshots/desktop-result-D-light.png)
+
+A reviewer uploads a call, or opens an example:
+1. Prisma transcribes it in short segments.
+2. A coverage check re-transcribes stretches that came back too thin, and marks anything still missing as **untranscribed speech** instead of hiding it.
+3. Frozen rules plus a Gemini tagger flag passages that may breach recovery-conduct rules. Every flag quotes the exact words and links to the audio, and an AI flag whose quote isn't in the transcript is thrown out.
+4. Timbre reads a short summary aloud in the call's language.
+
+There are no risk scores and no verdicts: flags are "potential conduct concern — human review required". All calls are fictional and synthesized with Timbre.
+
+## Run it
+
+```bash
+python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt     # needs ffmpeg on PATH
+RCQA_MOCK=1 UPLOAD_PASSCODE=local-test .venv/bin/uvicorn app:app --port 7860   # offline: mock STT/LLM/TTS
+cp .env.example .env    # add GNANI_API_KEY (and GEMINI_API_KEY), then drop RCQA_MOCK for real APIs
+.venv/bin/python -m pytest -q
+```
+
+## Results summary
+
+Every set was written externally, had its labels checked by reading and committed before any tagger ran, and was evaluated once.
+
+| set | what was tested | conduct concerns found | false flags on compliant calls |
+|---|---|---|---|
+| Held-out v1 (20 scripts, text) | rules v1 (frozen) | 5/17 | 0/10 |
+| Held-out v2 (20 scripts, text) | rules / LLM / hybrid | 0/11 / 11/11 / 11/11 | 0/12 for all three |
+| **Held-out v3 (18 calls, end-to-end audio: Timbre → phone ± 10 dB noise → Prisma)** | rules / LLM / hybrid | 0/15 / **15/15** / **15/15** on both audio versions | 0/9 for all three |
+
+- **Silent omissions:** the coverage check caught 36 of 40 turns that Prisma dropped in a noise sweep, and recovered 24 of them. Short turns are the hard remainder. In held-out v3, Prisma dropped 1 of 216 turns, a 12-word reply, and the check did not catch it. One transcription error there also caused one false "verify" flag.
+- **Caveats:** these are small synthetic sets, Kannada still needs native-speaker review, and the pipeline has no speaker separation.
+- Details are in [`docs/final_report.md`](docs/final_report.md).
+
+---
+
+## Developer notes: the original API spike
+
+The sections below document the spike that came first. It tested four things:
 
 1. Are the Gnani APIs reachable and behaving as documented?
 2. Can Timbre (TTS, `timbre-v2.5`) synthesize three fictional debt-recovery calls?
 3. How well does Prisma (STT v2.5) transcribe them, especially the critical spans: amounts, negations, threats and family mentions?
 4. How much does phone-quality audio (8 kHz, G.711 mu-law, noise) hurt that?
-
-There is no web app, no LLM classifier, no risk score and no legal verdict. All calls, names, companies and amounts are fictional. There is no voice cloning and no real recording.
 
 ## Setup
 
@@ -212,7 +253,8 @@ python eval_classifier_text.py --split dev --no-llm        # rules only
   - Third-party contact threat: telling or showing family, employer, neighbours or contacts.
   - Intimidation: visiting, harming or shaming in person.
   - One passage can carry both labels.
-- **Held-out v2** will be written externally to `data/scripts_held_out.json`. `--split held_out` evaluates it once it exists.
+- **Held-out v2** (`data/scripts_held_out.json`, text only) was evaluated once and is spent: `docs/held_out_v2_results.md`.
+- **Held-out v3** (`data/scripts_held_out_v3.json`) is the end-to-end audio evaluation, run once with `python eval_e2e.py run` and scored by `python eval_e2e.py report` (both accept `--mock`): `docs/held_out_v3_results.md`.
 - **Quotes:** a rules flag quotes the matched phrase, mapped back to the original text, not the whole turn.
 - **`src/llm_tagger.py`** calls the Gemini API free tier (default `gemini-3.5-flash-lite`, overridable with `GEMINI_MODEL`).
   - The model gets the four category definitions and returns JSON `{segment_id, type, quote}` at temperature 0.
@@ -290,34 +332,4 @@ The deployment is set up like this:
   - **Log audit:** 88 entries with no API key, passcode or transcript text.
   - **Live run, sample D (Gradio revision 00003, same pipeline):** 8.3 s total — STT 0.65 s, recovery 0.44 s, Gemini 5.0 s, Timbre 1.96 s — with 7 API calls (5 STT, 1 Gemini, 1 Timbre).
 - **Client IP:** Google doesn't document how Cloud Run fills `X-Forwarded-For` for direct `*.run.app` traffic. The app uses the rightmost entry, which is the real client whether Google's front end appends the address it saw or replaces the header. With an external load balancer in front, which appends `<client-ip>,<lb-ip>`, set `XFF_TRUSTED_HOPS=1`.
-- **Logs:** counts and timings only.
-- **Wording:** unchanged — potential conduct concern, verify claim, "to verify against the RBI circular", no score.
-
-**Page:**
-- **Start screen:** four sample cards, each labelled "cached example", plus "Analyse your own audio" behind a passcode dialog. The dialog can also run a sample live.
-- **Timeline:** a waveform with segment boundaries, amber and violet flag pins, and hatched low-coverage stretches. Clicking anywhere seeks.
-- **Transcript:** segment bubbles with timestamps and underlined, clickable quotes. Speakers aren't separated, because the pipeline has no diarization.
-- **Findings:** a card per flag (detector Rules, AI or Both), rejected AI flags shown struck through, plus coverage and call-time cards.
-- **Also:** the spoken summary, the audit JSON download, a Details panel with stage timings and API calls, and a step indicator for live runs.
-- **Layout:** light and dark mode. On phones it stacks timeline, findings, then transcript.
-
-Screenshots are in `docs/screenshots/`.
-
-### Deploy to Google Cloud Run
-
-Hugging Face no longer runs Gradio Spaces on the free CPU tier without PRO, so the app is deployed to **Cloud Run** in `asia-south1` (Mumbai, a Tier 1 pricing region) with its own GCP project (`recoverycall-qa-1021-308c`).
-
-The deployment is set up like this:
-- **Image:** the `Dockerfile` (Python 3.13 slim + ffmpeg + `requirements.txt`) holds only `app.py`, `src/` and `samples/`. `.dockerignore` and `.gcloudignore` keep `.env`, caches and outputs out of the build upload.
-- **Service:** public (`--allow-unauthenticated`), scale to zero (`--min-instances 0`), `--max-instances 1` so the in-memory rate limiter is exact and cost is bounded. It has 1 vCPU, 1 GiB of memory and a 300 s request timeout.
-- **Secrets:** `GNANI_API_KEY`, `GEMINI_API_KEY` and `UPLOAD_PASSCODE` live in **Secret Manager** and are exposed to the container as environment variables. Only the `rcqa-run` service account can read them.
-  - To read the passcode: `gcloud secrets versions access latest --secret=UPLOAD_PASSCODE --project recoverycall-qa-1021-308c`
-  - To rotate a secret: `printf %s "$NEW" | gcloud secrets versions add NAME --data-file=- --project …`, then redeploy.
-- **Budget:** ₹100 a month on this project, with alerts at 50%, 90% and 100% of actual spend and 100% of forecast, emailed to billing admins.
-- **Deploy:** `PROJECT=recoverycall-qa-1021-308c ./deploy_cloudrun.sh` builds with Cloud Build and deploys.
-- **Live URL:** https://recoverycall-qa-711436060077.asia-south1.run.app (revision `recoverycall-qa-00002-wqj`, 2026-10-21).
-- **Measured on 2026-10-21:**
-  - A cold start (first request after about 3.5 h idle) took 11.4 s to first byte; a warm request took 0.1 s.
-  - All four cached samples loaded with 0 API calls (logged as `cached example served … api_calls=0`).
-  - A log audit of 203 entries found no API key, passcode or transcript text.
 - **Logs:** `gcloud run services logs read recoverycall-qa --region asia-south1 --project recoverycall-qa-1021-308c`. They contain counts and timings only: `analysis done: … | calls … | latency_ms …`, `live request accepted` or `live request refused: reason=…`, and `cached example served: sample=X api_calls=0`.
