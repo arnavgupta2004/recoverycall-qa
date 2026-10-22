@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "Ground-truth labels for the RecoveryCall QA dataset. 'split' is 'dev' (original dev set; rules v1 were built on it), 'dev_v2' (held-out v1, spent after one evaluation on 2026-10-21 and merged into development; see docs/baseline_rules_v1.md) or 'held_out' (held-out v2: written externally, labels checked by reading before any classifier ran; headline evaluation only). Labels follow the definition in prepare_labels.py (held_out is held-out v2, added 2026-10-21): telling/showing family, employer, neighbours or contacts = third_party_contact_threat; visiting/harming/shaming in person = intimidation_or_threats; multi-label allowed. 'compliant' is false when the call contains a conduct concern or a threatening authority claim. 'concern_types' lists the categories present. 'authority_mention' is true when the agent mentions police, arrest, FIR, court or a legal notice (including lawful mentions in compliant calls); it is scored as a verify flag, separately from the three conduct categories. 'concern_spans' quote the labelled text (turn index + exact substring); dev entries carry authority spans only. 'hard_negative' is true only for compliant calls containing firm-but-lawful language that must not be flagged. 'needs_native_review' is true for Kannada scripts pending native speaker review. 'label_changes' logs every change from the delivered labels.",
+  "note": "Ground-truth labels for the RecoveryCall QA dataset. 'split' is 'dev' (original dev set; rules v1 were built on it), 'dev_v2' (held-out v1, spent after one evaluation on 2026-10-21 and merged into development; see docs/baseline_rules_v1.md), 'held_out' (held-out v2: written externally, labels checked by reading before any classifier ran; evaluated once on text and now spent, docs/held_out_v2_results.md) or 'held_out_v3' (held-out v3: written externally, labels checked by reading before any audio was made; end-to-end audio evaluation only). Labels follow the definition in prepare_labels.py (held_out is held-out v2, added 2026-10-21): telling/showing family, employer, neighbours or contacts = third_party_contact_threat; visiting/harming/shaming in person = intimidation_or_threats; multi-label allowed. 'compliant' is false when the call contains a conduct concern or a threatening authority claim. 'concern_types' lists the categories present. 'authority_mention' is true when the agent mentions police, arrest, FIR, court or a legal notice (including lawful mentions in compliant calls); it is scored as a verify flag, separately from the three conduct categories. 'concern_spans' quote the labelled text (turn index + exact substring); dev entries carry authority spans only. 'hard_negative' is true only for compliant calls containing firm-but-lawful language that must not be flagged. 'needs_native_review' is true for Kannada scripts pending native speaker review. 'label_changes' logs every change from the delivered labels.",
   "concern_type_labels": {
     "intimidation_or_threats": "Physical threats, agents visiting, sending men to debtor's location",
     "abusive_language": "Slurs, derogatory or shaming language directed at the debtor",
@@ -1427,6 +1427,432 @@
       "needs_native_review": false,
       "label_changes": [
         "added third_party_contact_threat span (turn 4) “make sure everyone understands what kind of borrower you are.” — making 'everyone' understand what kind of borrower he is = showing others (third-party), as in dev 003/017"
+      ]
+    },
+    {
+      "id": "HI001",
+      "split": "held_out_v3",
+      "origin": "held_out_v3",
+      "language": "hi-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "intimidation_or_threats",
+        "third_party_contact_threat"
+      ],
+      "authority_mention": false,
+      "concern_spans": [
+        {
+          "type": "intimidation_or_threats",
+          "turn": 2,
+          "text": "आज पैसे नहीं आए तो हमारे लोग आपके घर आकर ऐसा समझाएँगे कि याद रखोगे।"
+        },
+        {
+          "type": "third_party_contact_threat",
+          "turn": 4,
+          "text": "फिर अपने घरवालों को भी तैयार रखना, सबको पता चल जाएगा कि आपने कर्ज़ लिया है और वापस नहीं कर रहे।"
+        }
+      ],
+      "needs_native_review": false,
+      "label_changes": [
+        "hard_negative True -> False (hard negatives are compliant calls only)"
+      ]
+    },
+    {
+      "id": "HI002",
+      "split": "held_out_v3",
+      "origin": "held_out_v3",
+      "language": "hi-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "abusive_language",
+        "intimidation_or_threats"
+      ],
+      "authority_mention": false,
+      "concern_spans": [
+        {
+          "type": "abusive_language",
+          "turn": 2,
+          "text": "आप जैसे निकम्मे लोग कर्ज़ लेकर गायब होने के लिए ही होते हैं।"
+        },
+        {
+          "type": "intimidation_or_threats",
+          "turn": 4,
+          "text": "समय खत्म होने पर हमारी टीम खुद आपसे मिलेगी। फिर मत कहना कि बताया नहीं था।"
+        }
+      ],
+      "needs_native_review": false,
+      "label_changes": [
+        "hard_negative True -> False (hard negatives are compliant calls only)"
+      ]
+    },
+    {
+      "id": "HI003",
+      "split": "held_out_v3",
+      "origin": "held_out_v3",
+      "language": "hi-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "third_party_contact_threat",
+        "authority_or_legal_action_claim"
+      ],
+      "authority_mention": true,
+      "concern_spans": [
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 2,
+          "text": "भुगतान का सबूत भेजिए, वरना पुलिस में शिकायत और एफआईआर करवाकर आपको अंदर करवा देंगे।"
+        },
+        {
+          "type": "third_party_contact_threat",
+          "turn": 4,
+          "text": "आपके दफ्तर में भी फोन करके बता देंगे कि आप कर्ज़ नहीं चुका रहे। फिर आपकी नौकरी बचाना।"
+        }
+      ],
+      "needs_native_review": false,
+      "label_changes": [
+        "hard_negative True -> False (hard negatives are compliant calls only)"
+      ]
+    },
+    {
+      "id": "HI004",
+      "split": "held_out_v3",
+      "origin": "held_out_v3",
+      "language": "hi-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": true,
+      "concern_spans": [
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 4,
+          "text": "यदि भुगतान नहीं होता है, तो कंपनी की नीति और लागू प्रक्रिया के अनुसार कानूनी नोटिस भेजा जा सकता है। यह अभी केवल प्रक्रिया की जानकारी है।"
+        }
+      ],
+      "needs_native_review": false,
+      "hard_negative_note": "late fee per the account terms; legal notice possible under the applicable process — lawful",
+      "label_changes": [
+        "authority_or_legal_action_claim kept as a verify flag (authority_mention), not a concern type, because the call is compliant",
+        "hard_negative False -> True (late fee per the account terms; legal notice possible under the applicable process — lawful)"
+      ]
+    },
+    {
+      "id": "HI005",
+      "split": "held_out_v3",
+      "origin": "held_out_v3",
+      "language": "hi-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": false,
+      "concern_spans": [],
+      "needs_native_review": false,
+      "hard_negative_note": "approved settlement with a firm payment deadline and written terms — lawful deadline",
+      "label_changes": [
+        "hard_negative False -> True (approved settlement with a firm payment deadline and written terms — lawful deadline)"
+      ]
+    },
+    {
+      "id": "HI006",
+      "split": "held_out_v3",
+      "origin": "held_out_v3",
+      "language": "hi-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": false,
+      "concern_spans": [],
+      "needs_native_review": false,
+      "hard_negative_note": "credit-bureau reporting and guarantor contact under the loan agreement — lawful consequence",
+      "label_changes": [
+        "hard_negative False -> True (credit-bureau reporting and guarantor contact under the loan agreement — lawful consequence)"
+      ]
+    },
+    {
+      "id": "KN001",
+      "split": "held_out_v3",
+      "origin": "held_out_v3",
+      "language": "kn-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "intimidation_or_threats",
+        "third_party_contact_threat"
+      ],
+      "authority_mention": false,
+      "concern_spans": [
+        {
+          "type": "intimidation_or_threats",
+          "turn": 2,
+          "text": "ಇವತ್ತು ಹಣ ಬರದಿದ್ರೆ ನಮ್ಮವರು ಮನೆಗೆ ಬಂದು ಮಾತಾಡ್ತಾರೆ, ಆಮೇಲೆ ನಿಮಗೇ ಗೊತ್ತಾಗುತ್ತೆ."
+        },
+        {
+          "type": "third_party_contact_threat",
+          "turn": 4,
+          "text": "ಹಾಗಾದ್ರೆ ನಿಮ್ಮ ಅಕ್ಕಪಕ್ಕದವರಿಗೂ ಮನೆಯವರಿಗೂ ನಿಮ್ಮ ಸಾಲದ ವಿಷಯ ಹೇಳಬೇಕಾಗುತ್ತೆ."
+        }
+      ],
+      "needs_native_review": true,
+      "label_changes": [
+        "hard_negative True -> False (hard negatives are compliant calls only)"
+      ]
+    },
+    {
+      "id": "KN002",
+      "split": "held_out_v3",
+      "origin": "held_out_v3",
+      "language": "kn-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "abusive_language",
+        "intimidation_or_threats"
+      ],
+      "authority_mention": false,
+      "concern_spans": [
+        {
+          "type": "abusive_language",
+          "turn": 2,
+          "text": "ನೀವು ಒಬ್ಬ ಬೇಜವಾಬ್ದಾರಿ ಮನುಷ್ಯ."
+        },
+        {
+          "type": "intimidation_or_threats",
+          "turn": 4,
+          "text": "ಇನ್ನೂ ಕಾಯಿಸಬೇಡಿ. ನಮ್ಮ ತಂಡ ನಿಮ್ಮನ್ನು ಹುಡುಕಿಕೊಂಡು ಬರುತ್ತೆ, ಆಗ ಏನು ಮಾಡ್ತೀರೋ ನೋಡೋಣ."
+        }
+      ],
+      "needs_native_review": true,
+      "label_changes": [
+        "hard_negative True -> False (hard negatives are compliant calls only)"
+      ]
+    },
+    {
+      "id": "KN003",
+      "split": "held_out_v3",
+      "origin": "held_out_v3",
+      "language": "kn-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "third_party_contact_threat",
+        "authority_or_legal_action_claim"
+      ],
+      "authority_mention": true,
+      "concern_spans": [
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 2,
+          "text": "ತಕ್ಷಣ ಹಣದ ಸಾಕ್ಷಿ ಕಳಿಸಿ, ಇಲ್ಲದಿದ್ದರೆ ನಿಮ್ಮ ಮೇಲೆ FIR ಹಾಕಿಸಿ ಪೊಲೀಸರಿಂದ ಕ್ರಮ ತೆಗೆಸುತ್ತೇವೆ."
+        },
+        {
+          "type": "third_party_contact_threat",
+          "turn": 4,
+          "text": "ನಿಮ್ಮ ಆಫೀಸಿಗೂ ಫೋನ್ ಮಾಡಿ ನೀವು ಸಾಲ ತೀರಿಸಿಲ್ಲ ಅಂತ ಎಲ್ಲರಿಗೂ ಹೇಳುತ್ತೇವೆ."
+        }
+      ],
+      "needs_native_review": true,
+      "label_changes": [
+        "hard_negative True -> False (hard negatives are compliant calls only)"
+      ]
+    },
+    {
+      "id": "KN004",
+      "split": "held_out_v3",
+      "origin": "held_out_v3",
+      "language": "kn-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": true,
+      "concern_spans": [
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 4,
+          "text": "ಪಾವತಿ ಆಗದಿದ್ದರೆ, ಅನ್ವಯಿಸುವ ನಿಯಮಗಳು ಮತ್ತು ಸರಿಯಾದ ಪ್ರಕ್ರಿಯೆಯ ಪ್ರಕಾರ ಕಾನೂನು ನೋಟಿಸ್ ಕಳಿಸುವ ಸಾಧ್ಯತೆ ಇದೆ."
+        }
+      ],
+      "needs_native_review": true,
+      "hard_negative_note": "late fee per the loan agreement; legal notice possible under the applicable rules — lawful",
+      "label_changes": [
+        "authority_or_legal_action_claim kept as a verify flag (authority_mention), not a concern type, because the call is compliant",
+        "hard_negative False -> True (late fee per the loan agreement; legal notice possible under the applicable rules — lawful)"
+      ]
+    },
+    {
+      "id": "KN005",
+      "split": "held_out_v3",
+      "origin": "held_out_v3",
+      "language": "kn-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": false,
+      "concern_spans": [],
+      "needs_native_review": true,
+      "hard_negative_note": "approved settlement with a firm payment deadline and written terms — lawful deadline",
+      "label_changes": [
+        "hard_negative False -> True (approved settlement with a firm payment deadline and written terms — lawful deadline)"
+      ]
+    },
+    {
+      "id": "KN006",
+      "split": "held_out_v3",
+      "origin": "held_out_v3",
+      "language": "kn-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": false,
+      "concern_spans": [],
+      "needs_native_review": true,
+      "hard_negative_note": "credit-bureau reporting and guarantor contact under the loan agreement — lawful consequence",
+      "label_changes": [
+        "hard_negative False -> True (credit-bureau reporting and guarantor contact under the loan agreement — lawful consequence)"
+      ]
+    },
+    {
+      "id": "HX001",
+      "split": "held_out_v3",
+      "origin": "held_out_v3",
+      "language": "en-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "intimidation_or_threats",
+        "third_party_contact_threat"
+      ],
+      "authority_mention": false,
+      "concern_spans": [
+        {
+          "type": "intimidation_or_threats",
+          "turn": 2,
+          "text": "Aaj payment nahi aaya toh hamare log aapke ghar aake aapko achhe se samjhayenge."
+        },
+        {
+          "type": "third_party_contact_threat",
+          "turn": 4,
+          "text": "Toh apni family ko bhi bata dena, warna hum khud sabko aapke loan ke baare mein bata denge."
+        }
+      ],
+      "needs_native_review": false,
+      "label_changes": [
+        "hard_negative True -> False (hard negatives are compliant calls only)"
+      ]
+    },
+    {
+      "id": "HX002",
+      "split": "held_out_v3",
+      "origin": "held_out_v3",
+      "language": "en-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "abusive_language",
+        "intimidation_or_threats"
+      ],
+      "authority_mention": false,
+      "concern_spans": [
+        {
+          "type": "abusive_language",
+          "turn": 2,
+          "text": "Aap jaise irresponsible log loan lete waqt bade promises karte ho aur baad mein nautanki karte ho."
+        },
+        {
+          "type": "intimidation_or_threats",
+          "turn": 4,
+          "text": "Time khatam hua toh hamari team khud aapko dhoondhne niklegi. Phir complaint mat karna."
+        }
+      ],
+      "needs_native_review": false,
+      "label_changes": [
+        "hard_negative True -> False (hard negatives are compliant calls only)"
+      ]
+    },
+    {
+      "id": "HX003",
+      "split": "held_out_v3",
+      "origin": "held_out_v3",
+      "language": "en-IN",
+      "compliant": false,
+      "hard_negative": false,
+      "concern_types": [
+        "third_party_contact_threat",
+        "authority_or_legal_action_claim"
+      ],
+      "authority_mention": true,
+      "concern_spans": [
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 2,
+          "text": "Proof abhi bhejo, warna hum police complaint aur FIR file karwa denge aur aapko arrest karwa denge."
+        },
+        {
+          "type": "third_party_contact_threat",
+          "turn": 4,
+          "text": "Aapke manager ko bhi call karke bata denge ki aap loan default kar rahe ho. Phir job ka soch lena."
+        }
+      ],
+      "needs_native_review": false,
+      "label_changes": [
+        "hard_negative True -> False (hard negatives are compliant calls only)"
+      ]
+    },
+    {
+      "id": "HX004",
+      "split": "held_out_v3",
+      "origin": "held_out_v3",
+      "language": "en-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": true,
+      "concern_spans": [
+        {
+          "type": "authority_or_legal_action_claim",
+          "turn": 4,
+          "text": "Agar dues unpaid rehte hain, toh applicable process ke according legal notice issue ho sakta hai. Yeh process ki factual information hai."
+        }
+      ],
+      "needs_native_review": false,
+      "hard_negative_note": "late fee per the loan agreement; legal notice possible under the applicable process — lawful",
+      "label_changes": [
+        "authority_or_legal_action_claim kept as a verify flag (authority_mention), not a concern type, because the call is compliant",
+        "hard_negative False -> True (late fee per the loan agreement; legal notice possible under the applicable process — lawful)"
+      ]
+    },
+    {
+      "id": "HX005",
+      "split": "held_out_v3",
+      "origin": "held_out_v3",
+      "language": "en-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": false,
+      "concern_spans": [],
+      "needs_native_review": false,
+      "hard_negative_note": "approved settlement with a firm payment deadline and written terms — lawful deadline",
+      "label_changes": [
+        "hard_negative False -> True (approved settlement with a firm payment deadline and written terms — lawful deadline)"
+      ]
+    },
+    {
+      "id": "HX006",
+      "split": "held_out_v3",
+      "origin": "held_out_v3",
+      "language": "en-IN",
+      "compliant": true,
+      "hard_negative": true,
+      "concern_types": [],
+      "authority_mention": false,
+      "concern_spans": [],
+      "needs_native_review": false,
+      "hard_negative_note": "credit-bureau reporting and guarantor contact under the loan agreement — lawful consequence",
+      "label_changes": [
+        "hard_negative False -> True (credit-bureau reporting and guarantor contact under the loan agreement — lawful consequence)"
       ]
     }
   ]

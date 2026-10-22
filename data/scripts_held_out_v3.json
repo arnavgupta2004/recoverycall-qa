@@ -1,0 +1,722 @@
+{
+  "version": 1,
+  "note": "HELD-OUT v3: written externally, converted from data/held_out_source/held_out_v3_external.json by prepare_labels.py. Labels were checked by reading the scripts before any TTS, STT or tagger ran on them. End-to-end (audio) headline evaluation only, run once; never tune prompts, rules or labels on it. All content is fictional. Six scenario templates, each written in Hindi, Kannada and Hinglish. Voices are per-language defaults. Structural fixes: speaker 'borrower' renamed 'customer' (our schema); concern spans had no turn index; each was located as a unique exact substring of one agent turn; added tts_language, stt_language_codes, primary_stt_language_code (Hinglish) and voices using the dev per-language defaults; compliant calls listed authority_or_legal_action_claim in concern_types; our schema keeps compliant concern_types empty and records lawful mentions as authority_mention + spans.",
+  "tts_model": "timbre-v2.5",
+  "tts_speed": 1.0,
+  "scenarios": [
+    {
+      "id": "HI001",
+      "title": "Held-out v3 Hindi concerning",
+      "tts_language": "hi-IN",
+      "stt_language_codes": [
+        "hi-IN"
+      ],
+      "voices": {
+        "agent": "Hemraj",
+        "customer": "Chitra"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "शर्मा जी, आपके पंद्रह हज़ार रुपये की किस्त काफी समय से बकाया है। आज भुगतान कर दीजिए।"
+        },
+        {
+          "speaker": "customer",
+          "text": "सर, इस हफ्ते नौकरी नहीं थी, इसलिए पैसे नहीं हैं। अगले सोमवार तक दे दूँगा।"
+        },
+        {
+          "speaker": "agent",
+          "text": "हर बार यही कहानी सुनाते हो। आज पैसे नहीं आए तो हमारे लोग आपके घर आकर ऐसा समझाएँगे कि याद रखोगे।"
+        },
+        {
+          "speaker": "customer",
+          "text": "सर, घर पर मत आइए। मैं खुद भुगतान करने की कोशिश कर रहा हूँ।"
+        },
+        {
+          "speaker": "agent",
+          "text": "फिर अपने घरवालों को भी तैयार रखना, सबको पता चल जाएगा कि आपने कर्ज़ लिया है और वापस नहीं कर रहे।"
+        },
+        {
+          "speaker": "customer",
+          "text": "मेरे परिवार को इसमें मत लाइए। मैं सोमवार को पैसे देने की कोशिश करूँगा।"
+        }
+      ]
+    },
+    {
+      "id": "HI002",
+      "title": "Held-out v3 Hindi concerning",
+      "tts_language": "hi-IN",
+      "stt_language_codes": [
+        "hi-IN"
+      ],
+      "voices": {
+        "agent": "Hemraj",
+        "customer": "Chitra"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "आपकी बीस हज़ार रुपये की बकाया राशि अभी तक जमा नहीं हुई है। भुगतान कब करेंगे?"
+        },
+        {
+          "speaker": "customer",
+          "text": "अभी कुछ आर्थिक परेशानी है। दस दिन का समय मिल सकता है?"
+        },
+        {
+          "speaker": "agent",
+          "text": "आप जैसे निकम्मे लोग कर्ज़ लेकर गायब होने के लिए ही होते हैं।"
+        },
+        {
+          "speaker": "customer",
+          "text": "सर, ऐसे बात मत कीजिए। मैं भाग नहीं रहा हूँ।"
+        },
+        {
+          "speaker": "agent",
+          "text": "समय खत्म होने पर हमारी टीम खुद आपसे मिलेगी। फिर मत कहना कि बताया नहीं था।"
+        },
+        {
+          "speaker": "customer",
+          "text": "मैं समझ गया। कृपया मुझे भुगतान की तारीख तय करने दीजिए।"
+        }
+      ]
+    },
+    {
+      "id": "HI003",
+      "title": "Held-out v3 Hindi concerning",
+      "tts_language": "hi-IN",
+      "stt_language_codes": [
+        "hi-IN"
+      ],
+      "voices": {
+        "agent": "Hemraj",
+        "customer": "Chitra"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "नमस्ते, आपके दस हज़ार रुपये के ऋण की किस्त बकाया है। आप भुगतान क्यों नहीं कर रहे?"
+        },
+        {
+          "speaker": "customer",
+          "text": "मैंने पिछले हफ्ते भुगतान किया था, लेकिन शायद अपडेट नहीं हुआ।"
+        },
+        {
+          "speaker": "agent",
+          "text": "बहाने मत बनाइए। भुगतान का सबूत भेजिए, वरना पुलिस में शिकायत और एफआईआर करवाकर आपको अंदर करवा देंगे।"
+        },
+        {
+          "speaker": "customer",
+          "text": "सर, मेरे पास रसीद है। मैं अभी भेज देता हूँ।"
+        },
+        {
+          "speaker": "agent",
+          "text": "आपके दफ्तर में भी फोन करके बता देंगे कि आप कर्ज़ नहीं चुका रहे। फिर आपकी नौकरी बचाना।"
+        },
+        {
+          "speaker": "customer",
+          "text": "दफ्तर में फोन मत कीजिए। मैं रसीद भेज रहा हूँ।"
+        }
+      ]
+    },
+    {
+      "id": "HI004",
+      "title": "Held-out v3 Hindi compliant",
+      "tts_language": "hi-IN",
+      "stt_language_codes": [
+        "hi-IN"
+      ],
+      "voices": {
+        "agent": "Hemraj",
+        "customer": "Chitra"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "नमस्ते, आपके अठारह हज़ार रुपये की ऋण राशि में से एक किस्त बकाया दिखाई दे रही है।"
+        },
+        {
+          "speaker": "customer",
+          "text": "जी, अभी कुछ परेशानी चल रही है। क्या मैं अगले हफ्ते भुगतान कर सकता हूँ?"
+        },
+        {
+          "speaker": "agent",
+          "text": "आपके खाते की शर्तों के अनुसार विलंब शुल्क लग सकता है। मैं आपको लागू शुल्क और कुल बकाया राशि का विवरण भेज सकता हूँ।"
+        },
+        {
+          "speaker": "customer",
+          "text": "जी, कृपया विवरण भेज दीजिए।"
+        },
+        {
+          "speaker": "agent",
+          "text": "यदि भुगतान नहीं होता है, तो कंपनी की नीति और लागू प्रक्रिया के अनुसार कानूनी नोटिस भेजा जा सकता है। यह अभी केवल प्रक्रिया की जानकारी है।"
+        },
+        {
+          "speaker": "customer",
+          "text": "ठीक है। मैं विवरण देखकर भुगतान की तारीख बताऊँगा।"
+        }
+      ]
+    },
+    {
+      "id": "HI005",
+      "title": "Held-out v3 Hindi compliant",
+      "tts_language": "hi-IN",
+      "stt_language_codes": [
+        "hi-IN"
+      ],
+      "voices": {
+        "agent": "Hemraj",
+        "customer": "Chitra"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "नमस्ते, आपकी पच्चीस हज़ार रुपये की ऋण राशि में से किस्त बकाया है। क्या आप भुगतान की स्थिति बता सकते हैं?"
+        },
+        {
+          "speaker": "customer",
+          "text": "इस महीने खर्च ज़्यादा हो गया। मैं पूरी रकम अभी नहीं दे सकता।"
+        },
+        {
+          "speaker": "agent",
+          "text": "समझ गया। आपके खाते में उपलब्ध विकल्पों के अनुसार हम भुगतान योजना या समझौता राशि की जाँच कर सकते हैं।"
+        },
+        {
+          "speaker": "customer",
+          "text": "अगर समझौता हो जाए तो मैं इस महीने कुछ रकम दे सकता हूँ।"
+        },
+        {
+          "speaker": "agent",
+          "text": "स्वीकृत समझौते के लिए तीस नवंबर तक पंद्रह हज़ार रुपये जमा करने की समय-सीमा है। भुगतान से पहले लिखित शर्तें ज़रूर देख लीजिए।"
+        },
+        {
+          "speaker": "customer",
+          "text": "ठीक है, मैं लिखित शर्तें देखकर पुष्टि करूँगा।"
+        }
+      ]
+    },
+    {
+      "id": "HI006",
+      "title": "Held-out v3 Hindi compliant",
+      "tts_language": "hi-IN",
+      "stt_language_codes": [
+        "hi-IN"
+      ],
+      "voices": {
+        "agent": "Hemraj",
+        "customer": "Chitra"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "नमस्ते, आपके तीस हज़ार रुपये के ऋण की किस्त बकाया है। मैं भुगतान के विकल्प बताने के लिए फोन कर रहा हूँ।"
+        },
+        {
+          "speaker": "customer",
+          "text": "क्या भुगतान में देरी होने से मेरे क्रेडिट स्कोर पर असर पड़ेगा?"
+        },
+        {
+          "speaker": "agent",
+          "text": "यदि बकाया रिपोर्टिंग की शर्तें पूरी होती हैं, तो विलंब की जानकारी क्रेडिट ब्यूरो को दी जा सकती है। सही स्थिति आपके खाते और लागू नियमों पर निर्भर करेगी।"
+        },
+        {
+          "speaker": "customer",
+          "text": "मेरे भाई गारंटर हैं। क्या उनसे भी संपर्क होगा?"
+        },
+        {
+          "speaker": "agent",
+          "text": "यदि आपके ऋण समझौते में गारंटर से संपर्क करने का प्रावधान है, तो उसी शर्त के अनुसार उनसे संपर्क किया जा सकता है।"
+        },
+        {
+          "speaker": "customer",
+          "text": "ठीक है, मैं समझौते की प्रति देखकर भुगतान की तारीख बताऊँगा।"
+        }
+      ]
+    },
+    {
+      "id": "KN001",
+      "title": "Held-out v3 Kannada concerning",
+      "tts_language": "kn-IN",
+      "stt_language_codes": [
+        "kn-IN"
+      ],
+      "voices": {
+        "agent": "Kavin",
+        "customer": "Saanvi"
+      },
+      "needs_native_review": true,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "ಸರ್, ನಿಮ್ಮ ಹದಿನಾರು ಸಾವಿರ ರೂಪಾಯಿ EMI ಬಾಕಿ ಇದೆ. ಇವತ್ತು ಪಾವತಿ ಮಾಡ್ತೀರಾ?"
+        },
+        {
+          "speaker": "customer",
+          "text": "ಸರ್, ಸಂಬಳ ಇನ್ನೂ ಬಂದಿಲ್ಲ. ಮುಂದಿನ ವಾರ ಕೊಡ್ತೀನಿ."
+        },
+        {
+          "speaker": "agent",
+          "text": "ಪ್ರತಿ ಸಲ ಇದೇ ಕಥೆ ಹೇಳ್ತೀರಾ. ಇವತ್ತು ಹಣ ಬರದಿದ್ರೆ ನಮ್ಮವರು ಮನೆಗೆ ಬಂದು ಮಾತಾಡ್ತಾರೆ, ಆಮೇಲೆ ನಿಮಗೇ ಗೊತ್ತಾಗುತ್ತೆ."
+        },
+        {
+          "speaker": "customer",
+          "text": "ದಯವಿಟ್ಟು ಮನೆಗೆ ಬರಬೇಡಿ ಸರ್. ನಾನು ಹಣ ಹೊಂದಿಸುತ್ತಿದ್ದೀನಿ."
+        },
+        {
+          "speaker": "agent",
+          "text": "ಹಾಗಾದ್ರೆ ನಿಮ್ಮ ಅಕ್ಕಪಕ್ಕದವರಿಗೂ ಮನೆಯವರಿಗೂ ನಿಮ್ಮ ಸಾಲದ ವಿಷಯ ಹೇಳಬೇಕಾಗುತ್ತೆ."
+        },
+        {
+          "speaker": "customer",
+          "text": "ಅವರಿಗೆ ಹೇಳಬೇಡಿ ಸರ್. ಮುಂದಿನ ವಾರ ಪಾವತಿ ಮಾಡಲು ಪ್ರಯತ್ನ ಮಾಡ್ತೀನಿ."
+        }
+      ]
+    },
+    {
+      "id": "KN002",
+      "title": "Held-out v3 Kannada concerning",
+      "tts_language": "kn-IN",
+      "stt_language_codes": [
+        "kn-IN"
+      ],
+      "voices": {
+        "agent": "Kavin",
+        "customer": "Saanvi"
+      },
+      "needs_native_review": true,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "ನಿಮ್ಮ ಹನ್ನೆರಡು ಸಾವಿರ ರೂಪಾಯಿ ಕಂತು ಇನ್ನೂ ಬಾಕಿ ಇದೆ. ಯಾವಾಗ ಕಟ್ಟುತ್ತೀರಾ?"
+        },
+        {
+          "speaker": "customer",
+          "text": "ಈ ತಿಂಗಳು ಸ್ವಲ್ಪ ಹಣದ ತೊಂದರೆ ಇದೆ. ಇನ್ನೂ ಐದು ದಿನ ಸಮಯ ಬೇಕು."
+        },
+        {
+          "speaker": "agent",
+          "text": "ನೀವು ಒಬ್ಬ ಬೇಜವಾಬ್ದಾರಿ ಮನುಷ್ಯ. ಸಾಲ ತಗೊಳ್ಳೋವಾಗ ಮಾತ್ರ ದೊಡ್ಡ ಮಾತು, ಈಗ ಹಣ ಕಟ್ಟೋಕೆ ಆಗಲ್ಲವಾ?"
+        },
+        {
+          "speaker": "customer",
+          "text": "ಸರ್, ನಾನು ಹಣ ಕಟ್ಟಲ್ಲ ಅಂತ ಹೇಳಿಲ್ಲ. ಸ್ವಲ್ಪ ಸಮಯ ಕೇಳ್ತಿದ್ದೀನಿ."
+        },
+        {
+          "speaker": "agent",
+          "text": "ಇನ್ನೂ ಕಾಯಿಸಬೇಡಿ. ನಮ್ಮ ತಂಡ ನಿಮ್ಮನ್ನು ಹುಡುಕಿಕೊಂಡು ಬರುತ್ತೆ, ಆಗ ಏನು ಮಾಡ್ತೀರೋ ನೋಡೋಣ."
+        },
+        {
+          "speaker": "customer",
+          "text": "ಸರಿ ಸರ್, ನಾನು ಸಾಧ್ಯವಾದಷ್ಟು ಬೇಗ ಹಣ ಹೊಂದಿಸುತ್ತೇನೆ."
+        }
+      ]
+    },
+    {
+      "id": "KN003",
+      "title": "Held-out v3 Kannada concerning",
+      "tts_language": "kn-IN",
+      "stt_language_codes": [
+        "kn-IN"
+      ],
+      "voices": {
+        "agent": "Kavin",
+        "customer": "Saanvi"
+      },
+      "needs_native_review": true,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "ನಮಸ್ಕಾರ, ನಿಮ್ಮ ಇಪ್ಪತ್ತೆರಡು ಸಾವಿರ ರೂಪಾಯಿ ಸಾಲದ ಕಂತು ಬಾಕಿ ಇದೆ. ಪಾವತಿ ಯಾಕೆ ಆಗಿಲ್ಲ?"
+        },
+        {
+          "speaker": "customer",
+          "text": "ನಾನು ಕಳೆದ ವಾರವೇ ಹಣ ವರ್ಗಾಯಿಸಿದ್ದೇನೆ. ರಸೀದಿ ನನ್ನ ಹತ್ತಿರ ಇದೆ."
+        },
+        {
+          "speaker": "agent",
+          "text": "ಸುಳ್ಳು ಹೇಳಬೇಡಿ. ತಕ್ಷಣ ಹಣದ ಸಾಕ್ಷಿ ಕಳಿಸಿ, ಇಲ್ಲದಿದ್ದರೆ ನಿಮ್ಮ ಮೇಲೆ FIR ಹಾಕಿಸಿ ಪೊಲೀಸರಿಂದ ಕ್ರಮ ತೆಗೆಸುತ್ತೇವೆ."
+        },
+        {
+          "speaker": "customer",
+          "text": "ನನ್ನ ಬಳಿ ಬ್ಯಾಂಕ್ ರಸೀದಿ ಇದೆ. ಈಗಲೇ ಕಳಿಸುತ್ತೇನೆ."
+        },
+        {
+          "speaker": "agent",
+          "text": "ನಿಮ್ಮ ಆಫೀಸಿಗೂ ಫೋನ್ ಮಾಡಿ ನೀವು ಸಾಲ ತೀರಿಸಿಲ್ಲ ಅಂತ ಎಲ್ಲರಿಗೂ ಹೇಳುತ್ತೇವೆ."
+        },
+        {
+          "speaker": "customer",
+          "text": "ದಯವಿಟ್ಟು ಆಫೀಸಿಗೆ ಕರೆ ಮಾಡಬೇಡಿ. ನಾನು ರಸೀದಿ ಕಳಿಸುತ್ತೇನೆ."
+        }
+      ]
+    },
+    {
+      "id": "KN004",
+      "title": "Held-out v3 Kannada compliant",
+      "tts_language": "kn-IN",
+      "stt_language_codes": [
+        "kn-IN"
+      ],
+      "voices": {
+        "agent": "Kavin",
+        "customer": "Saanvi"
+      },
+      "needs_native_review": true,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "ನಮಸ್ಕಾರ ಸರ್, ನಿಮ್ಮ ಹದಿನೆಂಟು ಸಾವಿರ ರೂಪಾಯಿ ಸಾಲದ ಕಂತು ಬಾಕಿ ಇದೆ ಅಂತ ಖಾತೆಯಲ್ಲಿ ತೋರಿಸುತ್ತಿದೆ."
+        },
+        {
+          "speaker": "customer",
+          "text": "ಹೌದು, ಈ ತಿಂಗಳು ಸಂಬಳ ತಡವಾಗಿದೆ. ಮುಂದಿನ ವಾರ ಪಾವತಿ ಮಾಡಬಹುದಾ?"
+        },
+        {
+          "speaker": "agent",
+          "text": "ನಿಮ್ಮ ಸಾಲದ ಒಪ್ಪಂದದ ಪ್ರಕಾರ ತಡವಾದರೆ ಶುಲ್ಕ ಅನ್ವಯವಾಗಬಹುದು. ಎಷ್ಟು ಬಾಕಿ ಇದೆ ಅಂತ ವಿವರ ಕಳಿಸುತ್ತೇನೆ."
+        },
+        {
+          "speaker": "customer",
+          "text": "ಸರಿ ಸರ್, ವಿವರ ಕಳಿಸಿ."
+        },
+        {
+          "speaker": "agent",
+          "text": "ಪಾವತಿ ಆಗದಿದ್ದರೆ, ಅನ್ವಯಿಸುವ ನಿಯಮಗಳು ಮತ್ತು ಸರಿಯಾದ ಪ್ರಕ್ರಿಯೆಯ ಪ್ರಕಾರ ಕಾನೂನು ನೋಟಿಸ್ ಕಳಿಸುವ ಸಾಧ್ಯತೆ ಇದೆ."
+        },
+        {
+          "speaker": "customer",
+          "text": "ಸರಿ, ವಿವರ ನೋಡಿ ಪಾವತಿ ದಿನಾಂಕ ತಿಳಿಸುತ್ತೇನೆ."
+        }
+      ]
+    },
+    {
+      "id": "KN005",
+      "title": "Held-out v3 Kannada compliant",
+      "tts_language": "kn-IN",
+      "stt_language_codes": [
+        "kn-IN"
+      ],
+      "voices": {
+        "agent": "Kavin",
+        "customer": "Saanvi"
+      },
+      "needs_native_review": true,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "ನಮಸ್ಕಾರ, ನಿಮ್ಮ ಇಪ್ಪತ್ತೈದು ಸಾವಿರ ರೂಪಾಯಿ ಸಾಲದ ಕಂತು ಬಾಕಿ ಇದೆ. ಪಾವತಿ ಮಾಡಲು ಯಾವ ದಿನ ಅನುಕೂಲ?"
+        },
+        {
+          "speaker": "customer",
+          "text": "ಈಗ ಸಂಪೂರ್ಣ ಹಣ ಕೊಡೋಕೆ ಆಗಲ್ಲ. ಸ್ವಲ್ಪ ಕಡಿಮೆ ಮೊತ್ತದಲ್ಲಿ ಸೆಟ್ಲ್ ಮಾಡಬಹುದಾ?"
+        },
+        {
+          "speaker": "agent",
+          "text": "ನಿಮ್ಮ ಖಾತೆಗೆ ಸೆಟ್ಲ್‌ಮೆಂಟ್ ಆಯ್ಕೆ ಲಭ್ಯವಿದೆಯೇ ಅಂತ ಪರಿಶೀಲಿಸಬಹುದು. ಅನುಮೋದನೆ ಬಂದರೆ ಬರವಣಿಗೆಯಲ್ಲಿ ಷರತ್ತುಗಳನ್ನು ಕೊಡುತ್ತೇವೆ."
+        },
+        {
+          "speaker": "customer",
+          "text": "ಅನುಮೋದನೆ ಬಂದರೆ ಈ ತಿಂಗಳ ಕೊನೆಯಲ್ಲಿ ಹಣ ಕೊಡಬಹುದು."
+        },
+        {
+          "speaker": "agent",
+          "text": "ಅನುಮೋದಿತ ಪ್ರಸ್ತಾವನೆಯ ಪ್ರಕಾರ ನವೆಂಬರ್ ಮೂವತ್ತನೇ ತಾರೀಖಿನೊಳಗೆ ಹದಿನೈದು ಸಾವಿರ ರೂಪಾಯಿ ಪಾವತಿಸಬೇಕು. ಪಾವತಿಸುವ ಮೊದಲು ಷರತ್ತುಗಳನ್ನು ಓದಿ."
+        },
+        {
+          "speaker": "customer",
+          "text": "ಸರಿ, ಲಿಖಿತ ಪ್ರಸ್ತಾವನೆ ನೋಡಿ ನಂತರ ಖಚಿತಪಡಿಸುತ್ತೇನೆ."
+        }
+      ]
+    },
+    {
+      "id": "KN006",
+      "title": "Held-out v3 Kannada compliant",
+      "tts_language": "kn-IN",
+      "stt_language_codes": [
+        "kn-IN"
+      ],
+      "voices": {
+        "agent": "Kavin",
+        "customer": "Saanvi"
+      },
+      "needs_native_review": true,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "ನಮಸ್ಕಾರ, ನಿಮ್ಮ ಮೂವತ್ತು ಸಾವಿರ ರೂಪಾಯಿ ಸಾಲದ EMI ಬಾಕಿ ಇದೆ. ಪಾವತಿ ಸ್ಥಿತಿ ತಿಳಿಸಬಹುದಾ?"
+        },
+        {
+          "speaker": "customer",
+          "text": "ತಡವಾದರೆ ನನ್ನ ಕ್ರೆಡಿಟ್ ಸ್ಕೋರ್ ಮೇಲೆ ಪರಿಣಾಮ ಆಗುತ್ತಾ?"
+        },
+        {
+          "speaker": "agent",
+          "text": "ಖಾತೆಯ ವರದಿ ನಿಯಮಗಳು ಅನ್ವಯಿಸಿದರೆ, ತಡವಾದ ಪಾವತಿಯ ಮಾಹಿತಿ ಕ್ರೆಡಿಟ್ ಬ್ಯೂರೋಗೆ ಹೋಗಬಹುದು. ನಿಖರ ಪರಿಣಾಮ ನಿಮ್ಮ ಖಾತೆಯ ಸ್ಥಿತಿಯ ಮೇಲೆ ಅವಲಂಬಿತವಾಗಿರುತ್ತದೆ."
+        },
+        {
+          "speaker": "customer",
+          "text": "ನನ್ನ ತಂದೆ ಗ್ಯಾರಂಟರ್ ಆಗಿದ್ದಾರೆ. ಅವರನ್ನೂ ಸಂಪರ್ಕಿಸುತ್ತೀರಾ?"
+        },
+        {
+          "speaker": "agent",
+          "text": "ನಿಮ್ಮ ಸಾಲದ ಒಪ್ಪಂದದಲ್ಲಿ ಗ್ಯಾರಂಟರ್ ಸಂಪರ್ಕಕ್ಕೆ ಅವಕಾಶ ಇದ್ದರೆ, ಆ ಷರತ್ತಿನ ಪ್ರಕಾರ ಸಂಪರ್ಕಿಸಬಹುದು."
+        },
+        {
+          "speaker": "customer",
+          "text": "ಸರಿ, ಒಪ್ಪಂದ ಪರಿಶೀಲಿಸಿ ಪಾವತಿ ಬಗ್ಗೆ ತಿಳಿಸುತ್ತೇನೆ."
+        }
+      ]
+    },
+    {
+      "id": "HX001",
+      "title": "Held-out v3 Hinglish concerning",
+      "tts_language": "hi-en",
+      "stt_language_codes": [
+        "hi-IN",
+        "en-IN"
+      ],
+      "primary_stt_language_code": "en-IN",
+      "voices": {
+        "agent": "Poorvi",
+        "customer": "Pranav"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "Sir, aapka chaudah hazaar rupaye ka EMI overdue hai. Aaj payment kar dijiye."
+        },
+        {
+          "speaker": "customer",
+          "text": "Sir, salary abhi credit nahi hui hai. Agle Monday tak pay kar dunga."
+        },
+        {
+          "speaker": "agent",
+          "text": "Har baar same excuse dete ho. Aaj payment nahi aaya toh hamare log aapke ghar aake aapko achhe se samjhayenge."
+        },
+        {
+          "speaker": "customer",
+          "text": "Sir, please ghar mat bhejiye. Main payment arrange kar raha hoon."
+        },
+        {
+          "speaker": "agent",
+          "text": "Toh apni family ko bhi bata dena, warna hum khud sabko aapke loan ke baare mein bata denge."
+        },
+        {
+          "speaker": "customer",
+          "text": "Please meri family ko involve mat kijiye. Main Monday tak try karunga."
+        }
+      ]
+    },
+    {
+      "id": "HX002",
+      "title": "Held-out v3 Hinglish concerning",
+      "tts_language": "hi-en",
+      "stt_language_codes": [
+        "hi-IN",
+        "en-IN"
+      ],
+      "primary_stt_language_code": "en-IN",
+      "voices": {
+        "agent": "Poorvi",
+        "customer": "Pranav"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "Aapka gyarah hazaar rupaye ka outstanding abhi tak clear nahi hua. Payment kab karoge?"
+        },
+        {
+          "speaker": "customer",
+          "text": "Sir, medical expenses aa gaye hain. Mujhe ek week ka time chahiye."
+        },
+        {
+          "speaker": "agent",
+          "text": "Aap jaise irresponsible log loan lete waqt bade promises karte ho aur baad mein nautanki karte ho."
+        },
+        {
+          "speaker": "customer",
+          "text": "Sir, main avoid nahi kar raha. Bas thoda time maang raha hoon."
+        },
+        {
+          "speaker": "agent",
+          "text": "Time khatam hua toh hamari team khud aapko dhoondhne niklegi. Phir complaint mat karna."
+        },
+        {
+          "speaker": "customer",
+          "text": "Main samajh gaya. Please mujhe payment arrange karne ka time dijiye."
+        }
+      ]
+    },
+    {
+      "id": "HX003",
+      "title": "Held-out v3 Hinglish concerning",
+      "tts_language": "hi-en",
+      "stt_language_codes": [
+        "hi-IN",
+        "en-IN"
+      ],
+      "primary_stt_language_code": "en-IN",
+      "voices": {
+        "agent": "Poorvi",
+        "customer": "Pranav"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "Aapka unnis hazaar rupaye ka payment overdue show ho raha hai. Abhi tak clear kyun nahi hua?"
+        },
+        {
+          "speaker": "customer",
+          "text": "Maine kal transfer kiya tha. Shayad system mein update nahi hua."
+        },
+        {
+          "speaker": "agent",
+          "text": "Proof abhi bhejo, warna hum police complaint aur FIR file karwa denge aur aapko arrest karwa denge."
+        },
+        {
+          "speaker": "customer",
+          "text": "Sir, mere paas transaction receipt hai. Main abhi send karta hoon."
+        },
+        {
+          "speaker": "agent",
+          "text": "Aapke manager ko bhi call karke bata denge ki aap loan default kar rahe ho. Phir job ka soch lena."
+        },
+        {
+          "speaker": "customer",
+          "text": "Please mere manager ko call mat kijiye. Main receipt share kar raha hoon."
+        }
+      ]
+    },
+    {
+      "id": "HX004",
+      "title": "Held-out v3 Hinglish compliant",
+      "tts_language": "hi-en",
+      "stt_language_codes": [
+        "hi-IN",
+        "en-IN"
+      ],
+      "primary_stt_language_code": "en-IN",
+      "voices": {
+        "agent": "Poorvi",
+        "customer": "Pranav"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "Namaste, aapka satrah hazaar rupaye ka EMI overdue hai. Main aapko outstanding details explain karne ke liye call kar raha hoon."
+        },
+        {
+          "speaker": "customer",
+          "text": "Haan sir, is month salary late hai. Kya main next week payment kar sakta hoon?"
+        },
+        {
+          "speaker": "agent",
+          "text": "Aapke loan agreement ke hisaab se applicable late fee lag sakti hai. Main exact amount aur charges ka breakup share kar deta hoon."
+        },
+        {
+          "speaker": "customer",
+          "text": "Theek hai sir, please breakup bhej dijiye."
+        },
+        {
+          "speaker": "agent",
+          "text": "Agar dues unpaid rehte hain, toh applicable process ke according legal notice issue ho sakta hai. Yeh process ki factual information hai."
+        },
+        {
+          "speaker": "customer",
+          "text": "Understood sir, details dekh kar payment date confirm karunga."
+        }
+      ]
+    },
+    {
+      "id": "HX005",
+      "title": "Held-out v3 Hinglish compliant",
+      "tts_language": "hi-en",
+      "stt_language_codes": [
+        "hi-IN",
+        "en-IN"
+      ],
+      "primary_stt_language_code": "en-IN",
+      "voices": {
+        "agent": "Poorvi",
+        "customer": "Pranav"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "Namaste, aapka chhabbees hazaar rupaye ka outstanding pending hai. Aap abhi full amount pay nahi kar sakte toh available options check kar sakte hain."
+        },
+        {
+          "speaker": "customer",
+          "text": "Sir, main abhi poora amount arrange nahi kar paunga. Kya settlement possible hai?"
+        },
+        {
+          "speaker": "agent",
+          "text": "Main aapke account ke liye settlement eligibility check kar sakta hoon. Approval ke baad written terms provide ki jayengi."
+        },
+        {
+          "speaker": "customer",
+          "text": "Agar amount manageable hua toh main month-end tak payment kar dunga."
+        },
+        {
+          "speaker": "agent",
+          "text": "Approved settlement offer mein pandrah hazaar rupaye ki payment thirty November tak due hogi. Payment se pehle written terms review kar lijiye."
+        },
+        {
+          "speaker": "customer",
+          "text": "Theek hai, written offer milne ke baad main confirm karunga."
+        }
+      ]
+    },
+    {
+      "id": "HX006",
+      "title": "Held-out v3 Hinglish compliant",
+      "tts_language": "hi-en",
+      "stt_language_codes": [
+        "hi-IN",
+        "en-IN"
+      ],
+      "primary_stt_language_code": "en-IN",
+      "voices": {
+        "agent": "Poorvi",
+        "customer": "Pranav"
+      },
+      "needs_native_review": false,
+      "turns": [
+        {
+          "speaker": "agent",
+          "text": "Hello sir, aapka battis hazaar rupaye ka EMI overdue hai. Main repayment options discuss karne ke liye call kar raha hoon."
+        },
+        {
+          "speaker": "customer",
+          "text": "Sir, late payment se mera CIBIL score affect hoga kya?"
+        },
+        {
+          "speaker": "agent",
+          "text": "Agar applicable reporting conditions meet hoti hain, toh overdue status credit bureau ko report ho sakta hai. Actual impact account status aur reporting rules par depend karega."
+        },
+        {
+          "speaker": "customer",
+          "text": "Mere uncle guarantor hain. Kya unko call kar sakte hain?"
+        },
+        {
+          "speaker": "agent",
+          "text": "Aapke loan agreement mein guarantor contact ka provision hai toh usi terms ke according unse contact kiya ja sakta hai."
+        },
+        {
+          "speaker": "customer",
+          "text": "Okay sir, main agreement check karke payment timeline share karunga."
+        }
+      ]
+    }
+  ]
+}

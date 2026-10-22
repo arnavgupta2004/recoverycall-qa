@@ -47,6 +47,8 @@ SPLIT = "dev_v2"
 MANIFEST = ROOT / "data" / "dataset_manifest.json"
 SOURCE_V2 = ROOT / "data" / "held_out_source" / "held_out_v2.json"
 HELD_OUT_SCRIPTS = ROOT / "data" / "scripts_held_out.json"
+SOURCE_V3 = ROOT / "data" / "held_out_source" / "held_out_v3_external.json"
+HELD_OUT_V3_SCRIPTS = ROOT / "data" / "scripts_held_out_v3.json"
 
 AUTHORITY = "authority_or_legal_action_claim"
 CONDUCT = ["intimidation_or_threats", "abusive_language", "third_party_contact_threat"]
@@ -121,7 +123,9 @@ DEV_AUTHORITY_SPANS = {
 MANIFEST_NOTE = (
     "Ground-truth labels for the RecoveryCall QA dataset. 'split' is 'dev' (original dev set; rules v1 were built "
     "on it), 'dev_v2' (held-out v1, spent after one evaluation on 2026-10-21 and merged into development; see "
-    "docs/baseline_rules_v1.md) or 'held_out' (held-out v2: written externally, labels checked by reading before any classifier ran; headline evaluation only). Labels follow the "
+    "docs/baseline_rules_v1.md), 'held_out' (held-out v2: written externally, labels checked by reading before any classifier ran; "
+    "evaluated once on text and now spent, docs/held_out_v2_results.md) or 'held_out_v3' (held-out v3: written externally, "
+    "labels checked by reading before any audio was made; end-to-end audio evaluation only). Labels follow the "
     "definition in prepare_labels.py (held_out is held-out v2, added 2026-10-21): telling/showing family, employer, neighbours or contacts = "
     "third_party_contact_threat; visiting/harming/shaming in person = intimidation_or_threats; multi-label allowed. 'compliant' is false when "
     "the call contains a conduct concern or a threatening authority claim. 'concern_types' lists the categories present. "
@@ -313,6 +317,88 @@ def convert_held_out_v2() -> tuple[list[dict], list[dict], list[str]]:
     return scenarios, entries, structural
 
 
+# ── Held-out v3 (end-to-end audio evaluation; labels checked by reading, nothing run on them) ──
+# Delivered distribution: 6 calls per language (hi-IN, kn-IN, en-IN Hinglish), 3 concerning + 3 compliant
+# each. The 18 calls are six scenario templates written once per language (HI00k ≈ KN00k ≈ HX00k), so the
+# set holds 6 distinct situations, not 18. Hinglish (HX) is romanised Hindi with English loanwords
+# (EMI, overdue, payment, settlement, legal notice): code-mixed as required.
+# Rule 1: the delivered file set hard_negative=true on all 9 concerning calls and false on all 9 compliant
+# calls, the reverse of our definition. Corrected below; the firm-but-lawful content of each compliant call:
+HELD_OUT_V3_HARD_NEGATIVE = {
+    "HI004": "late fee per the account terms; legal notice possible under the applicable process — lawful",
+    "KN004": "late fee per the loan agreement; legal notice possible under the applicable rules — lawful",
+    "HX004": "late fee per the loan agreement; legal notice possible under the applicable process — lawful",
+    "HI005": "approved settlement with a firm payment deadline and written terms — lawful deadline",
+    "KN005": "approved settlement with a firm payment deadline and written terms — lawful deadline",
+    "HX005": "approved settlement with a firm payment deadline and written terms — lawful deadline",
+    "HI006": "credit-bureau reporting and guarantor contact under the loan agreement — lawful consequence",
+    "KN006": "credit-bureau reporting and guarantor contact under the loan agreement — lawful consequence",
+    "HX006": "credit-bureau reporting and guarantor contact under the loan agreement — lawful consequence",
+}
+
+
+def convert_held_out_v3() -> tuple[list[dict], list[dict], list[str]]:
+    """Return (scenarios, manifest entries, structural fixes) for held-out v3."""
+    source = json.loads(SOURCE_V3.read_text(encoding="utf-8"))
+    by_lang = {lang: [s for s in source if s["language"] == lang] for lang in LANG}
+    for lang, calls in by_lang.items():
+        if len(calls) != 6 or sum(s["label"] == "concerning" for s in calls) != 3:
+            raise SystemExit(f"held-out v3: expected 6 calls (3 concerning) for {lang}, got {len(calls)}")
+    structural = ["speaker 'borrower' renamed 'customer' (our schema)",
+                  "concern spans had no turn index; each was located as a unique exact substring of one agent turn",
+                  "added tts_language, stt_language_codes, primary_stt_language_code (Hinglish) and voices using "
+                  "the dev per-language defaults",
+                  "compliant calls listed authority_or_legal_action_claim in concern_types; our schema keeps "
+                  "compliant concern_types empty and records lawful mentions as authority_mention + spans"]
+    scenarios, entries = [], []
+    for s in source:
+        sid, lang = s["id"], s["language"]
+        conv = LANG[lang]
+        turns = [{"speaker": "customer" if t["speaker"] == "borrower" else t["speaker"], "text": t["text"]}
+                 for t in s["turns"]]
+        sc = {"id": sid, "title": f"Held-out v3 {conv['name']} {s['label']}", "tts_language": conv["tts_language"],
+              "stt_language_codes": conv["stt_language_codes"]}
+        if "primary_stt_language_code" in conv:
+            sc["primary_stt_language_code"] = conv["primary_stt_language_code"]
+        sc.update({"voices": conv["voices"], "needs_native_review": lang == "kn-IN", "turns": turns})
+        scenarios.append(sc)
+
+        changes = []
+        spans = [{"type": sp["type"], "turn": turn_index_of(turns, sp["text"]), "text": sp["text"]}
+                 for sp in s["concern_spans"]]
+        for sp in spans:
+            if turns[sp["turn"]]["speaker"] != "agent":
+                raise SystemExit(f"{sid}: delivered span is in a customer turn: {sp}")
+        compliant = s["label"] == "compliant"
+        authority = any(sp["type"] == AUTHORITY for sp in spans)
+        span_types = {sp["type"] for sp in spans} - ({AUTHORITY} if compliant else set())
+        delivered = set(s["concern_types"])
+        if compliant and AUTHORITY in delivered:
+            changes.append("authority_or_legal_action_claim kept as a verify flag (authority_mention), not a "
+                           "concern type, because the call is compliant")
+        for t in sorted((delivered - span_types) - {AUTHORITY}):
+            changes.append(f"removed {t} from concern_types (no span of that type)")
+        for t in sorted(span_types - delivered):
+            changes.append(f"added {t} to concern_types (a span of that type exists)")
+        hard_negative = sid in HELD_OUT_V3_HARD_NEGATIVE
+        if hard_negative and not compliant:
+            raise SystemExit(f"{sid}: hard negative must be compliant")
+        if hard_negative != s["hard_negative"]:
+            changes.append(f"hard_negative {s['hard_negative']} -> {hard_negative}"
+                           + (f" ({HELD_OUT_V3_HARD_NEGATIVE[sid]})" if hard_negative
+                              else " (hard negatives are compliant calls only)"))
+        types = [t for t in s["concern_types"] if t in span_types] + sorted(span_types - delivered)
+        entry = {"id": sid, "split": "held_out_v3", "origin": "held_out_v3", "language": lang, "compliant": compliant,
+                 "hard_negative": hard_negative, "concern_types": types, "authority_mention": authority,
+                 "concern_spans": spans, "needs_native_review": lang == "kn-IN"}
+        if hard_negative:
+            entry["hard_negative_note"] = HELD_OUT_V3_HARD_NEGATIVE[sid]
+        if changes:
+            entry["label_changes"] = changes
+        entries.append(entry)
+    return scenarios, entries, structural
+
+
 def main() -> None:
     scenarios, v2_entries = convert_held_out()
     v2_ids = {e["id"] for e in v2_entries}
@@ -341,6 +427,17 @@ def main() -> None:
                  + "; ".join(structural) + "."),
         "tts_model": "timbre-v2.5", "tts_speed": 1.0, "scenarios": ho_scenarios,
     }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    v3_scenarios, v3_entries, v3_structural = convert_held_out_v3()
+    manifest["calls"] = [c for c in manifest["calls"] if c["split"] != "held_out_v3"] + v3_entries
+    HELD_OUT_V3_SCRIPTS.write_text(json.dumps({
+        "version": 1,
+        "note": ("HELD-OUT v3: written externally, converted from data/held_out_source/held_out_v3_external.json by "
+                 "prepare_labels.py. Labels were checked by reading the scripts before any TTS, STT or tagger ran on "
+                 "them. End-to-end (audio) headline evaluation only, run once; never tune prompts, rules or labels "
+                 "on it. All content is fictional. Six scenario templates, each written in Hindi, Kannada and "
+                 "Hinglish. Voices are per-language defaults. Structural fixes: " + "; ".join(v3_structural) + "."),
+        "tts_model": "timbre-v2.5", "tts_speed": 1.0, "scenarios": v3_scenarios,
+    }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     MANIFEST.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     for e in v2_entries:
         for ch in e.get("label_changes", []):
@@ -349,6 +446,12 @@ def main() -> None:
     for f in structural:
         print(f"  - {f}")
     for e in ho_entries:
+        for ch in e.get("label_changes", []):
+            print(f"  {e['id']}: {ch}")
+    print("held-out v3 structural fixes:")
+    for f in v3_structural:
+        print(f"  - {f}")
+    for e in v3_entries:
         for ch in e.get("label_changes", []):
             print(f"  {e['id']}: {ch}")
     print(f"merged {len(scenarios)} scenarios into {DEV_SCRIPTS.relative_to(ROOT)} (split={SPLIT}) and updated "
